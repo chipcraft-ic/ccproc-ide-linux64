@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Automatic-Module-Name: com.chipcraftic.eplugin.product
+Bundle-SymbolicName: com.chipcraftic.eplugin.product;singleton:=true
+Bundle-Name: %pluginName
+Bundle-Version: 1.0.0.201811191440
+Bundle-Localization: plugin
+Require-Bundle: org.eclipse.ui.workbench
+Bundle-ManifestVersion: 2
+Bundle-Vendor: %providerName
+
+

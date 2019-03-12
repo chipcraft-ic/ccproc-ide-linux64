@@ -1,0 +1,94 @@
+From 2e641d11e92c7decea230162dba1fc8e2705f03a Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Rafa=C5=82=20Harabie=C5=84?= <rafalh1992@o2.pl>
+Date: Fri, 28 Jul 2017 16:16:29 +0200
+Subject: Add mips*-cc-elf* target based on mips*-sde-elf*.
+
+---
+ configure                        | 4 ++--
+ configure.ac                     | 4 ++--
+ newlib/configure.host            | 6 +++++-
+ newlib/libc/include/sys/config.h | 4 ++++
+ 4 files changed, 13 insertions(+), 5 deletions(-)
+
+diff --git a/configure b/configure
+index 2d0963b..22ca2a1 100755
+--- a/configure
++++ b/configure
+@@ -3913,7 +3913,7 @@ case "${target}" in
+   microblaze*)
+     noconfigdirs="$noconfigdirs gprof"
+     ;;
+-  mips*-sde-elf* | mips*-mti-elf* | mips*-img-elf*)
++  mips*-sde-elf* | mips*-mti-elf* | mips*-img-elf* | mips*-cc-elf*)
+     if test x$with_newlib = xyes; then
+       noconfigdirs="$noconfigdirs gprof"
+     fi
+@@ -6939,7 +6939,7 @@ case "${target}" in
+   spu-*-*)
+     target_makefile_frag="config/mt-spu"
+     ;;
+-  mips*-sde-elf* | mips*-mti-elf* | mips*-img-elf*)
++  mips*-sde-elf* | mips*-mti-elf* | mips*-img-elf* | mips*-cc-elf*)
+     target_makefile_frag="config/mt-sde"
+     ;;
+   mipsisa*-*-elfoabi*)
+diff --git a/configure.ac b/configure.ac
+index 3cb95d6..419b7d4 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -1249,7 +1249,7 @@ case "${target}" in
+   microblaze*)
+     noconfigdirs="$noconfigdirs gprof"
+     ;;
+-  mips*-sde-elf* | mips*-mti-elf* | mips*-img-elf*)
++  mips*-sde-elf* | mips*-mti-elf* | mips*-img-elf* | mips*-cc-elf*)
+     if test x$with_newlib = xyes; then
+       noconfigdirs="$noconfigdirs gprof"
+     fi
+@@ -2543,7 +2543,7 @@ case "${target}" in
+   spu-*-*)
+     target_makefile_frag="config/mt-spu"
+     ;;
+-  mips*-sde-elf* | mips*-mti-elf* | mips*-img-elf*)
++  mips*-sde-elf* | mips*-mti-elf* | mips*-img-elf* | mips*-cc-elf*)
+     target_makefile_frag="config/mt-sde"
+     ;;
+   mipsisa*-*-elfoabi*)
+diff --git a/newlib/configure.host b/newlib/configure.host
+index 493d7b0..3735487 100644
+--- a/newlib/configure.host
++++ b/newlib/configure.host
+@@ -753,10 +753,14 @@ case "${host}" in
+ 	default_newlib_io_long_long="yes"
+ 	newlib_cflags="${newlib_cflags} -DMISSING_SYSCALL_NAMES"
+ 	;;
++  mips*-cc-elf*)
++	syscall_dir=syscalls
++	newlib_cflags="${newlib_cflags} -DREENTRANT_SYSCALLS_PROVIDED -DNO_UNALIGNED_LOADSTORE"
++	;;
+   mips*-*-elf*)
+ 	default_newlib_io_long_long="yes"
+ 	syscall_dir=syscalls
+-	newlib_cflags="${newlib_cflags} -DNO_UNALIGNED_LOADSTORE"
++	newlib_cflags="${newlib_cflags} -DMISSING_SYSCALL_NAMES"
+ 	;;
+   mmix-*)
+ 	syscall_dir=syscalls
+diff --git a/newlib/libc/include/sys/config.h b/newlib/libc/include/sys/config.h
+index 555239f..1546c60 100644
+--- a/newlib/libc/include/sys/config.h
++++ b/newlib/libc/include/sys/config.h
+@@ -137,6 +137,10 @@
+ #define __ATTRIBUTE_IMPURE_PTR__ __attribute__((__section__(".sdata")))
+ #endif
+ 
++#if defined(_MIPS_ARCH_CCPROC) && !defined(__DYNAMIC_REENT__)
++#define __DYNAMIC_REENT__ 1
++#endif
++
+ #ifdef __xstormy16__
+ #define __SMALL_BITFIELDS
+ #undef INT_MAX
+-- 
+2.17.1
+

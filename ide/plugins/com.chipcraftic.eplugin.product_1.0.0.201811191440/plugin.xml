@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+   <extension
+         id="ccide"
+         point="org.eclipse.core.runtime.products">
+      <product
+            application="org.eclipse.ui.ide.workbench"
+            name="ChipCraft IDE">
+         <property
+               name="windowImages"
+               value="icons/icon16.png,icons/icon32.png,icons/icon48.png,icons/icon64.png,icons/icon128.png,icons/icon256.png">
+         </property>
+         <property
+               name="aboutText"
+               value="%productBlurb">
+         </property>
+         <property
+               name="aboutImage"
+               value="icons/icon128.png">
+         </property>
+         <property
+               name="startupForegroundColor"
+               value="51f544">
+         </property>
+         <property
+               name="startupProgressRect"
+               value="2,290,448,10">
+         </property>
+         <property
+               name="startupMessageRect"
+               value="7,265,320,20">
+         </property>
+         <property
+               name="appName"
+               value="ChipCraft IDE">
+         </property>
+         <property
+               name="preferenceCustomization"
+               value="plugin_customization.ini">
+         </property>
+      </product>
+   </extension>
+   
+   <extension
+         point="org.eclipse.ui.perspectiveExtensions">
+      <perspectiveExtension
+            targetID="org.eclipse.debug.ui.DebugPerspective">
+         <view
+               ratio="0.5"
+               relative="org.eclipse.ui.views.TaskList"
+               relationship="right"
+               id="org.eclipse.cdt.embsysregview.views.EmbSysRegView">
+         </view>
+      </perspectiveExtension>
+   </extension>
+   
+   <extension
+         point="org.eclipse.ui.activities">
+      <activity
+            description="Unused CDT elements like New Project wizards."
+            id="com.chipcraftic.eplugin.ui.cdtActivity"
+            name="Unused CDT elements">
+      </activity>
+      <category
+            description="CDT elements"
+            id="com.chipcraftic.eplugin.ui.activityCategory"
+            name="CDT">
+      </category>
+      <categoryActivityBinding
+            activityId="com.chipcraftic.eplugin.ui.cdtActivity"
+            categoryId="com.chipcraftic.eplugin.ui.activityCategory">
+      </categoryActivityBinding>
+      
+      <!-- Hide New Project CDT contributions -->
+      <activityPatternBinding
+            activityId="com.chipcraftic.eplugin.ui.cdtActivity"
+            pattern="org.eclipse.cdt.ui/org.eclipse.cdt.ui.wizard.project">
+      </activityPatternBinding>
+      <activityPatternBinding
+            activityId="com.chipcraftic.eplugin.ui.cdtActivity"
+            pattern="org.eclipse.cdt.ui/org.eclipse.cdt.ui.wizards.NewCWizard[12]">
+      </activityPatternBinding>
+      <activityPatternBinding
+            activityId="com.chipcraftic.eplugin.ui.cdtActivity"
+            pattern="org.eclipse.cdt.managedbuilder.ui/org.eclipse.cdt.ui.wizards.NewMakeFromExisting">
+      </activityPatternBinding>
+      <activityPatternBinding
+            activityId="com.chipcraftic.eplugin.ui.cdtActivity"
+            pattern="org.eclipse.cdt.managedbuilder.ui/org.eclipse.cdt.ui.wizards.ConvertToMakeWizard">
+      </activityPatternBinding>
+   </extension>
+   
+   <extension point="org.eclipse.ui.preferencePages">
+		<page
+        category="org.eclipse.ui.preferencePages.Workbench"
+        class="org.eclipse.ui.activities.ActivitiesPreferencePage"
+        id="org.eclipse.ui.activities.ActivitiesPreferencePage"
+        name="Capabilities">
+		</page>
+	</extension>
+
+</plugin>

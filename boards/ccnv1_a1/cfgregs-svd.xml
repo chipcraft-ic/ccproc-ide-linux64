@@ -1,0 +1,1359 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<peripheral>
+  <name>CFGREGS</name>
+  <description>Configuration Registers</description>
+  <baseAddress>0x80007000</baseAddress>
+  <addressBlock>
+    <offset>0</offset>
+    <size>0x9C</size>
+    <usage>registers</usage>
+  </addressBlock>
+  <registers>    <register>
+      <name>IRQMAP</name>
+      <description>Interrupt Mapping Register</description>
+      <addressOffset>0x0</addressOffset>
+      <access>read-write</access>
+      <fields>
+        <field>
+          <name>NC</name>
+          <bitRange>[31:16]</bitRange>
+          <access>read-only</access>
+        </field>
+        <field>
+          <name>IRQMAP</name>
+          <description>Interrupt Mapping, Each set bit represents the interrupt number that will be passed to interrupt controller. It is allowed to set more than one bit.</description>
+          <bitRange>[15:1]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>NC</name>
+          <bitRange>[0:0]</bitRange>
+          <access>read-only</access>
+        </field>
+      </fields>
+    </register>
+    <register>
+      <name>UNLOCK</name>
+      <description>Unlock Register</description>
+      <addressOffset>0x4</addressOffset>
+      <access>read-write</access>
+      <fields>
+        <field>
+          <name>NC</name>
+          <bitRange>[31:16]</bitRange>
+          <access>read-only</access>
+        </field>
+        <field>
+          <name>UNLOCK_KEY</name>
+          <description>Write Unlock Key, Write unlock key value to allow write to a single module register.</description>
+          <bitRange>[15:0]</bitRange>
+          <access>read-write</access>
+        </field>
+      </fields>
+    </register>
+    <register>
+      <name>IRQFLAGS</name>
+      <description>32kHz RTC Clock Interrupt Flags</description>
+      <addressOffset>0x8</addressOffset>
+      <access>read-write</access>
+      <fields>
+        <field>
+          <name>NC</name>
+          <bitRange>[31:3]</bitRange>
+          <access>read-only</access>
+        </field>
+        <field>
+          <name>PLL_FAIL</name>
+          <description>PLL Generator Fail, Bit is set if external PLL generator encountered unexpected error.</description>
+          <bitRange>[2:2]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>XTAL_CORE_FAIL</name>
+          <description>External XTAL Oscillator Fail, Bit is set if external XTAL oscillator encountered unexpected error.</description>
+          <bitRange>[1:1]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>XTAL_RTC_FAIL</name>
+          <description>External 32kHz XTAL Oscillator Fail, Bit is set if external 32kHz XTAL oscillator encountered unexpected error.</description>
+          <bitRange>[0:0]</bitRange>
+          <access>read-write</access>
+        </field>
+      </fields>
+    </register>
+    <register>
+      <name>RTCSTAT</name>
+      <description>32kHz RTC Clock Status</description>
+      <addressOffset>0xC</addressOffset>
+      <access>read-write</access>
+      <fields>
+        <field>
+          <name>NC</name>
+          <bitRange>[31:9]</bitRange>
+          <access>read-only</access>
+        </field>
+        <field>
+          <name>RC_RTC_VAL</name>
+          <description>FLL Calibration Value, , Calibration value of internal FLL 32kHz RTC RC generator.</description>
+          <bitRange>[8:2]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>RC_RTC_RDY</name>
+          <description>FLL Calibration Ready, Calibration value of internal FLL 32kHz RTC RC generator is ready.</description>
+          <bitRange>[1:1]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>CLK_RTC_SEL</name>
+          <description>32kHz RTC Clock Source, '0' - Internal RC oscillator, '1' - External XTAL oscillator</description>
+          <bitRange>[0:0]</bitRange>
+          <access>read-write</access>
+        </field>
+      </fields>
+    </register>
+    <register>
+      <name>RTCCONF</name>
+      <description>32kHz RTC Clock Configuration</description>
+      <addressOffset>0x10</addressOffset>
+      <access>read-write</access>
+      <fields>
+        <field>
+          <name>NC</name>
+          <bitRange>[31:3]</bitRange>
+          <access>read-only</access>
+        </field>
+        <field>
+          <name>RC_RTC_CAL</name>
+          <description>FLL Calibration Enable, Enable calibration of internal FLL 32kHz RTC RC generator.</description>
+          <bitRange>[2:2]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>XTAL_RTC_SEL</name>
+          <description>Select External XTAL as RTC Clock Source, Informative only to generate interrupt on XTAL fail., '0' - Internal RC oscillator, '1' - External XTAL oscillator</description>
+          <bitRange>[1:1]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>XTAL_RTC_TEST</name>
+          <description>External XTAL Fail Test Input, Set this bit to simulate XTAL fail.</description>
+          <bitRange>[0:0]</bitRange>
+          <access>read-write</access>
+        </field>
+      </fields>
+    </register>
+    <register>
+      <name>COREFREQ_CLK</name>
+      <description>External XTAL Configuration Register</description>
+      <addressOffset>0x14</addressOffset>
+      <access>read-write</access>
+      <fields>
+        <field>
+          <name>NC</name>
+          <bitRange>[31:5]</bitRange>
+          <access>read-only</access>
+        </field>
+        <field>
+          <name>TEST_OUT_EN</name>
+          <description>Clock Test Output Enable</description>
+          <bitRange>[4:4]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>RC_CORE_CAL</name>
+          <description>FLL Calibration Enable, Enable calibration of internal FLL 16MHz RC generator.</description>
+          <bitRange>[3:3]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>CLK_CORE_SEL</name>
+          <description>Clock Source Selection, '0' - Internal 16MHz RC generator, '1' - External XTAL oscillator, '2' - PLL generator, '3' - RTC 32kHz clock source</description>
+          <bitRange>[2:1]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>XTAL_CORE_TEST</name>
+          <description>External XTAL Fail Test Input, Set this bit to simulate XTAL fail.</description>
+          <bitRange>[0:0]</bitRange>
+          <access>read-write</access>
+        </field>
+      </fields>
+    </register>
+    <register>
+      <name>COREFREQ_PLL</name>
+      <description>PLL Configuration Register</description>
+      <addressOffset>0x18</addressOffset>
+      <access>read-write</access>
+      <fields>
+        <field>
+          <name>NC</name>
+          <bitRange>[31:13]</bitRange>
+          <access>read-only</access>
+        </field>
+        <field>
+          <name>PLL_VFB_EN</name>
+          <description>Enable VFB Output</description>
+          <bitRange>[12:12]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>PLL_VCONT_SF</name>
+          <description>Config VCONT Buffer., '0' - Buffer configured as input, '1' - Buffer configured as output</description>
+          <bitRange>[11:11]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>PLL_VCONT_EN</name>
+          <description>Enable VCONT Buffer</description>
+          <bitRange>[10:10]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>PLL_TEST</name>
+          <description>External PLL Fail Test Input, Set this bit to simulate PLL fail.</description>
+          <bitRange>[9:9]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>PLL_N</name>
+          <description>PLL Multiplication Factor, The PLL output frequency equals to:.</description>
+          <bitRange>[8:4]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>PLL_M</name>
+          <description>PLL Input Prescaler</description>
+          <bitRange>[3:2]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>REF_SEL</name>
+          <description>PLL Reference Clock Source., '0' - Internal 16MHz RC generator, '1' - External XTAL oscillator</description>
+          <bitRange>[1:1]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>PLL_EN</name>
+          <description>Enable PLL Loop</description>
+          <bitRange>[0:0]</bitRange>
+          <access>read-write</access>
+        </field>
+      </fields>
+    </register>
+    <register>
+      <name>COREFREQ_STAT</name>
+      <description>Core Clock Status Register</description>
+      <addressOffset>0x1C</addressOffset>
+      <access>read-write</access>
+      <fields>
+        <field>
+          <name>NC</name>
+          <bitRange>[31:11]</bitRange>
+          <access>read-only</access>
+        </field>
+        <field>
+          <name>RC_CORE_VAL</name>
+          <description>16 MHz RC Osciilator Calibration Value, Calibration value of internal 16MHz RC generator.</description>
+          <bitRange>[10:5]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>RC_CORE_RDY</name>
+          <description>16 MHz RC Osciilator Calibration Ready, Calibration value of internal 16MHz RC generator is ready.</description>
+          <bitRange>[4:4]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>PLL_LOCK</name>
+          <description>State of PLL Lock Indicator</description>
+          <bitRange>[3:3]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>XTAL_CORE_LOCK</name>
+          <description>State of XTAL Lock Indicator</description>
+          <bitRange>[2:2]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>CLK_CORE_SEL</name>
+          <description>Actual Clock Source Selection, In case of error may be different than set in Clock Source Selection Register., '0' - Internal 16MHz RC generator, '1' - External XTAL oscillator, '2' - PLL generator, '3' - RTC 32kHz clock source</description>
+          <bitRange>[1:0]</bitRange>
+          <access>read-write</access>
+        </field>
+      </fields>
+    </register>
+    <register>
+      <name>GNSSAFE_CONF</name>
+      <description>GNSS-AFE Configuration Register</description>
+      <addressOffset>0x20</addressOffset>
+      <access>read-write</access>
+      <fields>
+        <field>
+          <name>NC</name>
+          <bitRange>[31:2]</bitRange>
+          <access>read-only</access>
+        </field>
+        <field>
+          <name>GNSS_EXT_ADC</name>
+          <description>Config External ADC Input</description>
+          <bitRange>[1:1]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>GNSS_OUT_BAND</name>
+          <description>Config ADC Test Output Band., '0' - L1 band, '1' - L5 band</description>
+          <bitRange>[0:0]</bitRange>
+          <access>read-write</access>
+        </field>
+      </fields>
+    </register>
+    <register>
+      <name>PM_CONF</name>
+      <description>PM GLOBAL Configuration Register</description>
+      <addressOffset>0x24</addressOffset>
+      <access>read-write</access>
+      <fields>
+        <field>
+          <name>NC</name>
+          <bitRange>[31:5]</bitRange>
+          <access>read-only</access>
+        </field>
+        <field>
+          <name>PM_ITRIM</name>
+          <description>PM Iref trimming</description>
+          <bitRange>[4:1]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>PM_EN</name>
+          <description>Enable GNSS-AFE PM</description>
+          <bitRange>[0:0]</bitRange>
+          <access>read-write</access>
+        </field>
+      </fields>
+    </register>
+    <register>
+      <name>PM_GNSSAFE1_CONF</name>
+      <description>PM GNSS-AFE1 Configuration Register</description>
+      <addressOffset>0x28</addressOffset>
+      <access>read-write</access>
+      <fields>
+        <field>
+          <name>NC</name>
+          <bitRange>[31:24]</bitRange>
+          <access>read-only</access>
+        </field>
+        <field>
+          <name>IREG_SPARE1</name>
+          <description>SPARE1 Ibias regulation</description>
+          <bitRange>[23:21]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>IREG_TEST</name>
+          <description>TEST pin Ibias regulation</description>
+          <bitRange>[20:18]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>IREG_PLL1</name>
+          <description>PLL1 Ibias regulation</description>
+          <bitRange>[17:15]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>IREG_ADC1</name>
+          <description>ADC1 Ibias regulation</description>
+          <bitRange>[14:12]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>IREG_IF1</name>
+          <description>IF1 Ibias regulation</description>
+          <bitRange>[11:9]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>IREG_MIXER1</name>
+          <description>MIXER1 Ibias regulation</description>
+          <bitRange>[8:6]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>IREG_BALUN1</name>
+          <description>BALUN1 Ibias regulation</description>
+          <bitRange>[5:3]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>IREG_LNA1</name>
+          <description>LNA1 Ibias regulation</description>
+          <bitRange>[2:0]</bitRange>
+          <access>read-write</access>
+        </field>
+      </fields>
+    </register>
+    <register>
+      <name>PM_GNSSAFE5_CONF</name>
+      <description>PM GNSS-AFE5 Configuration Register</description>
+      <addressOffset>0x2C</addressOffset>
+      <access>read-write</access>
+      <fields>
+        <field>
+          <name>NC</name>
+          <bitRange>[31:24]</bitRange>
+          <access>read-only</access>
+        </field>
+        <field>
+          <name>IREG_SPARE5</name>
+          <description>SPARE5 Ibias regulation</description>
+          <bitRange>[23:21]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>IREG_LNA15</name>
+          <description>LNA15 Ibias regulation</description>
+          <bitRange>[20:18]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>IREG_PLL5</name>
+          <description>PLL5 Ibias regulation</description>
+          <bitRange>[17:15]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>IREG_ADC5</name>
+          <description>ADC5 Ibias regulation</description>
+          <bitRange>[14:12]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>IREG_IF5</name>
+          <description>IF5 Ibias regulation</description>
+          <bitRange>[11:9]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>IREG_MIXER5</name>
+          <description>MIXER5 Ibias regulation</description>
+          <bitRange>[8:6]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>IREG_BALUN5</name>
+          <description>BALUN5 Ibias regulation</description>
+          <bitRange>[5:3]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>IREG_LNA5</name>
+          <description>LNA5 Ibias regulation</description>
+          <bitRange>[2:0]</bitRange>
+          <access>read-write</access>
+        </field>
+      </fields>
+    </register>
+    <register>
+      <name>DCDC_CONF</name>
+      <description>DCDC Configuration Register</description>
+      <addressOffset>0x30</addressOffset>
+      <access>read-write</access>
+      <fields>
+        <field>
+          <name>NC</name>
+          <bitRange>[31:5]</bitRange>
+          <access>read-only</access>
+        </field>
+        <field>
+          <name>DCDC_TRIM</name>
+          <description>DCDC Converter Frequency Trim</description>
+          <bitRange>[4:1]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>DCDC_EN</name>
+          <description>DCDC Converter Enable</description>
+          <bitRange>[0:0]</bitRange>
+          <access>read-write</access>
+        </field>
+      </fields>
+    </register>
+    <register>
+      <name>LNA1_CONF</name>
+      <description>LNA1 Configuration Register</description>
+      <addressOffset>0x34</addressOffset>
+      <access>read-write</access>
+      <fields>
+        <field>
+          <name>NC</name>
+          <bitRange>[31:17]</bitRange>
+          <access>read-only</access>
+        </field>
+        <field>
+          <name>LNA_TUNE</name>
+          <description>LNA1 center frequency tuning</description>
+          <bitRange>[16:1]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>EN</name>
+          <description>LNA1 Enable</description>
+          <bitRange>[0:0]</bitRange>
+          <access>read-write</access>
+        </field>
+      </fields>
+    </register>
+    <register>
+      <name>BALUN_MIXER1_CONF</name>
+      <description>BALUN and MIXER 1 Configuration Register</description>
+      <addressOffset>0x38</addressOffset>
+      <access>read-write</access>
+      <fields>
+        <field>
+          <name>NC</name>
+          <bitRange>[31:18]</bitRange>
+          <access>read-only</access>
+        </field>
+        <field>
+          <name>BALUN_TUNE</name>
+          <description>LNA1 center frequency tuning</description>
+          <bitRange>[17:2]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>BALUN_EN</name>
+          <description>BALUN1 Enable</description>
+          <bitRange>[1:1]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>MIXER_EN</name>
+          <description>MIXER1 Enable</description>
+          <bitRange>[0:0]</bitRange>
+          <access>read-write</access>
+        </field>
+      </fields>
+    </register>
+    <register>
+      <name>LNA5_CONF</name>
+      <description>LNA5 Configuration Register</description>
+      <addressOffset>0x3C</addressOffset>
+      <access>read-write</access>
+      <fields>
+        <field>
+          <name>NC</name>
+          <bitRange>[31:17]</bitRange>
+          <access>read-only</access>
+        </field>
+        <field>
+          <name>LNA_TUNE</name>
+          <description>LNA5 center frequency tuning</description>
+          <bitRange>[16:1]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>EN</name>
+          <description>LNA5 Enable</description>
+          <bitRange>[0:0]</bitRange>
+          <access>read-write</access>
+        </field>
+      </fields>
+    </register>
+    <register>
+      <name>BALUN_MIXER5_CONF</name>
+      <description>BALUN and MIXER 5 Configuration Register</description>
+      <addressOffset>0x40</addressOffset>
+      <access>read-write</access>
+      <fields>
+        <field>
+          <name>NC</name>
+          <bitRange>[31:18]</bitRange>
+          <access>read-only</access>
+        </field>
+        <field>
+          <name>BALUN_TUNE</name>
+          <description>LNA5 center frequency tuning</description>
+          <bitRange>[17:2]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>BALUN_EN</name>
+          <description>BALUN5 Enable</description>
+          <bitRange>[1:1]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>MIXER_EN</name>
+          <description>MIXER5 Enable</description>
+          <bitRange>[0:0]</bitRange>
+          <access>read-write</access>
+        </field>
+      </fields>
+    </register>
+    <register>
+      <name>LNA15_TUNE_CONF</name>
+      <description>LNA15 Tuning Configuration Register</description>
+      <addressOffset>0x44</addressOffset>
+      <access>read-write</access>
+      <fields>
+        <field>
+          <name>BAND5_TUNE</name>
+          <description>LNA15 center frequency tuning for E5</description>
+          <bitRange>[31:16]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>BAND1_TUNE</name>
+          <description>LNA15 center frequency tuning for E1</description>
+          <bitRange>[15:0]</bitRange>
+          <access>read-write</access>
+        </field>
+      </fields>
+    </register>
+    <register>
+      <name>LNA15_CONF</name>
+      <description>LNA15 Configuration Register</description>
+      <addressOffset>0x48</addressOffset>
+      <access>read-write</access>
+      <fields>
+        <field>
+          <name>NC</name>
+          <bitRange>[31:17]</bitRange>
+          <access>read-only</access>
+        </field>
+        <field>
+          <name>SPARE_TUNE</name>
+          <description>SPARE tuning, '[11:10]' - agc5_thr_ctrl, '[9:8]' - agc1_thr_ctrl, '[7:6]' - tdc5_scale_gain, '[5:4]' - tdc1_scale_gain, '[3]' - external_clk5_en, '[2]' - external_clk1_en, '[1]' - en_lopcb5, '[0]' - en_lopcb1</description>
+          <bitRange>[16:1]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>EN</name>
+          <description>LNA15 Enable</description>
+          <bitRange>[0:0]</bitRange>
+          <access>read-write</access>
+        </field>
+      </fields>
+    </register>
+    <register>
+      <name>PROBE_IF1_CONF</name>
+      <description>GNSS-AFE IF1 analog probing Configuration Register</description>
+      <addressOffset>0x4C</addressOffset>
+      <access>read-write</access>
+      <fields>
+        <field>
+          <name>NC</name>
+          <bitRange>[31:8]</bitRange>
+          <access>read-only</access>
+        </field>
+        <field>
+          <name>PROBEB_SELECT</name>
+          <description>PROBE B Select mux block</description>
+          <bitRange>[7:6]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>PROBEB_SOURCE</name>
+          <description>PROBE B Source or Force, '0' - Force, '1' - Source</description>
+          <bitRange>[5:5]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>PROBEB_EN</name>
+          <description>PROBE B Enable</description>
+          <bitRange>[4:4]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>PROBEA_SELECT</name>
+          <description>PROBE A Select mux block</description>
+          <bitRange>[3:2]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>PROBEA_SOURCE</name>
+          <description>PROBE A Source or Force, '0' - Force, '1' - Source</description>
+          <bitRange>[1:1]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>PROBEA_EN</name>
+          <description>PROBE A Enable</description>
+          <bitRange>[0:0]</bitRange>
+          <access>read-write</access>
+        </field>
+      </fields>
+    </register>
+    <register>
+      <name>PROBE_IF5_CONF</name>
+      <description>GNSS-AFE IF5 analog probing Configuration Register</description>
+      <addressOffset>0x50</addressOffset>
+      <access>read-write</access>
+      <fields>
+        <field>
+          <name>NC</name>
+          <bitRange>[31:12]</bitRange>
+          <access>read-only</access>
+        </field>
+        <field>
+          <name>NRST_TEST</name>
+          <description>Enable NRST for test in GNSSAFE</description>
+          <bitRange>[11:11]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>PLL15FB_SEL</name>
+          <description>Select FB from PLL1 or PLL5, '0' - PLL1, '1' - PLL5</description>
+          <bitRange>[10:10]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>PLL_VCONT_EN</name>
+          <description>PROBE B Select PLL_VCONT from PLL100M</description>
+          <bitRange>[9:9]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>IBIAS_TEST_EN</name>
+          <description>PROBE A Select IBIAS TEST from PM</description>
+          <bitRange>[8:8]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>PROBEB_SELECT</name>
+          <description>PROBE B Select mux block</description>
+          <bitRange>[7:6]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>PROBEB_SOURCE</name>
+          <description>PROBE B Source or Force, '0' - Force, '1' - Source</description>
+          <bitRange>[5:5]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>PROBEB_EN</name>
+          <description>PROBE B Enable</description>
+          <bitRange>[4:4]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>PROBEA_SELECT</name>
+          <description>PROBE A Select mux block</description>
+          <bitRange>[3:2]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>PROBEA_SOURCE</name>
+          <description>PROBE A Source or Force, '0' - Force, '1' - Source</description>
+          <bitRange>[1:1]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>PROBEA_EN</name>
+          <description>PROBE A Enable</description>
+          <bitRange>[0:0]</bitRange>
+          <access>read-write</access>
+        </field>
+      </fields>
+    </register>
+    <register>
+      <name>PLL1_CONF</name>
+      <description>PLL1 Configuration Register</description>
+      <addressOffset>0x54</addressOffset>
+      <access>read-write</access>
+      <fields>
+        <field>
+          <name>NC</name>
+          <bitRange>[31:26]</bitRange>
+          <access>read-only</access>
+        </field>
+        <field>
+          <name>TEST_EN</name>
+          <description>PLL1 test mode, '1' - enable Ip and Qp test</description>
+          <bitRange>[25:25]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>FCW</name>
+          <description>PLL1 Frequency Control Word</description>
+          <bitRange>[24:1]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>EN</name>
+          <description>PLL1 Enable</description>
+          <bitRange>[0:0]</bitRange>
+          <access>read-write</access>
+        </field>
+      </fields>
+    </register>
+    <register>
+      <name>PLL1TDC_CONF</name>
+      <description>PLL1 TDC Configuration Register</description>
+      <addressOffset>0x58</addressOffset>
+      <access>read-write</access>
+      <fields>
+        <field>
+          <name>NC</name>
+          <bitRange>[31:16]</bitRange>
+          <access>read-only</access>
+        </field>
+        <field>
+          <name>SCALE</name>
+          <description>PLL1 TDC scale value used when LOAD = '1'</description>
+          <bitRange>[15:1]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>LOAD</name>
+          <description>PLL1 TDC scale load, '1' - load SCALE, '0' - use internal TDC scale</description>
+          <bitRange>[0:0]</bitRange>
+          <access>read-write</access>
+        </field>
+      </fields>
+    </register>
+    <register>
+      <name>PLL1DCO_CONF</name>
+      <description>PLL1 DCO Configuration Register</description>
+      <addressOffset>0x5C</addressOffset>
+      <access>read-write</access>
+      <fields>
+        <field>
+          <name>NC</name>
+          <bitRange>[31:21]</bitRange>
+          <access>read-only</access>
+        </field>
+        <field>
+          <name>CTRL_PVT</name>
+          <description>PLL1 DCO coarse frequency control</description>
+          <bitRange>[20:16]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>CTRL_FINE</name>
+          <description>PLL1 DCO fine frequency control</description>
+          <bitRange>[14:1]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>CTRL_LOAD</name>
+          <description>PLL1 DCO control signal load, '1' - load CTRL_PVT and CTRL_FINE, '0' - use internal CTRL</description>
+          <bitRange>[0:0]</bitRange>
+          <access>read-write</access>
+        </field>
+      </fields>
+    </register>
+    <register>
+      <name>PLL1_STAT</name>
+      <description>PLL1 Status Register</description>
+      <addressOffset>0x60</addressOffset>
+      <access>read-write</access>
+      <fields>
+        <field>
+          <name>NC</name>
+          <bitRange>[31:30]</bitRange>
+          <access>read-only</access>
+        </field>
+        <field>
+          <name>PHERR</name>
+          <description>PLL1 phase error signal</description>
+          <bitRange>[29:10]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>NDIV</name>
+          <description>PLL1 divider division factor</description>
+          <bitRange>[9:2]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>PHSEL</name>
+          <description>PLL1 phase select signal</description>
+          <bitRange>[1:1]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>LOCK</name>
+          <description>PLL1 lock signal, '1' - PLL1 locked, '0' - PLL1 not locked</description>
+          <bitRange>[0:0]</bitRange>
+          <access>read-write</access>
+        </field>
+      </fields>
+    </register>
+    <register>
+      <name>PLL1TDC_STAT</name>
+      <description>PLL1 TDC Status Register</description>
+      <addressOffset>0x64</addressOffset>
+      <access>read-write</access>
+      <fields>
+        <field>
+          <name>NC</name>
+          <bitRange>[31:15]</bitRange>
+          <access>read-only</access>
+        </field>
+        <field>
+          <name>SCALE</name>
+          <description>PLL1 TDC scale signal</description>
+          <bitRange>[14:0]</bitRange>
+          <access>read-write</access>
+        </field>
+      </fields>
+    </register>
+    <register>
+      <name>PLL1DCO_STAT</name>
+      <description>PLL1 TDC Status Register</description>
+      <addressOffset>0x68</addressOffset>
+      <access>read-write</access>
+      <fields>
+        <field>
+          <name>NC</name>
+          <bitRange>[31:19]</bitRange>
+          <access>read-only</access>
+        </field>
+        <field>
+          <name>CTRL_PVT</name>
+          <description>PLL1 DCO coarse frequency control</description>
+          <bitRange>[18:14]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>CTRL_FINE</name>
+          <description>PLL1 DCO fine frequency control</description>
+          <bitRange>[13:0]</bitRange>
+          <access>read-write</access>
+        </field>
+      </fields>
+    </register>
+    <register>
+      <name>IF1_CONF</name>
+      <description>IF1 Configuration Register</description>
+      <addressOffset>0x6C</addressOffset>
+      <access>read-write</access>
+      <fields>
+        <field>
+          <name>NC</name>
+          <bitRange>[31:17]</bitRange>
+          <access>read-only</access>
+        </field>
+        <field>
+          <name>LPF_CAL</name>
+          <description>IF1 LPF calibration input</description>
+          <bitRange>[16:14]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>LPF_GAIN</name>
+          <description>IF1 LPF gain control, '00' - gain = 12 dB, '01' - gain = 18 dB, '10' - gain = 24 dB, '11' - gain = 24 dB</description>
+          <bitRange>[13:12]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>LPF_BAND</name>
+          <description>IF1 LPF band control, '00' - bandwidth = 4 MHz, '01' - bandwidth = 8 MHz, '10' - bandwidth = 16 MHz, '11' - bandwidth = 32 MHz</description>
+          <bitRange>[11:10]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>LPF_EN</name>
+          <description>IF1 LPF enable</description>
+          <bitRange>[9:9]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>PGA2_GAIN</name>
+          <description>IF1 PGA2 gain control, '00' - gain = 6 dB, '01' - gain = 12 dB, '10' - gain = 18 dB, '11' - gain = 24 dB</description>
+          <bitRange>[8:7]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>PGA2_EN</name>
+          <description>IF1 PGA2 enable</description>
+          <bitRange>[6:6]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>PGA1_GAIN</name>
+          <description>IF1 PGA1 gain control, '00' - gain = 6 dB, '01' - gain = 12 dB, '10' - gain = 18 dB, '11' - gain = 24 dB</description>
+          <bitRange>[5:4]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>PGA1_EN</name>
+          <description>IF1 PGA1 enable</description>
+          <bitRange>[3:3]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>PREAMP_EN</name>
+          <description>IF1 PREAMP enable</description>
+          <bitRange>[2:2]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>LOAD_EN</name>
+          <description>IF1 load external gain settings, '0' - gain controlled by AGC, '0' - gain controlled by digital inputs</description>
+          <bitRange>[1:1]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>EN</name>
+          <description>IF1 enable</description>
+          <bitRange>[0:0]</bitRange>
+          <access>read-write</access>
+        </field>
+      </fields>
+    </register>
+    <register>
+      <name>IF1_STAT</name>
+      <description>IF1 Status Register</description>
+      <addressOffset>0x70</addressOffset>
+      <access>read-write</access>
+      <fields>
+        <field>
+          <name>NC</name>
+          <bitRange>[31:6]</bitRange>
+          <access>read-only</access>
+        </field>
+        <field>
+          <name>AGC_CTRL</name>
+          <description>IF1 automatic gain control (AGC) gain output, '[1:0]' - pga1_gain, '[3:2]' - pga2_gain, '[5:4]' - lpf_gain</description>
+          <bitRange>[5:0]</bitRange>
+          <access>read-write</access>
+        </field>
+      </fields>
+    </register>
+    <register>
+      <name>ADC1_CONF</name>
+      <description>ADC1 Configuration Register</description>
+      <addressOffset>0x74</addressOffset>
+      <access>read-write</access>
+      <fields>
+        <field>
+          <name>NC</name>
+          <bitRange>[31:4]</bitRange>
+          <access>read-only</access>
+        </field>
+        <field>
+          <name>CLK_CONF</name>
+          <description>IF1 clock frequency control</description>
+          <bitRange>[3:2]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>SAH_EN</name>
+          <description>ADC1 Sample and Hold enable</description>
+          <bitRange>[1:1]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>ADC_EN</name>
+          <description>ADC1 enable</description>
+          <bitRange>[0:0]</bitRange>
+          <access>read-write</access>
+        </field>
+      </fields>
+    </register>
+    <register>
+      <name>PLL5_CONF</name>
+      <description>PLL5 Configuration Register</description>
+      <addressOffset>0x78</addressOffset>
+      <access>read-write</access>
+      <fields>
+        <field>
+          <name>NC</name>
+          <bitRange>[31:26]</bitRange>
+          <access>read-only</access>
+        </field>
+        <field>
+          <name>TEST_EN</name>
+          <description>PLL5 test mode, '1' - enable Ip and Qp test</description>
+          <bitRange>[25:25]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>FCW</name>
+          <description>PLL5 Frequency Control Word</description>
+          <bitRange>[24:1]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>EN</name>
+          <description>PLL5 Enable</description>
+          <bitRange>[0:0]</bitRange>
+          <access>read-write</access>
+        </field>
+      </fields>
+    </register>
+    <register>
+      <name>PLL5TDC_CONF</name>
+      <description>PLL5 TDC Configuration Register</description>
+      <addressOffset>0x7C</addressOffset>
+      <access>read-write</access>
+      <fields>
+        <field>
+          <name>NC</name>
+          <bitRange>[31:16]</bitRange>
+          <access>read-only</access>
+        </field>
+        <field>
+          <name>SCALE</name>
+          <description>PLL5 TDC scale value used when LOAD = '1'</description>
+          <bitRange>[15:1]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>LOAD</name>
+          <description>PLL5 TDC scale load, '1' - load SCALE, '0' - use internal TDC scale</description>
+          <bitRange>[0:0]</bitRange>
+          <access>read-write</access>
+        </field>
+      </fields>
+    </register>
+    <register>
+      <name>PLL5DCO_CONF</name>
+      <description>PLL5 DCO Configuration Register</description>
+      <addressOffset>0x80</addressOffset>
+      <access>read-write</access>
+      <fields>
+        <field>
+          <name>NC</name>
+          <bitRange>[31:21]</bitRange>
+          <access>read-only</access>
+        </field>
+        <field>
+          <name>CTRL_PVT</name>
+          <description>PLL5 DCO coarse frequency control</description>
+          <bitRange>[20:16]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>CTRL_FINE</name>
+          <description>PLL5 DCO fine frequency control</description>
+          <bitRange>[14:1]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>CTRL_LOAD</name>
+          <description>PLL5 DCO control signal load, '1' - load CTRL_PVT and CTRL_FINE, '0' - use internal CTRL</description>
+          <bitRange>[0:0]</bitRange>
+          <access>read-write</access>
+        </field>
+      </fields>
+    </register>
+    <register>
+      <name>PLL5_STAT</name>
+      <description>PLL5 Status Register</description>
+      <addressOffset>0x84</addressOffset>
+      <access>read-write</access>
+      <fields>
+        <field>
+          <name>NC</name>
+          <bitRange>[31:30]</bitRange>
+          <access>read-only</access>
+        </field>
+        <field>
+          <name>PHERR</name>
+          <description>PLL5 phase error signal</description>
+          <bitRange>[29:10]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>NDIV</name>
+          <description>PLL5 divider division factor</description>
+          <bitRange>[9:2]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>PHSEL</name>
+          <description>PLL5 phase select signal</description>
+          <bitRange>[1:1]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>LOCK</name>
+          <description>PLL5 lock signal, '1' - PLL5 locked, '0' - PLL5 not locked</description>
+          <bitRange>[0:0]</bitRange>
+          <access>read-write</access>
+        </field>
+      </fields>
+    </register>
+    <register>
+      <name>PLL5TDC_STAT</name>
+      <description>PLL5 TDC Status Register</description>
+      <addressOffset>0x88</addressOffset>
+      <access>read-write</access>
+      <fields>
+        <field>
+          <name>NC</name>
+          <bitRange>[31:15]</bitRange>
+          <access>read-only</access>
+        </field>
+        <field>
+          <name>SCALE</name>
+          <description>PLL5 TDC scale signal</description>
+          <bitRange>[14:0]</bitRange>
+          <access>read-write</access>
+        </field>
+      </fields>
+    </register>
+    <register>
+      <name>PLL5DCO_STAT</name>
+      <description>PLL5 TDC Status Register</description>
+      <addressOffset>0x8C</addressOffset>
+      <access>read-write</access>
+      <fields>
+        <field>
+          <name>NC</name>
+          <bitRange>[31:19]</bitRange>
+          <access>read-only</access>
+        </field>
+        <field>
+          <name>CTRL_PVT</name>
+          <description>PLL5 DCO coarse frequency control</description>
+          <bitRange>[18:14]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>CTRL_FINE</name>
+          <description>PLL5 DCO fine frequency control</description>
+          <bitRange>[13:0]</bitRange>
+          <access>read-write</access>
+        </field>
+      </fields>
+    </register>
+    <register>
+      <name>IF5_CONF</name>
+      <description>IF5 Configuration Register</description>
+      <addressOffset>0x90</addressOffset>
+      <access>read-write</access>
+      <fields>
+        <field>
+          <name>NC</name>
+          <bitRange>[31:17]</bitRange>
+          <access>read-only</access>
+        </field>
+        <field>
+          <name>LPF_CAL</name>
+          <description>IF5 LPF calibration input</description>
+          <bitRange>[16:14]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>LPF_GAIN</name>
+          <description>IF5 LPF gain control, '00' - gain = 12 dB, '01' - gain = 18 dB, '10' - gain = 24 dB, '11' - gain = 24 dB</description>
+          <bitRange>[13:12]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>LPF_BAND</name>
+          <description>IF5 LPF band control, '00' - bandwidth = 4 MHz, '01' - bandwidth = 8 MHz, '10' - bandwidth = 16 MHz, '11' - bandwidth = 32 MHz</description>
+          <bitRange>[11:10]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>LPF_EN</name>
+          <description>IF5 LPF enable</description>
+          <bitRange>[9:9]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>PGA2_GAIN</name>
+          <description>IF5 PGA2 gain control, '00' - gain = 6 dB, '01' - gain = 12 dB, '10' - gain = 18 dB, '11' - gain = 24 dB</description>
+          <bitRange>[8:7]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>PGA2_EN</name>
+          <description>IF5 PGA2 enable</description>
+          <bitRange>[6:6]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>PGA1_GAIN</name>
+          <description>IF5 PGA1 gain control, '00' - gain = 6 dB, '01' - gain = 12 dB, '10' - gain = 18 dB, '11' - gain = 24 dB</description>
+          <bitRange>[5:4]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>PGA1_EN</name>
+          <description>IF5 PGA1 enable</description>
+          <bitRange>[3:3]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>PREAMP_EN</name>
+          <description>IF5 PREAMP enable</description>
+          <bitRange>[2:2]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>LOAD_EN</name>
+          <description>IF5 load external gain settings, '0' - gain controlled by AGC, '0' - gain controlled by digital inputs</description>
+          <bitRange>[1:1]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>EN</name>
+          <description>IF5 enable</description>
+          <bitRange>[0:0]</bitRange>
+          <access>read-write</access>
+        </field>
+      </fields>
+    </register>
+    <register>
+      <name>IF5_STAT</name>
+      <description>IF5 status Register</description>
+      <addressOffset>0x94</addressOffset>
+      <access>read-write</access>
+      <fields>
+        <field>
+          <name>NC</name>
+          <bitRange>[31:6]</bitRange>
+          <access>read-only</access>
+        </field>
+        <field>
+          <name>AGC_CTRL</name>
+          <description>IF5 automatic gain control (AGC) gain output, '[1:0]' - pga1_gain, '[3:2]' - pga2_gain, '[5:4]' - lpf_gain</description>
+          <bitRange>[5:0]</bitRange>
+          <access>read-write</access>
+        </field>
+      </fields>
+    </register>
+    <register>
+      <name>ADC5_CONF</name>
+      <description>ADC5 Configuration Register</description>
+      <addressOffset>0x98</addressOffset>
+      <access>read-write</access>
+      <fields>
+        <field>
+          <name>NC</name>
+          <bitRange>[31:4]</bitRange>
+          <access>read-only</access>
+        </field>
+        <field>
+          <name>CLK_CONF</name>
+          <description>IF5 clock frequency control</description>
+          <bitRange>[3:2]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>SAH_EN</name>
+          <description>ADC5 Sample and Hold enable</description>
+          <bitRange>[1:1]</bitRange>
+          <access>read-write</access>
+        </field>
+        <field>
+          <name>ADC_EN</name>
+          <description>ADC5 enable</description>
+          <bitRange>[0:0]</bitRange>
+          <access>read-write</access>
+        </field>
+      </fields>
+    </register>
+  </registers>
+</peripheral>

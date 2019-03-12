@@ -1,0 +1,1 @@
+CCPROG_FLAGS          += --burst

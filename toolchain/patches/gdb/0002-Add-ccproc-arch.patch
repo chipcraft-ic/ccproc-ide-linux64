@@ -1,0 +1,96 @@
+From 6d419bb0044e42ea776b8452f02d5f3b7a2decdf Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Rafa=C5=82=20Harabie=C5=84?= <rafalh1992@o2.pl>
+Date: Wed, 25 Apr 2018 15:21:36 +0200
+Subject: Add ccproc arch.
+
+---
+ bfd/bfd-in2.h         | 1 +
+ bfd/cpu-mips.c        | 2 ++
+ bfd/elfxx-mips.c      | 3 +++
+ include/opcode/mips.h | 1 +
+ opcodes/mips-dis.c    | 4 ++++
+ 5 files changed, 11 insertions(+)
+
+diff --git a/bfd/bfd-in2.h b/bfd/bfd-in2.h
+index f9f0e26..545bc47 100644
+--- a/bfd/bfd-in2.h
++++ b/bfd/bfd-in2.h
+@@ -2016,6 +2016,7 @@ enum bfd_architecture
+ #define bfd_mach_mips_octeon2          6502
+ #define bfd_mach_mips_octeon3          6503
+ #define bfd_mach_mips_xlr              887682   /* decimal 'XLR'  */
++#define bfd_mach_mips_ccproc           61646563
+ #define bfd_mach_mipsisa32             32
+ #define bfd_mach_mipsisa32r2           33
+ #define bfd_mach_mipsisa32r3           34
+diff --git a/bfd/cpu-mips.c b/bfd/cpu-mips.c
+index d209fb6..f4c7fea 100644
+--- a/bfd/cpu-mips.c
++++ b/bfd/cpu-mips.c
+@@ -104,6 +104,7 @@ enum
+   I_mipsocteon2,
+   I_mipsocteon3,
+   I_xlr,
++  I_ccproc,
+   I_micromips
+ };
+ 
+@@ -155,6 +156,7 @@ static const bfd_arch_info_type arch_info_struct[] =
+   N (64, 64, bfd_mach_mips_octeon2,"mips:octeon2",  FALSE, NN(I_mipsocteon2)),
+   N (64, 64, bfd_mach_mips_octeon3, "mips:octeon3",  FALSE, NN(I_mipsocteon3)),
+   N (64, 64, bfd_mach_mips_xlr, "mips:xlr",       FALSE, NN(I_xlr)),
++  N (32, 32, bfd_mach_mips_ccproc, "mips:ccproc",      FALSE, NN(I_ccproc)),
+   N (64, 64, bfd_mach_mips_micromips,"mips:micromips",FALSE,0)
+ };
+ 
+diff --git a/bfd/elfxx-mips.c b/bfd/elfxx-mips.c
+index cdc5d96..6033558 100644
+--- a/bfd/elfxx-mips.c
++++ b/bfd/elfxx-mips.c
+@@ -14164,6 +14164,7 @@ static const struct mips_mach_extension mips_mach_extensions[] =
+   /* MIPS II extensions.  */
+   { bfd_mach_mips4000, bfd_mach_mips6000 },
+   { bfd_mach_mipsisa32, bfd_mach_mips6000 },
++  { bfd_mach_mips_ccproc, bfd_mach_mips6000 },
+ 
+   /* MIPS I extensions.  */
+   { bfd_mach_mips6000, bfd_mach_mips3000 },
+@@ -15761,6 +15762,8 @@ print_mips_ases (FILE *file, unsigned int mask)
+     fputs ("\n\tMICROMIPS ASE", file);
+   if (mask & AFL_ASE_XPA)
+     fputs ("\n\tXPA ASE", file);
++  if (mask & AFL_ASE_GNSS)
++    fputs ("\n\tGNSS ASE", file);
+   if (mask == 0)
+     fprintf (file, "\n\t%s", _("None"));
+   else if ((mask & ~AFL_ASE_MASK) != 0)
+diff --git a/include/opcode/mips.h b/include/opcode/mips.h
+index b1d4ef6..6d2d52e 100644
+--- a/include/opcode/mips.h
++++ b/include/opcode/mips.h
+@@ -1331,6 +1331,7 @@ static const unsigned int mips_isa_table[] = {
+ #define CPU_OCTEON2	6502
+ #define CPU_OCTEON3	6503
+ #define CPU_XLR     	887682   	/* decimal 'XLR'   */
++#define CPU_CCPROC     61646563
+ 
+ /* Return true if the given CPU is included in INSN_* mask MASK.  */
+ 
+diff --git a/opcodes/mips-dis.c b/opcodes/mips-dis.c
+index 3f874e7..5c860eb 100644
+--- a/opcodes/mips-dis.c
++++ b/opcodes/mips-dis.c
+@@ -656,6 +656,10 @@ const struct mips_arch_choice mips_arch_choices[] =
+     mips_cp0sel_names_xlr, ARRAY_SIZE (mips_cp0sel_names_xlr),
+     mips_cp1_names_mips3264, mips_hwr_names_numeric },
+ 
++  { "ccproc",	1, bfd_mach_mips_ccproc, CPU_CCPROC, ISA_MIPS2, 0,
++    mips_cp0_names_numeric, NULL, 0, mips_cp1_names_numeric,
++    mips_hwr_names_numeric },
++
+   /* This entry, mips16, is here only for ISA/processor selection; do
+      not print its name.  */
+   { "",		1, bfd_mach_mips16, CPU_MIPS16, ISA_MIPS3, 0,
+-- 
+2.17.1
+

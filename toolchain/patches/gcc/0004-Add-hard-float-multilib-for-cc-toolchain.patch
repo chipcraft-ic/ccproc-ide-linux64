@@ -1,0 +1,60 @@
+From aa2866e3539ba697e8a80e371acfb32dc8dae1a2 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Rafa=C5=82=20Harabie=C5=84?= <rafalh1992@o2.pl>
+Date: Fri, 5 Jan 2018 20:12:23 +0100
+Subject: Add hard-float multilib for cc toolchain.
+
+---
+ gcc/config.gcc           |  2 +-
+ gcc/config/mips/t-cc-elf | 27 +++++++++++++++++++++++++++
+ 2 files changed, 28 insertions(+), 1 deletion(-)
+ create mode 100644 gcc/config/mips/t-cc-elf
+
+diff --git a/gcc/config.gcc b/gcc/config.gcc
+index 6a807dabe..1836113c5 100644
+--- a/gcc/config.gcc
++++ b/gcc/config.gcc
+@@ -2153,7 +2153,7 @@ mips*-img-elf*)
+ 	;;
+ mips*-cc-elf*)
+ 	tm_file="elfos.h newlib-stdint.h ${tm_file} mips/elf.h mips/n32-elf.h mips/sde.h"
+-	tmake_file="mips/t-sde"
++	tmake_file="mips/t-cc-elf"
+ 	tm_defines="${tm_defines} MIPS_ISA_DEFAULT=1 MIPS_ABI_DEFAULT=ABI_32"
+ 	;;
+ mips*-sde-elf*)
+diff --git a/gcc/config/mips/t-cc-elf b/gcc/config/mips/t-cc-elf
+new file mode 100644
+index 000000000..1c0714e84
+--- /dev/null
++++ b/gcc/config/mips/t-cc-elf
+@@ -0,0 +1,27 @@
++# Copyright (C) 2012-2016 Free Software Foundation, Inc.
++#
++# This file is part of GCC.
++#
++# GCC is free software; you can redistribute it and/or modify
++# it under the terms of the GNU General Public License as published by
++# the Free Software Foundation; either version 3, or (at your option)
++# any later version.
++#
++# GCC is distributed in the hope that it will be useful,
++# but WITHOUT ANY WARRANTY; without even the implied warranty of
++# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++# GNU General Public License for more details.
++#
++# You should have received a copy of the GNU General Public License
++# along with GCC; see the file COPYING3.  If not see
++# <http://www.gnu.org/licenses/>.
++
++# The default build is mips2, soft-float big-endian.
++# A multilib for hard-float single-float
++
++MULTILIB_OPTIONS = mhard-float msingle-float
++MULTILIB_DIRNAMES = hard-float single-float
++MULTILIB_MATCHES =
++
++# Disable hard-float without single-float and single-float without hard-float
++MULTILIB_EXCEPTIONS += mhard-float msingle-float
+-- 
+2.17.1
+

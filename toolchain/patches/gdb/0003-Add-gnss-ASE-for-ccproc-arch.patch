@@ -1,0 +1,171 @@
+From 630fb12eeb5d60c4e91b29f19b2c02d45b4e2697 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Rafa=C5=82=20Harabie=C5=84?= <rafalh1992@o2.pl>
+Date: Wed, 25 Apr 2018 15:25:27 +0200
+Subject: Add gnss ASE for ccproc arch.
+
+---
+ include/elf/mips.h    |  3 +-
+ include/opcode/mips.h |  2 ++
+ opcodes/mips-dis.c    | 11 ++++++-
+ opcodes/mips-opc.c    | 75 +++++++++++++++++++++++++++++++++++++++++++
+ 4 files changed, 89 insertions(+), 2 deletions(-)
+
+diff --git a/include/elf/mips.h b/include/elf/mips.h
+index 7e813de..050957f 100644
+--- a/include/elf/mips.h
++++ b/include/elf/mips.h
+@@ -1233,7 +1233,8 @@ extern void bfd_mips_elf_swap_abiflags_v0_out
+ #define AFL_ASE_MICROMIPS    0x00000800 /* MICROMIPS ASE.  */
+ #define AFL_ASE_XPA          0x00001000 /* XPA ASE.  */
+ #define AFL_ASE_DSPR3        0x00002000 /* DSP R3 ASE.  */
+-#define AFL_ASE_MASK         0x00003fff /* All ASEs.  */
++#define AFL_ASE_GNSS         0x00004000 /* GNSS ASE.  */
++#define AFL_ASE_MASK         0x00007fff /* All ASEs.  */
+ 
+ /* Values for the isa_ext word of an ABI flags structure.  */
+ 
+diff --git a/include/opcode/mips.h b/include/opcode/mips.h
+index 6d2d52e..0148c52 100644
+--- a/include/opcode/mips.h
++++ b/include/opcode/mips.h
+@@ -1261,6 +1261,8 @@ static const unsigned int mips_isa_table[] = {
+ /* eXtended Physical Address (XPA) Extension.  */
+ #define ASE_XPA			0x00002000
+ #define ASE_DSPR3		0x00004000
++/* GNSS-ISE  */
++#define ASE_GNSS		0x00008000
+ 
+ /* MIPS ISA defines, use instead of hardcoding ISA level.  */
+ 
+diff --git a/opcodes/mips-dis.c b/opcodes/mips-dis.c
+index 5c860eb..882cb18 100644
+--- a/opcodes/mips-dis.c
++++ b/opcodes/mips-dis.c
+@@ -656,7 +656,7 @@ const struct mips_arch_choice mips_arch_choices[] =
+     mips_cp0sel_names_xlr, ARRAY_SIZE (mips_cp0sel_names_xlr),
+     mips_cp1_names_mips3264, mips_hwr_names_numeric },
+ 
+-  { "ccproc",	1, bfd_mach_mips_ccproc, CPU_CCPROC, ISA_MIPS2, 0,
++  { "ccproc",	1, bfd_mach_mips_ccproc, CPU_CCPROC, ISA_MIPS2, ASE_GNSS,
+     mips_cp0_names_numeric, NULL, 0, mips_cp1_names_numeric,
+     mips_hwr_names_numeric },
+ 
+@@ -868,6 +868,12 @@ parse_mips_dis_option (const char *option, unsigned int len)
+       return;
+     }
+ 
++  if (CONST_STRNEQ (option, "gnss"))
++    {
++      mips_ase |= ASE_GNSS;
++      return;
++    }
++
+ 
+   /* Look for the = that delimits the end of the option name.  */
+   for (i = 0; i < len; i++)
+@@ -2396,6 +2402,9 @@ with the -M switch (multiple options should be separated by commas):\n"));
+   fprintf (stream, _("\n\
+   xpa            Recognize the eXtended Physical Address (XPA) ASE instructions.\n"));
+ 
++  fprintf (stream, _("\n\
++  gnss                     Recognize the GNSS-ISE.\n"));
++
+   fprintf (stream, _("\n\
+   gpr-names=ABI            Print GPR names according to  specified ABI.\n\
+                            Default: based on binary being disassembled.\n"));
+diff --git a/opcodes/mips-opc.c b/opcodes/mips-opc.c
+index 3dcec76..90b1898 100644
+--- a/opcodes/mips-opc.c
++++ b/opcodes/mips-opc.c
+@@ -290,6 +290,9 @@ decode_mips_operand (const char *p)
+ #define I4_33   INSN_ISA4_32R2
+ #define I5_33   INSN_ISA5_32R2
+ 
++/* GNSS-ISE support.  */
++#define GNSS    ASE_GNSS
++
+ /* MIPS64 MIPS-3D ASE support.  */
+ #define M3D     ASE_MIPS3D
+ 
+@@ -437,6 +440,78 @@ const struct mips_opcode mips_builtin_opcodes[] =
+ {"lapc",		"s,-A",		0xec000000, 0xfc180000, WR_1,			RD_pc,		I37,		0,	0 },
+ {"la",			"t,A(b)",	0,    (int) M_LA_AB,	INSN_MACRO,		0,		I1,		0,	0 },
+ 
++/* GNSS-ISE specific instructions. GNSS-ISE redefines Coprocessor 2 instructions.
++   Put them here so that disassembler will find them first.
++   The assemblers uses a hash table based on the instruction name anyhow.  */
++
++{"gnss.chann.set",		"v",		0x48000089, 0xfc1fffff,	RD_1,			0,		I1,		GNSS,	0 },
++{"gnss.chann.get",		"d",		0x48000086, 0xffff07ff,	WR_1,			0,		I1,		GNSS,	0 },
++{"gnss.chann.incr",		"",			0x48000280, 0xffffffff,	0,				0,		I1,		GNSS,	0 },
++
++{"gnss.carr.freq",		"v",		0x48000087, 0xfc1fffff,	RD_1,			0,		I1,		GNSS,	0 },
++{"gnss.carr.freq.i",	"v",		0x48000287, 0xfc1fffff,	RD_1,			0,		I1,		GNSS,	0 },
++{"gnss.carr.disc",		"d,v",		0x48000082, 0xfc1f07ff,	WR_1|RD_2,			0,		I1,		GNSS,	0 },
++{"gnss.carr.disc.i",	"d,v",		0x48000282, 0xfc1f07ff,	WR_1|RD_2,			0,		I1,		GNSS,	0 },
++{"gnss.carr.set",		"v,t",		0x48000003, 0xfc00ffff,	RD_1|RD_2,		0,		I1,		GNSS,	0 },
++{"gnss.carr.rem",		"d,v,t",	0x48000083, 0xfc0007ff,	WR_1|RD_2|RD_3,	0,		I1,		GNSS,	0 },
++{"gnss.carr.rem.i",		"d,v,t",	0x48000283, 0xfc0007ff,	WR_1|RD_2|RD_3,	0,		I1,		GNSS,	0 },
++
++{"gnss.accu.add",		"v,t",		0x48000004, 0xfc00ffff,	RD_1|RD_2,		0,		I1,		GNSS,	0 },
++{"gnss.accu.get",		"d",		0x48000084, 0xffff07ff,	WR_1,			0,		I1,		GNSS,	0 },
++{"gnss.accu.get.i",		"d",		0x48000284, 0xffff07ff,	WR_1,			0,		I1,		GNSS,	0 },
++
++{"gnss.pll.disc",		"d,v,t",	0x48000100, 0xfc0007ff,	WR_1|RD_2|RD_3,	0,		I1,		GNSS,	0 },
++{"gnss.pll.cost",		"d,v,t",	0x48000101, 0xfc0007ff,	WR_1|RD_2|RD_3,	0,		I1,		GNSS,	0 },
++
++{"gnss.dll.disc.a",		"v,t",		0x48000005, 0xfc00ffff,	RD_1|RD_2,		0,		I1,		GNSS,	0 },
++{"gnss.dll.disc.b",		"d,v,t",	0x48000105, 0xfc0007ff,	WR_1|RD_2|RD_3,	0,		I1,		GNSS,	0 },
++
++{"gnss.pll.flt.rst",	"",			0x48000007, 0xffffffff,	0,				0,		I1,		GNSS,	0 },
++{"gnss.pll.flt.coef",	"v,t",		0x48000006, 0xfc00ffff,	RD_1|RD_2,		0,		I1,		GNSS,	0 },
++{"gnss.pll.flt",		"d,v",		0x48000106, 0xfc1f07ff,	WR_1|RD_2,		0,		I1,		GNSS,	0 },
++{"gnss.pll.flt.i",		"d,v",		0x48000306, 0xfc1f07ff,	WR_1|RD_2,		0,		I1,		GNSS,	0 },
++
++{"gnss.dll.flt.rst",	"",			0x48000009, 0xffffffff,	0,				0,		I1,		GNSS,	0 },
++{"gnss.dll.flt.coef",	"v,t",		0x48000008, 0xfc00ffff,	RD_1|RD_2,		0,		I1,		GNSS,	0 },
++{"gnss.dll.flt",		"d,v",		0x48000108, 0xfc1f07ff,	WR_1|RD_2,		0,		I1,		GNSS,	0 },
++{"gnss.dll.flt.i",		"d,v",		0x48000308, 0xfc1f07ff,	WR_1|RD_2,		0,		I1,		GNSS,	0 },
++
++{"gnss.pcode.addr.set",	"v,t",		0x4800000a, 0xfc00ffff,	RD_1|RD_2,		0,		I1,		GNSS,	0 },
++{"gnss.pcode.wr",		"v",		0x4800000b, 0xfc1fffff,	RD_1,			0,		I1,		GNSS,	0 },
++{"gnss.pcode.len",		"v",		0x4800000c, 0xfc1fffff,	RD_1,			0,		I1,		GNSS,	0 },
++
++{"gnss.scode.addr.set",	"v",		0x4800000f, 0xfc1fffff,	RD_1,			0,		I1,		GNSS,	0 },
++{"gnss.scode.wr",		"v",		0x48000010, 0xfc1fffff,	RD_1,			0,		I1,		GNSS,	0 },
++{"gnss.scode.len",		"v",		0x48000011, 0xfc1fffff,	RD_1,			0,		I1,		GNSS,	0 },
++
++{"gnss.code.get",		"d",		0x4800008a, 0xffff07ff,	WR_1,			0,		I1,		GNSS,	0 },
++{"gnss.code.get.i",		"d",		0x4800028a, 0xffff07ff,	WR_1,			0,		I1,		GNSS,	0 },
++{"gnss.code.nco.freq",	"v,t",		0x4800000d, 0xfc00ffff,	RD_1|RD_2,		0,		I1,		GNSS,	0 },
++{"gnss.code.epl.freq",	"v,t",		0x4800000e, 0xfc00ffff,	RD_1|RD_2,		0,		I1,		GNSS,	0 },
++{"gnss.code.disc",		"d,v",		0x4800008b, 0xfc1f07ff,	WR_1|RD_2,		0,		I1,		GNSS,	0 },
++{"gnss.code.disc.i",	"d,v",		0x4800028b, 0xfc1f07ff,	WR_1|RD_2,		0,		I1,		GNSS,	0 },
++{"gnss.code.rng",		"d,v",		0x4800008c, 0xfc1f07ff,	WR_1|RD_2,			0,		I1,		GNSS,	0 },
++{"gnss.code.rng.i",		"d,v",		0x4800028c, 0xfc1f07ff,	WR_1|RD_2,			0,		I1,		GNSS,	0 },
++
++{"gnss.stat.wr",		"v",		0x48000001, 0xfc1fffff,	RD_1,			0,		I1,		GNSS,	0 },
++{"gnss.stat.rd",		"d",		0x48000081, 0xffff07ff,	WR_1,			0,		I1,		GNSS,	0 },
++
++{"gnss.afe.wr",			"v",		0x48000014, 0xfc1fffff,	RD_1,			0,		I1,		GNSS,	0 },
++{"gnss.afe.rd",			"d",		0x4800008D, 0xffff07ff,	WR_1,			0,		I1,		GNSS,	0 },
++
++{"gnss.free.accu.wr",	"v,t",		0x48000012,0xfc00ffff,	RD_1|RD_2,		0,		I1,		GNSS,	0 },
++{"gnss.free.accu.rd",	"d",		0x48000085, 0xffff07ff,	WR_1,			0,		I1,		GNSS,	0 },
++
++{"gnss.free.update.wr",	"v",		0x48000013, 0xfc1fffff,	RD_1,			0,		I1,		GNSS,	0 },
++{"gnss.free.update.rd",	"d",		0x48000088, 0xffff07ff,	WR_1,			0,		I1,		GNSS,	0 },
++
++{"gnss.track.step",		"v",		0x48000002, 0xfc1fffff, RD_1,			0,		I1,		GNSS,	0 },
++
++{"gnss.tst.0",			"v",		0x4800007f, 0xfc1fffff,	RD_1,			0,		I1,		GNSS,	0 },
++{"gnss.tst.1",			"d,v",		0x480000ff, 0xfc1f07ff,	WR_1|RD_2,		0,		I1,		GNSS,	0 },
++{"gnss.tst.2",			"d,v,t",	0x4800017f, 0xfc0007ff,	WR_1|RD_2|RD_3,	0,		I1,		GNSS,	0 },
++
++
+ /* Loongson specific instructions.  Loongson 3A redefines the Coprocessor 2
+    instructions.  Put them here so that disassembler will find them first.
+    The assemblers uses a hash table based on the instruction name anyhow.  */
+-- 
+2.17.1
+
