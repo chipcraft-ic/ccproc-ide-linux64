@@ -12,18 +12,10 @@ Install required Python modules:
 
     pip install pyserial
 
-Usage
------
+Usage (with GUI)
+----------------
 
-Start CCIDE by running `ide/ccide` executable file.
-IDE has special support for CCSDK projects.
-To create a new project or import existing one click `New -> CCSDK Project...` and
-follow instructions from the wizard.
-To build click hammer icon.
-To start a hardware debugging session create `CCSDK Application` launch configuration.
-To start a simulation create `CCSDK Simulation` launch configuration.
-To write program in RAM or Flash memory select `Write RAM Memory` or `Write Flash Memory`
-in Build Targets (in project tree).
+CCIDE user guide is located in `docs/user_guide` folder.
 
 Usage (in terminal)
 -------------------
