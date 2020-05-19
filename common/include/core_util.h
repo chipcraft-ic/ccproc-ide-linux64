@@ -32,10 +32,11 @@
 * File Name : core_util.h
 * Author    : Rafal Harabien
 * ******************************************************************************
-* $Date: 2018-09-07 16:07:40 +0200 (pią) $
-* $Revision: 296 $
+* $Date: 2019-04-09 11:24:43 +0200 (wto, 09 kwi 2019) $
+* $Revision: 402 $
 *H*****************************************************************************/
 
 #pragma once
 
 int coreStart(int core, void (*fn)(void *param), void *param);
+int lockstepDisable();

@@ -13,8 +13,8 @@
   <licenseText>
     Copyright (c) 2018 ChipCraft Sp. z o.o. All rights reserved\n
 \n
-    $Date$\n
-    $Revision$\n
+    $Date: 2019-08-28 09:42:00 +0200 (śro, 28 sie 2019) $\n
+    $Revision: 462 $\n
 \n
      ----------------------------------------------------------------------\n
     Redistribution and use in source and binary forms, with or without\n
@@ -189,6 +189,18 @@
           <addressOffset>0xD8</addressOffset>
           <access>write-only</access>
         </register>
+        <register>
+          <name>INJECT_MASK_0</name>
+          <description>Core 0 Lockstep Error Injection Mask (FT-only)</description>
+          <addressOffset>0x1dc</addressOffset>
+          <access>read-write</access>
+        </register>
+        <register>
+          <name>INJECT_MASK_1</name>
+          <description>Core 1 Lockstep Error Injection Mask (FT-only)</description>
+          <addressOffset>0x1e0</addressOffset>
+          <access>read-write</access>
+        </register>
       </registers>
     </peripheral>
     <!--  Power Management Controller  -->
@@ -357,6 +369,21 @@
               <description>Watchdog Reset</description>
               <bitRange>[3:3]</bitRange>
             </field>
+            <field>
+              <name>MBIST</name>
+              <description>MBIST Reset</description>
+              <bitRange>[4:4]</bitRange>
+            </field>
+            <field>
+              <name>DCLS_ERR</name>
+              <description>Lockstep Hard Error</description>
+              <bitRange>[5:5]</bitRange>
+            </field>
+            <field>
+              <name>DCACHE_ERR</name>
+              <description>Data Cache Hard Error</description>
+              <bitRange>[6:6]</bitRange>
+            </field>
           </fields>
         </register>
         <register>
@@ -417,10 +444,10 @@
         </register>
       </registers>
     </peripheral>
-    <!--  IRQ Controller  -->
+    <!--  System Controller  -->
     <peripheral>
-      <name>IRQ</name>
-      <description>Interrupt Controller</description>
+      <name>CSR</name>
+      <description>System Controller</description>
       <baseAddress>0x30030000</baseAddress>
       <addressBlock>
         <offset>0</offset>
@@ -460,6 +487,12 @@
               <name>IR</name>
               <description>Interrupt Pending</description>
               <bitRange>[4:4]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>DCLS</name>
+              <description>Dual-core Lockstep Mode</description>
+              <bitRange>[5:5]</bitRange>
               <access>read-write</access>
             </field>
             <field>
@@ -898,6 +931,33 @@
               <name>EN</name>
               <description>Module Enable</description>
               <bitRange>[0:0]</bitRange>
+            </field>
+            <field>
+              <name>SOURCE</name>
+              <description>Counter Clock Source</description>
+              <bitRange>[7:4]</bitRange>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>Core_Clock</name>
+                  <description>processor core clock</description>
+                  <value>0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>GNSS_L1_Clock</name>
+                  <description>GNSS L1 AFE Clock</description>
+                  <value>1</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>GNSS_L5_Clock</name>
+                  <description>GNSS L5 AFE Clock</description>
+                  <value>2</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>GNSS_L2_Clock</name>
+                  <description>GNSS L2 AFE Clock</description>
+                  <value>3</value>
+                </enumeratedValue>
+              </enumeratedValues>
             </field>
             <field>
               <name>BITS</name>
@@ -2391,17 +2451,22 @@
             </field>
             <field>
               <name>MODE</name>
-              <description>GNSS FIFO Mode</description>
+              <description>GNSS Sample Mode</description>
               <bitRange>[10:10]</bitRange>
             </field>
             <field>
+              <name>PLAY</name>
+              <description>GNSS Playback Mode</description>
+              <bitRange>[11:11]</bitRange>
+            </field>
+            <field>
               <name>BUSY</name>
-              <description>GNSS FIFO Busy</description>
+              <description>GNSS Busy</description>
               <bitRange>[12:12]</bitRange>
             </field>
             <field>
               <name>START</name>
-              <description>GNSS FIFO Start</description>
+              <description>GNSS Start</description>
               <bitRange>[13:13]</bitRange>
             </field>
             <field>
@@ -2563,6 +2628,31 @@
               <description>Instruction Cache Enable</description>
               <bitRange>[0:0]</bitRange>
             </field>
+            <field>
+              <name>PARITY_EN</name>
+              <description>Enable Parity (FT-only)</description>
+              <bitRange>[3:3]</bitRange>
+            </field>
+            <field>
+              <name>ERR_CNT_TRIG</name>
+              <description>Error Counter Trigger (FT-only)</description>
+              <bitRange>[4:4]</bitRange>
+            </field>
+            <field>
+              <name>SCRAMBLE_EN</name>
+              <description>Enable Scrambling (FT-only)</description>
+              <bitRange>[5:5]</bitRange>
+            </field>
+            <field>
+              <name>MEM_ERR_INJECT</name>
+              <description>Inject Memory Error (FT-only)</description>
+              <bitRange>[6:6]</bitRange>
+            </field>
+            <field>
+              <name>TAG_ERR_INJECT</name>
+              <description>Inject Tag Error (FT-only)</description>
+              <bitRange>[7:7]</bitRange>
+            </field>
           </fields>
         </register>
         <register>
@@ -2607,7 +2697,48 @@
               <description>Instruction Cache Tag</description>
               <bitRange>[21:15]</bitRange>
             </field>
+            <field>
+              <name>VER</name>
+              <description>Instruction Cache Version</description>
+              <bitRange>[31:28]</bitRange>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>HP</name>
+                  <description>High-performance</description>
+                  <value>0x0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>FT</name>
+                  <description>Fault-tolerant</description>
+                  <value>0x3</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
           </fields>
+        </register>
+        <register>
+          <name>ERR_CNT_0</name>
+          <description>Core 0 Error Count</description>
+          <addressOffset>0xC</addressOffset>
+          <access>read-write</access>
+        </register>
+        <register>
+          <name>ERR_CNT_1</name>
+          <description>Core 1 Error Count</description>
+          <addressOffset>0x10</addressOffset>
+          <access>read-write</access>
+        </register>
+        <register>
+          <name>INJECT_MASK_LO</name>
+          <description>Error Injection Mask Low</description>
+          <addressOffset>0x14</addressOffset>
+          <access>read-write</access>
+        </register>
+        <register>
+          <name>INJECT_MASK_HI</name>
+          <description>Error Injection Mask High</description>
+          <addressOffset>0x18</addressOffset>
+          <access>read-write</access>
         </register>
       </registers>
     </peripheral>
@@ -2635,13 +2766,38 @@
             </field>
             <field>
               <name>FLUSH</name>
-              <description>Data Cache Flush in Progress</description>
+              <description>Data Cache Flush in Progress (not in FT)</description>
               <bitRange>[1:1]</bitRange>
             </field>
             <field>
               <name>BUSY</name>
-              <description>Data Cache Write Buffer Busy</description>
+              <description>Data Cache Write Buffer Busy (not in FT)</description>
               <bitRange>[2:2]</bitRange>
+            </field>
+            <field>
+              <name>PARITY_EN</name>
+              <description>Enable Parity (FT-only)</description>
+              <bitRange>[3:3]</bitRange>
+            </field>
+            <field>
+              <name>ERR_CNT_TRIG</name>
+              <description>Error Counter Trigger (FT-only)</description>
+              <bitRange>[4:4]</bitRange>
+            </field>
+            <field>
+              <name>SCRAMBLE_EN</name>
+              <description>Enable Scrambling (FT-only)</description>
+              <bitRange>[5:5]</bitRange>
+            </field>
+            <field>
+              <name>MEM_ERR_INJECT</name>
+              <description>Inject Memory Error (FT-only)</description>
+              <bitRange>[6:6]</bitRange>
+            </field>
+            <field>
+              <name>TAG_ERR_INJECT</name>
+              <description>Inject Tag Error (FT-only)</description>
+              <bitRange>[7:7]</bitRange>
             </field>
           </fields>
         </register>
@@ -2691,8 +2847,49 @@
               <name>VER</name>
               <description>Data Cache Version</description>
               <bitRange>[31:28]</bitRange>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>HP</name>
+                  <description>High-performance</description>
+                  <value>0x0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>HS</name>
+                  <description>High-speed</description>
+                  <value>0x1</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>FT</name>
+                  <description>Fault-tolerant</description>
+                  <value>0x3</value>
+                </enumeratedValue>
+              </enumeratedValues>
             </field>
           </fields>
+        </register>
+        <register>
+          <name>ERR_CNT_0</name>
+          <description>Core 0 Error Count</description>
+          <addressOffset>0xC</addressOffset>
+          <access>read-write</access>
+        </register>
+        <register>
+          <name>ERR_CNT_1</name>
+          <description>Core 1 Error Count</description>
+          <addressOffset>0x10</addressOffset>
+          <access>read-write</access>
+        </register>
+        <register>
+          <name>INJECT_MASK_LO</name>
+          <description>Error Injection Mask Low</description>
+          <addressOffset>0x14</addressOffset>
+          <access>read-write</access>
+        </register>
+        <register>
+          <name>INJECT_MASK_HI</name>
+          <description>Error Injection Mask High</description>
+          <addressOffset>0x18</addressOffset>
+          <access>read-write</access>
         </register>
       </registers>
     </peripheral>
@@ -15395,19 +15592,6 @@
           <addressOffset>0x1C</addressOffset>
           <access>read-only</access>
         </register>
-        <!--  &lt;register&gt;
-          &lt;name&gt;BURST_CNT&lt;/name&gt;
-          &lt;description&gt;Burst Counter&lt;/description&gt;
-          &lt;addressOffset&gt;0x20&lt;/addressOffset&gt;
-          &lt;access&gt;write-only&lt;/access&gt;
-          &lt;fields&gt;
-            &lt;field&gt;
-              &lt;name&gt;BURST_CNT&lt;/name&gt;
-              &lt;description&gt;Burst Count&lt;/description&gt;
-              &lt;bitRange&gt;[12:2]&lt;/bitRange&gt;
-            &lt;/field&gt;
-          &lt;/fields&gt;
-        &lt;/register&gt;  -->
         <register>
           <name>INFO</name>
           <description>Debug Info</description>

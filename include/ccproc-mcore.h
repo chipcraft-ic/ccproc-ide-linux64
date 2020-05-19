@@ -2,8 +2,8 @@
 *
 * Copyright (c) 2017 ChipCraft Sp. z o.o. All rights reserved
 *
-* $Date: 2018-09-07 16:07:40 +0200 (pią) $
-* $Revision: 296 $
+* $Date: 2019-09-11 09:01:01 +0200 (śro, 11 wrz 2019) $
+* $Revision: 464 $
 *
 *  ----------------------------------------------------------------------
 * Redistribution and use in source and binary forms, with or without
@@ -60,13 +60,16 @@
 /** Multi-Core Controller Registers */
 typedef struct
 {
-    uint32_t STATUS;         /*!< Core Status         */
-    uint32_t CORE_NUM;       /*!< Core Number         */
-    uint32_t CORE_SHDN;      /*!< Core Shut Down      */
+    uint32_t STATUS;         /*!< Core Status                         */
+    uint32_t CORE_NUM;       /*!< Core Number                         */
+    uint32_t CORE_SHDN;      /*!< Core Shut Down                      */
     uint32_t _reserved1[1];
-    uint32_t CORE_ADDR[32];  /*!< Core Start Address  */
+    uint32_t CORE_ADDR[32];  /*!< Core Start Address                  */
     uint32_t _reserved2[18];
-    uint32_t CORE_RUN[32];   /*!< Core Start Register */
+    uint32_t CORE_RUN[32];   /*!< Core Start Register                 */
+    uint32_t _reserved3[32];
+    uint32_t INJECT_MASK_0;  /*!< Core 0 Error Inject Mask (FT-only)  */
+    uint32_t INJECT_MASK_1;  /*!< Core 1 Error Inject Mask (FT-only)  */
 } multicore_regs_t;
 
 static volatile multicore_regs_t * const MCORE_PTR = (multicore_regs_t*)MCORE_BASE;

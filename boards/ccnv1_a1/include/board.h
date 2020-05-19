@@ -2,8 +2,8 @@
 *
 * Copyright (c) 2017 ChipCraft Sp. z o.o. All rights reserved
 *
-* $Date: 2018-10-31 23:04:02 +0100 (śro) $
-* $Revision: 327 $
+* $Date: 2020-02-13 11:00:59 +0100 (czw, 13 lut 2020) $
+* $Revision: 524 $
 *
 *  ----------------------------------------------------------------------
 * Redistribution and use in source and binary forms, with or without
@@ -41,12 +41,19 @@
 #define IDCODE_PART_VER         0
 #define FLASH_DELAY             36UL
 
-#define PERIPH0_FREQ            40000000UL
-#define CORE_FREQ               80000000UL
+/* 16.368 TXCO */
+#define PERIPH0_FREQ            40920000UL
+#define CORE_FREQ               81840000UL
+
+#define DBG_BAUDRATE            38400
 
 #define STDIO_UART              3
 #define STDIO_BAUDRATE          115200
+#define STDIO_RTSCTS            0
 
 #define TIME_SOURCE             RTC
+
+/* Initialize GNSS AFE */
+void gnss_afe_init(void);
 
 #endif /* _BOARD_H */

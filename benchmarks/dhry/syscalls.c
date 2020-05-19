@@ -32,8 +32,8 @@
 * File Name : syscalls.c
 * Author    : Rafal Harabien
 * ******************************************************************************
-* $Date: 2018-09-07 16:07:40 +0200 (pią) $
-* $Revision: 296 $
+* $Date: 2019-07-05 10:06:41 +0200 (pią, 05 lip 2019) $
+* $Revision: 427 $
 *H*****************************************************************************/
 
 #include <errno.h>
@@ -48,7 +48,11 @@
 #include <ccproc.h>
 #include <ccproc-amba.h>
 
-static char SPRAM_BSS heap[4096];
+#ifndef _NO_SPRAM_MEMORY
+    static char SPRAM_BSS heap[12288];
+#else
+    static char heap[12288];
+#endif
 static char *heap_top = heap;
 
 void *_sbrk_r(struct _reent *r, ptrdiff_t incr)
@@ -62,6 +66,7 @@ void *_sbrk_r(struct _reent *r, ptrdiff_t incr)
         res = heap_top;
         heap_top = new_heap_top;
     } else {
+        BREAKPOINT();
         res = (void*)-1;
         r->_errno = ENOMEM;
     }

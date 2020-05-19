@@ -1,20 +1,20 @@
 <?xml version="1.0"?>
-<device xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" schemaVersion="1.2" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/ARM-software/CMSIS/v4.4.0/CMSIS/Utilities/CMSIS-SVD.xsd">
-  <!-- device vendor name -->
+<device xmlns:ns0="http://www.w3.org/2001/XMLSchema-instance" schemaVersion="1.2" ns0:noNamespaceSchemaLocation="https://raw.githubusercontent.com/ARM-software/CMSIS/v4.4.0/CMSIS/Utilities/CMSIS-SVD.xsd">
+  <!--  device vendor name  -->
   <vendor>ChipCraft</vendor>
-  <!-- device vendor short name -->
+  <!--  device vendor short name  -->
   <vendorID>chipcraft</vendorID>
-  <!-- name of part-->
+  <!--  name of part -->
   <name>ccnv1_a1</name>
-  <!-- version of this description -->
+  <!--  version of this description  -->
   <version>1.0</version>
   <description>ChipCraft microcontroller</description>
-  <!-- this license text will appear in header file. \n force line breaks -->
+  <!--  this license text will appear in header file. \n force line breaks  -->
   <licenseText>
     Copyright (c) 2018 ChipCraft Sp. z o.o. All rights reserved\n
 \n
-    $Date$\n
-    $Revision$\n
+    $Date: 2019-08-28 09:42:00 +0200 (śro, 28 sie 2019) $\n
+    $Revision: 462 $\n
 \n
      ----------------------------------------------------------------------\n
     Redistribution and use in source and binary forms, with or without\n
@@ -43,21 +43,21 @@
     ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE\n
     POSSIBILITY OF SUCH DAMAGE.\n
   </licenseText>
-  <!-- word addressable memory -->
+  <!--  word addressable memory  -->
   <addressUnitBits>32</addressUnitBits>
-  <!-- bus width is 32 bits -->
+  <!--  bus width is 32 bits  -->
   <width>32</width>
-  <!-- default settings implicitly inherited by subsequent sections -->
-  <!-- default size (number of bits) -->
+  <!--  default settings implicitly inherited by subsequent sections  -->
+  <!--  default size (number of bits)  -->
   <size>32</size>
-  <!-- default access permission for all subsequent registers -->
+  <!--  default access permission for all subsequent registers  -->
   <access>read-write</access>
-  <!-- by default all bits of the registers are initialized to 0 on reset -->
+  <!--  by default all bits of the registers are initialized to 0 on reset  -->
   <resetValue>0x00000000</resetValue>
-  <!-- by default all 32Bits of the registers are used -->
+  <!--  by default all 32Bits of the registers are used  -->
   <resetMask>0xFFFFFFFF</resetMask>
   <peripherals>
-    <!-- Multi-Core Controller -->
+    <!--  Multi-Core Controller  -->
     <peripheral>
       <name>MULTICORE</name>
       <description>Multi-Core Controller</description>
@@ -189,9 +189,21 @@
           <addressOffset>0xD8</addressOffset>
           <access>write-only</access>
         </register>
+        <register>
+          <name>INJECT_MASK_0</name>
+          <description>Core 0 Lockstep Error Injection Mask (FT-only)</description>
+          <addressOffset>0x1dc</addressOffset>
+          <access>read-write</access>
+        </register>
+        <register>
+          <name>INJECT_MASK_1</name>
+          <description>Core 1 Lockstep Error Injection Mask (FT-only)</description>
+          <addressOffset>0x1e0</addressOffset>
+          <access>read-write</access>
+        </register>
       </registers>
     </peripheral>
-    <!-- Power Management Controller -->
+    <!--  Power Management Controller  -->
     <peripheral>
       <name>PWD</name>
       <description>Power Management Controller</description>
@@ -357,6 +369,21 @@
               <description>Watchdog Reset</description>
               <bitRange>[3:3]</bitRange>
             </field>
+            <field>
+              <name>MBIST</name>
+              <description>MBIST Reset</description>
+              <bitRange>[4:4]</bitRange>
+            </field>
+            <field>
+              <name>DCLS_ERR</name>
+              <description>Lockstep Hard Error</description>
+              <bitRange>[5:5]</bitRange>
+            </field>
+            <field>
+              <name>DCACHE_ERR</name>
+              <description>Data Cache Hard Error</description>
+              <bitRange>[6:6]</bitRange>
+            </field>
           </fields>
         </register>
         <register>
@@ -417,10 +444,10 @@
         </register>
       </registers>
     </peripheral>
-    <!-- IRQ Controller -->
+    <!--  System Controller  -->
     <peripheral>
-      <name>IRQ</name>
-      <description>Interrupt Controller</description>
+      <name>CSR</name>
+      <description>System Controller</description>
       <baseAddress>0x30030000</baseAddress>
       <addressBlock>
         <offset>0</offset>
@@ -883,7 +910,7 @@
         </register>
       </registers>
     </peripheral>
-    <!-- Performance Counter -->
+    <!--  Performance Counter  -->
     <peripheral>
       <name>PERFCNT</name>
       <description>Performance Counter</description>
@@ -906,6 +933,33 @@
               <bitRange>[0:0]</bitRange>
             </field>
             <field>
+              <name>SOURCE</name>
+              <description>Counter Clock Source</description>
+              <bitRange>[7:4]</bitRange>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>Core_Clock</name>
+                  <description>processor core clock</description>
+                  <value>0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>GNSS_L1_Clock</name>
+                  <description>GNSS L1 AFE Clock</description>
+                  <value>1</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>GNSS_L5_Clock</name>
+                  <description>GNSS L5 AFE Clock</description>
+                  <value>2</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>GNSS_L2_Clock</name>
+                  <description>GNSS L2 AFE Clock</description>
+                  <value>3</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <field>
               <name>BITS</name>
               <description>Counter Bits</description>
               <bitRange>[22:16]</bitRange>
@@ -926,7 +980,7 @@
         </register>
       </registers>
     </peripheral>
-    <!-- Memory Protection Unit -->
+    <!--  Memory Protection Unit  -->
     <peripheral>
       <name>MPU</name>
       <description>Memory Protection Unit</description>
@@ -2325,7 +2379,7 @@
         </register>
       </registers>
     </peripheral>
-    <!-- GNSS Controller Registers -->
+    <!--  GNSS Controller Registers  -->
     <peripheral>
       <name>GNSS</name>
       <description>GNSS Controller</description>
@@ -2341,7 +2395,7 @@
           <description>Status Register</description>
           <addressOffset>0x0</addressOffset>
           <access>read-write</access>
-          <!-- GNSS Controller Status Register Flags -->
+          <!--  GNSS Controller Status Register Flags  -->
           <fields>
             <field>
               <name>L1</name>
@@ -2397,17 +2451,22 @@
             </field>
             <field>
               <name>MODE</name>
-              <description>GNSS FIFO Mode</description>
+              <description>GNSS Sample Mode</description>
               <bitRange>[10:10]</bitRange>
             </field>
             <field>
+              <name>PLAY</name>
+              <description>GNSS Playback Mode</description>
+              <bitRange>[11:11]</bitRange>
+            </field>
+            <field>
               <name>BUSY</name>
-              <description>GNSS FIFO Busy</description>
+              <description>GNSS Busy</description>
               <bitRange>[12:12]</bitRange>
             </field>
             <field>
               <name>START</name>
-              <description>GNSS FIFO Start</description>
+              <description>GNSS Start</description>
               <bitRange>[13:13]</bitRange>
             </field>
             <field>
@@ -2472,7 +2531,7 @@
           <description>GNSS-ISE Control Register</description>
           <addressOffset>0x18</addressOffset>
           <access>read-write</access>
-          <!-- GNSS Controller GNSS-ISE Control Register Flags -->
+          <!--  GNSS Controller GNSS-ISE Control Register Flags  -->
           <fields>
             <field>
               <name>CODE_TICK_IE</name>
@@ -2547,7 +2606,7 @@
         </register>
       </registers>
     </peripheral>
-    <!-- Instruction Cache -->
+    <!--  Instruction Cache  -->
     <peripheral>
       <name>ICACHE</name>
       <description>Instruction Cache Controller</description>
@@ -2568,6 +2627,31 @@
               <name>EN</name>
               <description>Instruction Cache Enable</description>
               <bitRange>[0:0]</bitRange>
+            </field>
+            <field>
+              <name>PARITY_EN</name>
+              <description>Enable Parity (FT-only)</description>
+              <bitRange>[3:3]</bitRange>
+            </field>
+            <field>
+              <name>ERR_CNT_TRIG</name>
+              <description>Error Counter Trigger (FT-only)</description>
+              <bitRange>[4:4]</bitRange>
+            </field>
+            <field>
+              <name>SCRAMBLE_EN</name>
+              <description>Enable Scrambling (FT-only)</description>
+              <bitRange>[5:5]</bitRange>
+            </field>
+            <field>
+              <name>MEM_ERR_INJECT</name>
+              <description>Inject Memory Error (FT-only)</description>
+              <bitRange>[6:6]</bitRange>
+            </field>
+            <field>
+              <name>TAG_ERR_INJECT</name>
+              <description>Inject Tag Error (FT-only)</description>
+              <bitRange>[7:7]</bitRange>
             </field>
           </fields>
         </register>
@@ -2613,11 +2697,52 @@
               <description>Instruction Cache Tag</description>
               <bitRange>[21:15]</bitRange>
             </field>
+            <field>
+              <name>VER</name>
+              <description>Instruction Cache Version</description>
+              <bitRange>[31:28]</bitRange>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>HP</name>
+                  <description>High-performance</description>
+                  <value>0x0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>FT</name>
+                  <description>Fault-tolerant</description>
+                  <value>0x3</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
           </fields>
+        </register>
+        <register>
+          <name>ERR_CNT_0</name>
+          <description>Core 0 Error Count</description>
+          <addressOffset>0xC</addressOffset>
+          <access>read-write</access>
+        </register>
+        <register>
+          <name>ERR_CNT_1</name>
+          <description>Core 1 Error Count</description>
+          <addressOffset>0x10</addressOffset>
+          <access>read-write</access>
+        </register>
+        <register>
+          <name>INJECT_MASK_LO</name>
+          <description>Error Injection Mask Low</description>
+          <addressOffset>0x14</addressOffset>
+          <access>read-write</access>
+        </register>
+        <register>
+          <name>INJECT_MASK_HI</name>
+          <description>Error Injection Mask High</description>
+          <addressOffset>0x18</addressOffset>
+          <access>read-write</access>
         </register>
       </registers>
     </peripheral>
-    <!-- Data Cache -->
+    <!--  Data Cache  -->
     <peripheral>
       <name>DCACHE</name>
       <description>Data Cache Controller</description>
@@ -2641,13 +2766,38 @@
             </field>
             <field>
               <name>FLUSH</name>
-              <description>Data Cache Flush in Progress</description>
+              <description>Data Cache Flush in Progress (not in FT)</description>
               <bitRange>[1:1]</bitRange>
             </field>
             <field>
               <name>BUSY</name>
-              <description>Data Cache Write Buffer Busy</description>
+              <description>Data Cache Write Buffer Busy (not in FT)</description>
               <bitRange>[2:2]</bitRange>
+            </field>
+            <field>
+              <name>PARITY_EN</name>
+              <description>Enable Parity (FT-only)</description>
+              <bitRange>[3:3]</bitRange>
+            </field>
+            <field>
+              <name>ERR_CNT_TRIG</name>
+              <description>Error Counter Trigger (FT-only)</description>
+              <bitRange>[4:4]</bitRange>
+            </field>
+            <field>
+              <name>SCRAMBLE_EN</name>
+              <description>Enable Scrambling (FT-only)</description>
+              <bitRange>[5:5]</bitRange>
+            </field>
+            <field>
+              <name>MEM_ERR_INJECT</name>
+              <description>Inject Memory Error (FT-only)</description>
+              <bitRange>[6:6]</bitRange>
+            </field>
+            <field>
+              <name>TAG_ERR_INJECT</name>
+              <description>Inject Tag Error (FT-only)</description>
+              <bitRange>[7:7]</bitRange>
             </field>
           </fields>
         </register>
@@ -2697,12 +2847,53 @@
               <name>VER</name>
               <description>Data Cache Version</description>
               <bitRange>[31:28]</bitRange>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>HP</name>
+                  <description>High-performance</description>
+                  <value>0x0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>HS</name>
+                  <description>High-speed</description>
+                  <value>0x1</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>FT</name>
+                  <description>Fault-tolerant</description>
+                  <value>0x3</value>
+                </enumeratedValue>
+              </enumeratedValues>
             </field>
           </fields>
         </register>
+        <register>
+          <name>ERR_CNT_0</name>
+          <description>Core 0 Error Count</description>
+          <addressOffset>0xC</addressOffset>
+          <access>read-write</access>
+        </register>
+        <register>
+          <name>ERR_CNT_1</name>
+          <description>Core 1 Error Count</description>
+          <addressOffset>0x10</addressOffset>
+          <access>read-write</access>
+        </register>
+        <register>
+          <name>INJECT_MASK_LO</name>
+          <description>Error Injection Mask Low</description>
+          <addressOffset>0x14</addressOffset>
+          <access>read-write</access>
+        </register>
+        <register>
+          <name>INJECT_MASK_HI</name>
+          <description>Error Injection Mask High</description>
+          <addressOffset>0x18</addressOffset>
+          <access>read-write</access>
+        </register>
       </registers>
     </peripheral>
-    <!-- FFT Controller Registers -->
+    <!--  FFT Controller Registers  -->
     <peripheral>
       <name>FFT</name>
       <description>FFT Controller</description>
@@ -2718,7 +2909,7 @@
           <description>Status Register</description>
           <addressOffset>0x0</addressOffset>
           <access>read-write</access>
-          <!-- FFT Controller Status Register Flags -->
+          <!--  FFT Controller Status Register Flags  -->
           <fields>
             <field>
               <name>BUSY</name>
@@ -2863,7 +3054,7 @@
           <description>Interrupt Flags Register</description>
           <addressOffset>0x14</addressOffset>
           <access>read-write</access>
-          <!-- FFT Interrupt Flags -->
+          <!--  FFT Interrupt Flags  -->
           <fields>
             <field>
               <name>IRQ_FLAG</name>
@@ -2885,7 +3076,7 @@
         </register>
       </registers>
     </peripheral>
-    <!-- AMBA APB0 Bridge -->
+    <!--  AMBA APB0 Bridge  -->
     <peripheral>
       <name>APB0</name>
       <description>AMBA APB0 Bridge</description>
@@ -3027,7 +3218,7 @@
         </register>
       </registers>
     </peripheral>
-    <!-- AMBA APB1 Bridge -->
+    <!--  AMBA APB1 Bridge  -->
     <peripheral>
       <name>APB1</name>
       <description>AMBA APB1 Bridge</description>
@@ -3038,7 +3229,7 @@
         <usage>registers</usage>
       </addressBlock>
     </peripheral>
-    <!-- AMBA UART -->
+    <!--  AMBA UART  -->
     <peripheral>
       <name>UART0</name>
       <description>UART Controller</description>
@@ -3158,7 +3349,7 @@
               <description>Big Endian Enable</description>
               <bitRange>[1:1]</bitRange>
             </field>
-            <!-- Character Length -->
+            <!--  Character Length  -->
             <field>
               <name>CHRL</name>
               <description>Character Length</description>
@@ -3191,7 +3382,7 @@
                 </enumeratedValue>
               </enumeratedValues>
             </field>
-            <!-- Stop Bits Number -->
+            <!--  Stop Bits Number  -->
             <field>
               <name>STOP_BITS</name>
               <description>Stop Bits Number</description>
@@ -3209,7 +3400,7 @@
                 </enumeratedValue>
               </enumeratedValues>
             </field>
-            <!-- Parity -->
+            <!--  Parity  -->
             <field>
               <name>PARITY</name>
               <description>Parity</description>
@@ -3242,7 +3433,7 @@
                 </enumeratedValue>
               </enumeratedValues>
             </field>
-            <!-- RS485 Mode -->
+            <!--  RS485 Mode  -->
             <field>
               <name>RS485EN</name>
               <description>RS485 Mode Enable</description>
@@ -3513,7 +3704,7 @@
               <description>Big Endian Enable</description>
               <bitRange>[1:1]</bitRange>
             </field>
-            <!-- Character Length -->
+            <!--  Character Length  -->
             <field>
               <name>CHRL</name>
               <description>Character Length</description>
@@ -3546,7 +3737,7 @@
                 </enumeratedValue>
               </enumeratedValues>
             </field>
-            <!-- Stop Bits Number -->
+            <!--  Stop Bits Number  -->
             <field>
               <name>STOP_BITS</name>
               <description>Stop Bits Number</description>
@@ -3564,7 +3755,7 @@
                 </enumeratedValue>
               </enumeratedValues>
             </field>
-            <!-- Parity -->
+            <!--  Parity  -->
             <field>
               <name>PARITY</name>
               <description>Parity</description>
@@ -3597,7 +3788,7 @@
                 </enumeratedValue>
               </enumeratedValues>
             </field>
-            <!-- RS485 Mode -->
+            <!--  RS485 Mode  -->
             <field>
               <name>RS485EN</name>
               <description>RS485 Mode Enable</description>
@@ -3868,7 +4059,7 @@
               <description>Big Endian Enable</description>
               <bitRange>[1:1]</bitRange>
             </field>
-            <!-- Character Length -->
+            <!--  Character Length  -->
             <field>
               <name>CHRL</name>
               <description>Character Length</description>
@@ -3901,7 +4092,7 @@
                 </enumeratedValue>
               </enumeratedValues>
             </field>
-            <!-- Stop Bits Number -->
+            <!--  Stop Bits Number  -->
             <field>
               <name>STOP_BITS</name>
               <description>Stop Bits Number</description>
@@ -3919,7 +4110,7 @@
                 </enumeratedValue>
               </enumeratedValues>
             </field>
-            <!-- Parity -->
+            <!--  Parity  -->
             <field>
               <name>PARITY</name>
               <description>Parity</description>
@@ -3952,7 +4143,7 @@
                 </enumeratedValue>
               </enumeratedValues>
             </field>
-            <!-- RS485 Mode -->
+            <!--  RS485 Mode  -->
             <field>
               <name>RS485EN</name>
               <description>RS485 Mode Enable</description>
@@ -4223,7 +4414,7 @@
               <description>Big Endian Enable</description>
               <bitRange>[1:1]</bitRange>
             </field>
-            <!-- Character Length -->
+            <!--  Character Length  -->
             <field>
               <name>CHRL</name>
               <description>Character Length</description>
@@ -4256,7 +4447,7 @@
                 </enumeratedValue>
               </enumeratedValues>
             </field>
-            <!-- Stop Bits Number -->
+            <!--  Stop Bits Number  -->
             <field>
               <name>STOP_BITS</name>
               <description>Stop Bits Number</description>
@@ -4274,7 +4465,7 @@
                 </enumeratedValue>
               </enumeratedValues>
             </field>
-            <!-- Parity -->
+            <!--  Parity  -->
             <field>
               <name>PARITY</name>
               <description>Parity</description>
@@ -4307,7 +4498,7 @@
                 </enumeratedValue>
               </enumeratedValues>
             </field>
-            <!-- RS485 Mode -->
+            <!--  RS485 Mode  -->
             <field>
               <name>RS485EN</name>
               <description>RS485 Mode Enable</description>
@@ -4459,7 +4650,7 @@
         </register>
       </registers>
     </peripheral>
-    <!-- AMBA SPI -->
+    <!--  AMBA SPI  -->
     <peripheral>
       <name>SPI0</name>
       <description>SPI Controller</description>
@@ -4476,7 +4667,7 @@
           <description>Status Register</description>
           <addressOffset>0x0</addressOffset>
           <access>read-only</access>
-          <!-- SPI status bits -->
+          <!--  SPI status bits  -->
           <fields>
             <field>
               <name>TXC</name>
@@ -4530,7 +4721,7 @@
           <description>Control Register</description>
           <addressOffset>0x4</addressOffset>
           <access>read-write</access>
-          <!-- SPI Control Register Shifts -->
+          <!--  SPI Control Register Shifts  -->
           <fields>
             <field>
               <name>EN</name>
@@ -4704,7 +4895,7 @@
           <description>Status Register</description>
           <addressOffset>0x0</addressOffset>
           <access>read-only</access>
-          <!-- SPI status bits -->
+          <!--  SPI status bits  -->
           <fields>
             <field>
               <name>TXC</name>
@@ -4758,7 +4949,7 @@
           <description>Control Register</description>
           <addressOffset>0x4</addressOffset>
           <access>read-write</access>
-          <!-- SPI Control Register Shifts -->
+          <!--  SPI Control Register Shifts  -->
           <fields>
             <field>
               <name>EN</name>
@@ -4932,7 +5123,7 @@
           <description>Status Register</description>
           <addressOffset>0x0</addressOffset>
           <access>read-only</access>
-          <!-- SPI status bits -->
+          <!--  SPI status bits  -->
           <fields>
             <field>
               <name>TXC</name>
@@ -4986,7 +5177,7 @@
           <description>Control Register</description>
           <addressOffset>0x4</addressOffset>
           <access>read-write</access>
-          <!-- SPI Control Register Shifts -->
+          <!--  SPI Control Register Shifts  -->
           <fields>
             <field>
               <name>EN</name>
@@ -5144,7 +5335,7 @@
         </register>
       </registers>
     </peripheral>
-    <!-- GPIO Registers -->
+    <!--  GPIO Registers  -->
     <peripheral>
       <name>GPIO</name>
       <description>GPIO Controller</description>
@@ -7049,7 +7240,7 @@
         </register>
       </registers>
     </peripheral>
-    <!-- Timer32 -->
+    <!--  Timer32  -->
     <peripheral>
       <name>TIMER32_0</name>
       <description>32-bit Timer Module</description>
@@ -7876,7 +8067,7 @@
         </register>
       </registers>
     </peripheral>
-    <!-- Timer16 -->
+    <!--  Timer16  -->
     <peripheral>
       <name>TIMER16_0</name>
       <description>16-bit Timer Module</description>
@@ -8703,7 +8894,7 @@
         </register>
       </registers>
     </peripheral>
-    <!-- SysTick -->
+    <!--  SysTick  -->
     <peripheral>
       <name>SYSTICK</name>
       <description>Systick Module</description>
@@ -8776,7 +8967,7 @@
         </register>
       </registers>
     </peripheral>
-    <!-- RTC Registers -->
+    <!--  RTC Registers  -->
     <peripheral>
       <name>RTC</name>
       <description>RTC Controller</description>
@@ -9069,7 +9260,7 @@
         </register>
       </registers>
     </peripheral>
-    <!-- Watchdog Registers -->
+    <!--  Watchdog Registers  -->
     <peripheral>
       <name>WDT</name>
       <description>Watchdog Timer</description>
@@ -9169,7 +9360,7 @@
         </register>
       </registers>
     </peripheral>
-    <!-- DMA Registers -->
+    <!--  DMA Registers  -->
     <peripheral>
       <name>DMA</name>
       <description>DMA Controller</description>
@@ -9185,7 +9376,7 @@
           <description>Base Configuration</description>
           <addressOffset>0x0</addressOffset>
           <access>read-write</access>
-          <!-- DMA Base Configuration Register flags -->
+          <!--  DMA Base Configuration Register flags  -->
           <fields>
             <field>
               <name>DSEN</name>
@@ -9248,7 +9439,7 @@
           <description>Status Register</description>
           <addressOffset>0x20</addressOffset>
           <access>read-only</access>
-          <!-- DMA Channel Status Register flags -->
+          <!--  DMA Channel Status Register flags  -->
           <fields>
             <field>
               <name>ACT</name>
@@ -9282,7 +9473,7 @@
           <description>Control Register</description>
           <addressOffset>0x24</addressOffset>
           <access>read-write</access>
-          <!-- DMA Channel Control Register flags -->
+          <!--  DMA Channel Control Register flags  -->
           <fields>
             <field>
               <name>EN</name>
@@ -9363,7 +9554,7 @@
           <description>Interrupt Mask</description>
           <addressOffset>0x3C</addressOffset>
           <access>read-write</access>
-          <!-- DMA Channel Interrupt Mask bits -->
+          <!--  DMA Channel Interrupt Mask bits  -->
           <fields>
             <field>
               <name>TCZIE</name>
@@ -9392,7 +9583,7 @@
           <description>Status Register</description>
           <addressOffset>0x40</addressOffset>
           <access>read-only</access>
-          <!-- DMA Channel Status Register flags -->
+          <!--  DMA Channel Status Register flags  -->
           <fields>
             <field>
               <name>ACT</name>
@@ -9426,7 +9617,7 @@
           <description>Control Register</description>
           <addressOffset>0x44</addressOffset>
           <access>read-write</access>
-          <!-- DMA Channel Control Register flags -->
+          <!--  DMA Channel Control Register flags  -->
           <fields>
             <field>
               <name>EN</name>
@@ -9507,7 +9698,7 @@
           <description>Interrupt Mask</description>
           <addressOffset>0x5C</addressOffset>
           <access>read-write</access>
-          <!-- DMA Channel Interrupt Mask bits -->
+          <!--  DMA Channel Interrupt Mask bits  -->
           <fields>
             <field>
               <name>TCZIE</name>
@@ -9536,7 +9727,7 @@
           <description>Status Register</description>
           <addressOffset>0x60</addressOffset>
           <access>read-only</access>
-          <!-- DMA Channel Status Register flags -->
+          <!--  DMA Channel Status Register flags  -->
           <fields>
             <field>
               <name>ACT</name>
@@ -9570,7 +9761,7 @@
           <description>Control Register</description>
           <addressOffset>0x64</addressOffset>
           <access>read-write</access>
-          <!-- DMA Channel Control Register flags -->
+          <!--  DMA Channel Control Register flags  -->
           <fields>
             <field>
               <name>EN</name>
@@ -9651,7 +9842,7 @@
           <description>Interrupt Mask</description>
           <addressOffset>0x7C</addressOffset>
           <access>read-write</access>
-          <!-- DMA Channel Interrupt Mask bits -->
+          <!--  DMA Channel Interrupt Mask bits  -->
           <fields>
             <field>
               <name>TCZIE</name>
@@ -9680,7 +9871,7 @@
           <description>Status Register</description>
           <addressOffset>0x80</addressOffset>
           <access>read-only</access>
-          <!-- DMA Channel Status Register flags -->
+          <!--  DMA Channel Status Register flags  -->
           <fields>
             <field>
               <name>ACT</name>
@@ -9714,7 +9905,7 @@
           <description>Control Register</description>
           <addressOffset>0x84</addressOffset>
           <access>read-write</access>
-          <!-- DMA Channel Control Register flags -->
+          <!--  DMA Channel Control Register flags  -->
           <fields>
             <field>
               <name>EN</name>
@@ -9795,7 +9986,7 @@
           <description>Interrupt Mask</description>
           <addressOffset>0x9C</addressOffset>
           <access>read-write</access>
-          <!-- DMA Channel Interrupt Mask bits -->
+          <!--  DMA Channel Interrupt Mask bits  -->
           <fields>
             <field>
               <name>TCZIE</name>
@@ -9824,7 +10015,7 @@
           <description>Status Register</description>
           <addressOffset>0xA0</addressOffset>
           <access>read-only</access>
-          <!-- DMA Channel Status Register flags -->
+          <!--  DMA Channel Status Register flags  -->
           <fields>
             <field>
               <name>ACT</name>
@@ -9858,7 +10049,7 @@
           <description>Control Register</description>
           <addressOffset>0xA4</addressOffset>
           <access>read-write</access>
-          <!-- DMA Channel Control Register flags -->
+          <!--  DMA Channel Control Register flags  -->
           <fields>
             <field>
               <name>EN</name>
@@ -9939,7 +10130,7 @@
           <description>Interrupt Mask</description>
           <addressOffset>0xBC</addressOffset>
           <access>read-write</access>
-          <!-- DMA Channel Interrupt Mask bits -->
+          <!--  DMA Channel Interrupt Mask bits  -->
           <fields>
             <field>
               <name>TCZIE</name>
@@ -9968,7 +10159,7 @@
           <description>Status Register</description>
           <addressOffset>0xC0</addressOffset>
           <access>read-only</access>
-          <!-- DMA Channel Status Register flags -->
+          <!--  DMA Channel Status Register flags  -->
           <fields>
             <field>
               <name>ACT</name>
@@ -10002,7 +10193,7 @@
           <description>Control Register</description>
           <addressOffset>0xC4</addressOffset>
           <access>read-write</access>
-          <!-- DMA Channel Control Register flags -->
+          <!--  DMA Channel Control Register flags  -->
           <fields>
             <field>
               <name>EN</name>
@@ -10083,7 +10274,7 @@
           <description>Interrupt Mask</description>
           <addressOffset>0xDC</addressOffset>
           <access>read-write</access>
-          <!-- DMA Channel Interrupt Mask bits -->
+          <!--  DMA Channel Interrupt Mask bits  -->
           <fields>
             <field>
               <name>TCZIE</name>
@@ -10112,7 +10303,7 @@
           <description>Status Register</description>
           <addressOffset>0xE0</addressOffset>
           <access>read-only</access>
-          <!-- DMA Channel Status Register flags -->
+          <!--  DMA Channel Status Register flags  -->
           <fields>
             <field>
               <name>ACT</name>
@@ -10146,7 +10337,7 @@
           <description>Control Register</description>
           <addressOffset>0xE4</addressOffset>
           <access>read-write</access>
-          <!-- DMA Channel Control Register flags -->
+          <!--  DMA Channel Control Register flags  -->
           <fields>
             <field>
               <name>EN</name>
@@ -10227,7 +10418,7 @@
           <description>Interrupt Mask</description>
           <addressOffset>0xFC</addressOffset>
           <access>read-write</access>
-          <!-- DMA Channel Interrupt Mask bits -->
+          <!--  DMA Channel Interrupt Mask bits  -->
           <fields>
             <field>
               <name>TCZIE</name>
@@ -10256,7 +10447,7 @@
           <description>Status Register</description>
           <addressOffset>0x100</addressOffset>
           <access>read-only</access>
-          <!-- DMA Channel Status Register flags -->
+          <!--  DMA Channel Status Register flags  -->
           <fields>
             <field>
               <name>ACT</name>
@@ -10290,7 +10481,7 @@
           <description>Control Register</description>
           <addressOffset>0x104</addressOffset>
           <access>read-write</access>
-          <!-- DMA Channel Control Register flags -->
+          <!--  DMA Channel Control Register flags  -->
           <fields>
             <field>
               <name>EN</name>
@@ -10371,7 +10562,7 @@
           <description>Interrupt Mask</description>
           <addressOffset>0x11C</addressOffset>
           <access>read-write</access>
-          <!-- DMA Channel Interrupt Mask bits -->
+          <!--  DMA Channel Interrupt Mask bits  -->
           <fields>
             <field>
               <name>TCZIE</name>
@@ -10397,7 +10588,7 @@
         </register>
       </registers>
     </peripheral>
-    <!-- 1 Wire Controller -->
+    <!--  1 Wire Controller  -->
     <peripheral>
       <name>_1WIRE</name>
       <description>1 Wire Controller</description>
@@ -10408,7 +10599,7 @@
         <usage>registers</usage>
       </addressBlock>
     </peripheral>
-    <!-- CAN -->
+    <!--  CAN  -->
     <peripheral>
       <name>CAN0</name>
       <description>CAN Controller</description>
@@ -10431,7 +10622,7 @@
         <usage>registers</usage>
       </addressBlock>
     </peripheral>
-    <!-- I2C Master -->
+    <!--  I2C Master  -->
     <peripheral>
       <name>I2C_MST0</name>
       <description>I2C Master Controller</description>
@@ -10448,7 +10639,7 @@
           <description>Status Register</description>
           <addressOffset>0x0</addressOffset>
           <access>read-only</access>
-          <!-- I2C status bits -->
+          <!--  I2C status bits  -->
           <fields>
             <field>
               <name>BUS_STATE</name>
@@ -10566,7 +10757,7 @@
           <description>Control Register</description>
           <addressOffset>0x4</addressOffset>
           <access>read-write</access>
-          <!-- I2C Control Register Shifts -->
+          <!--  I2C Control Register Shifts  -->
           <fields>
             <field>
               <name>EN</name>
@@ -10600,7 +10791,7 @@
           <description>Command Register</description>
           <addressOffset>0x8</addressOffset>
           <access>read-write</access>
-          <!-- I2C Control Register Shifts -->
+          <!--  I2C Control Register Shifts  -->
           <fields>
             <field>
               <name>CMD</name>
@@ -10829,7 +11020,7 @@
           <description>Status Register</description>
           <addressOffset>0x0</addressOffset>
           <access>read-only</access>
-          <!-- I2C status bits -->
+          <!--  I2C status bits  -->
           <fields>
             <field>
               <name>BUS_STATE</name>
@@ -10947,7 +11138,7 @@
           <description>Control Register</description>
           <addressOffset>0x4</addressOffset>
           <access>read-write</access>
-          <!-- I2C Control Register Shifts -->
+          <!--  I2C Control Register Shifts  -->
           <fields>
             <field>
               <name>EN</name>
@@ -10981,7 +11172,7 @@
           <description>Command Register</description>
           <addressOffset>0x8</addressOffset>
           <access>read-write</access>
-          <!-- I2C Control Register Shifts -->
+          <!--  I2C Control Register Shifts  -->
           <fields>
             <field>
               <name>CMD</name>
@@ -11194,7 +11385,7 @@
         </register>
       </registers>
     </peripheral>
-    <!-- I2C Slave -->
+    <!--  I2C Slave  -->
     <peripheral>
       <name>I2C_SLV</name>
       <description>I2C Slave Controller</description>
@@ -11210,7 +11401,7 @@
           <description>Status Register</description>
           <addressOffset>0x0</addressOffset>
           <access>read-only</access>
-          <!-- I2C status bits -->
+          <!--  I2C status bits  -->
           <fields>
             <field>
               <name>BUS_ERR</name>
@@ -11336,7 +11527,7 @@
           <description>Control Register</description>
           <addressOffset>0x4</addressOffset>
           <access>read-write</access>
-          <!-- I2C Control Register Shifts -->
+          <!--  I2C Control Register Shifts  -->
           <fields>
             <field>
               <name>EN</name>
@@ -11390,7 +11581,7 @@
           <description>Command Register</description>
           <addressOffset>0x8</addressOffset>
           <access>read-write</access>
-          <!-- I2C Control Register Shifts -->
+          <!--  I2C Control Register Shifts  -->
           <fields>
             <field>
               <name>CMD</name>
@@ -11575,7 +11766,7 @@
         </register>
       </registers>
     </peripheral>
-    <!-- Flash Controller -->
+    <!--  Flash Controller  -->
     <peripheral>
       <name>FLASH</name>
       <description>Flash Controller</description>
@@ -12218,7 +12409,7 @@
         </register>
       </registers>
     </peripheral>
-    <!-- Flash Controller User Row -->
+    <!--  Flash Controller User Row  -->
     <peripheral>
       <name>FLASH_USER</name>
       <description>Flash Controller User Row</description>
@@ -12999,7 +13190,7 @@
         </register>
       </registers>
     </peripheral>
-    <!-- Flash Controller Manufacturer Row -->
+    <!--  Flash Controller Manufacturer Row  -->
     <peripheral>
       <name>FLASH_MAN</name>
       <description>Flash Controller Manufacturer Row</description>
@@ -13780,7 +13971,7 @@
         </register>
       </registers>
     </peripheral>
-    <!-- Flash Controller Factory Row -->
+    <!--  Flash Controller Factory Row  -->
     <peripheral>
       <name>FLASH_FACT</name>
       <description>Flash Controller Factory Row</description>
@@ -14561,7 +14752,7 @@
         </register>
       </registers>
     </peripheral>
-    <!-- Flash Controller Page Buffer -->
+    <!--  Flash Controller Page Buffer  -->
     <peripheral>
       <name>FLASH_BUFFER</name>
       <description>Flash Controller Page Buffer</description>
@@ -15342,7 +15533,7 @@
         </register>
       </registers>
     </peripheral>
-    <!-- Debug Controller -->
+    <!--  Debug Controller  -->
     <peripheral>
       <name>DEBUG</name>
       <description>Debug Controller</description>
@@ -15401,19 +15592,6 @@
           <addressOffset>0x1C</addressOffset>
           <access>read-only</access>
         </register>
-        <!-- <register>
-          <name>BURST_CNT</name>
-          <description>Burst Counter</description>
-          <addressOffset>0x20</addressOffset>
-          <access>write-only</access>
-          <fields>
-            <field>
-              <name>BURST_CNT</name>
-              <description>Burst Count</description>
-              <bitRange>[12:2]</bitRange>
-            </field>
-          </fields>
-        </register> -->
         <register>
           <name>INFO</name>
           <description>Debug Info</description>
@@ -15434,7 +15612,7 @@
         </register>
       </registers>
     </peripheral>
-    <!-- Debug Controller Instruction Cache Access -->
+    <!--  Debug Controller Instruction Cache Access  -->
     <peripheral>
       <name>DEBUG_ICACHE_WAY0</name>
       <description>Debug Instruction Cache Access</description>
@@ -30053,7 +30231,7 @@
         </register>
       </registers>
     </peripheral>
-    <!-- Debug Controller Data Cache Access -->
+    <!--  Debug Controller Data Cache Access  -->
     <peripheral>
       <name>DEBUG_DCACHE_WAY0</name>
       <description>Debug Data Cache Access</description>

@@ -32,8 +32,8 @@
 * File Name : main.cpp
 * Author    : Rafal Harabien
 * ******************************************************************************
-* $Date: 2018-09-07 16:07:40 +0200 (pią) $
-* $Revision: 296 $
+* $Date: 2019-06-25 14:24:19 +0200 (wto, 25 cze 2019) $
+* $Revision: 424 $
 *H*****************************************************************************/
 
 /**
@@ -104,17 +104,17 @@ CtorTest g_foo;
 
 void testCtor()
 {
-	assertEq(g_ConstrCalls, 1);
-	assertEq(g_DescrCalls, 0);
+    assertEq(g_ConstrCalls, 1);
+    assertEq(g_DescrCalls, 0);
 
-	{
-		CtorTest foo2;
-		assertEq(g_ConstrCalls, 2);
-		assertEq(g_DescrCalls, 0);
-	}
+    {
+        CtorTest foo2;
+        assertEq(g_ConstrCalls, 2);
+        assertEq(g_DescrCalls, 0);
+    }
 
-	assertEq(g_ConstrCalls, 2);
-	assertEq(g_DescrCalls, 1);
+    assertEq(g_ConstrCalls, 2);
+    assertEq(g_DescrCalls, 1);
 
     CtorTest *ptr = new CtorTest;
     assertEq(g_ConstrCalls, 3);
@@ -127,17 +127,17 @@ void testCtor()
 
 void testExcept()
 {
-	bool catched = false;
-	try
-	{
-		throwException();
-	}
-	catch (std::exception &e)
-	{
+    bool catched = false;
+    try
+    {
+        throwException();
+    }
+    catch (std::exception &e)
+    {
         assertEq(strcmp(e.what(), "test"), 0);
-		catched = true;
-	}
-	assertEq(catched, true);
+        catched = true;
+    }
+    assertEq(catched, true);
 }
 
 void testVirtual()
@@ -181,8 +181,8 @@ extern "C" char* __cxa_demangle(const char* mangled_name, char* buf, size_t* n, 
 int main(void)
 {
     printf("Starting CPP support test.\n");
-	testCtor();
-	testExcept();
+    testCtor();
+    testExcept();
     testVirtual();
     testTpl();
 

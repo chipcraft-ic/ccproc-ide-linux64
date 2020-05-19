@@ -2,8 +2,8 @@
 *
 * Copyright (c) 2017 ChipCraft Sp. z o.o. All rights reserved
 *
-* $Date: 2018-10-08 11:52:38 +0200 (pon) $
-* $Revision: 320 $
+* $Date: 2020-03-01 10:46:31 +0100 (nie, 01 mar 2020) $
+* $Revision: 532 $
 *
 *  ----------------------------------------------------------------------
 * Redistribution and use in source and binary forms, with or without
@@ -45,9 +45,13 @@
 #include <string.h>
 #include <sys/time.h>
 #include <ccproc.h>
+#include <ccproc-icache.h>
 #include <ccproc-dcache.h>
-#include <ccproc-irq.h>
+#include <ccproc-csr.h>
+#include <ccproc-utils.h>
 #include <ccproc-mcore.h>
+#include <core_util.h>
+#include <pwd_util.h>
 #include "coremark.h"
 
 #if (MEM_METHOD==MEM_MALLOC)
@@ -271,10 +275,10 @@ void core_main(void)
 ee_u8 core_start_parallel(core_results *res)
 {
     unsigned core_index;
-    volatile unsigned i;
+    //volatile unsigned i;
 
     if (MULTITHREAD > MCORE_PTR->CORE_NUM){
-        ee_printf("ERROR! Not enough cores to perform benchmark!\n");
+        ee_printf("WARNING! Not enough cores to perform benchmark!\n");
         __asm__ __volatile__ ("jal end_loop");
     }
 
@@ -289,7 +293,9 @@ ee_u8 core_start_parallel(core_results *res)
            Postpone benchmarking to core_stop_parallel function */
 
         // Disable lockstep mode if present
-        MCORE_PTR->CORE_SHDN = MCORE_SHDN_KEY | 2;
+        if (lockstepDisable() == 0){
+            ee_printf("Disabling lockstep mode!\n");
+        }
 
         return 0;
     }
@@ -303,7 +309,7 @@ ee_u8 core_start_parallel(core_results *res)
         /* Start core */
         core_starting = 1;
         // flush write buffer
-        while (((DCACHE_PTR->STATUS)&DCACHE_STAT_BUSY)>0);
+        MEMORY_BARRIER();
         MCORE_PTR->CORE_ADDR[core_index] = (uint32_t)core_entrypoint;
         MCORE_PTR->CORE_RUN[core_index] = MCORE_RUN_KEY;
 

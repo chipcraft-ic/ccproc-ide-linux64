@@ -13,7 +13,11 @@ tail -f "$stdout_log" &
 tail_pid=$!
 sleep 0.2
 
-make -s ram-write
+if [ "$CCSDK_BOARD" == "ml605" ]; then
+    make -s ram-write
+else
+    make -s flash-write
+fi
 
 count=0
 while ! grep "$test_end_marker" "$stdout_log" > /dev/null

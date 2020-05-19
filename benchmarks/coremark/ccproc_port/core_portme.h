@@ -2,8 +2,8 @@
 *
 * Copyright (c) 2017 ChipCraft Sp. z o.o. All rights reserved
 *
-* $Date: 2018-09-07 16:07:40 +0200 (pią) $
-* $Revision: 296 $
+* $Date: 2019-05-16 23:26:56 +0200 (czw, 16 maj 2019) $
+* $Revision: 419 $
 *
 *  ----------------------------------------------------------------------
 * Redistribution and use in source and binary forms, with or without
@@ -83,8 +83,14 @@
 /* Configuration : USE_SPRAM
     Define to 1 to run all processing using SPRAM (used in multicore run).
 */
-#ifndef USE_SPRAM
-#define USE_SPRAM 1
+#ifdef _NO_SPRAM_MEMORY
+ #ifndef USE_SPRAM
+  #define USE_SPRAM 0
+ #endif
+#else
+ #ifndef USE_SPRAM
+  #define USE_SPRAM 1
+ #endif
 #endif
 
 /* Configuration : CORE_TICKS

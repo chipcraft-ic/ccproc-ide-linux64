@@ -5,29 +5,29 @@ TEMP_LOG   ?= /tmp/cctest-last.log
 
 Q ?= @
 
-ANSI_YELLOW := \e[93m\e[1m
-ANSI_RESET := \e[0m
+ANSI_COLOR          :=  \e[34;1m
+ANSI_RESET          :=  \e[0m
 
 # default
-all: tests ccsim
+all: tests
 
-.PHONY: all tests ccsim before_tests after_tests $(HW_TESTS) $(SIM_TESTS)
+.PHONY: all hw-tests sim-tests before_tests after_tests $(HW_TESTS) $(SIM_TESTS)
 
-tests: before_tests $(HW_TESTS) after_tests parse_logs
-sim-tests: before_tests $(SIM_TESTS) after_tests parse_logs
+hw-tests: before_tests $(HW_TESTS) after_tests parse_logs show_logs
+sim-tests: before_tests $(SIM_TESTS) after_tests parse_logs show_logs
 
 $(HW_TESTS):
-	@echo -ne "$(ANSI_YELLOW)Compiling $@$(ANSI_RESET)\n"
+	@echo -ne "$(ANSI_COLOR)Compiling $@$(ANSI_RESET)\n"
 	$(Q)$(MAKE) -C "../$@" clean all
-	@echo -ne "$(ANSI_YELLOW)Running $@$(ANSI_RESET)\n"
+	@echo -ne "$(ANSI_COLOR)Running $@$(ANSI_RESET)\n"
 	$(Q)cd "../$@" && $(CURDIR)/run-hw-test.sh "$(TEMP_LOG)"
 	$(Q)cat "$(TEMP_LOG)" >> "$(STDOUT_LOG)"
 
 $(SIM_TESTS):
-	@echo -ne "$(ANSI_YELLOW)Compiling $@$(ANSI_RESET)\n"
+	@echo -ne "$(ANSI_COLOR)Compiling $@$(ANSI_RESET)\n"
 	$(Q)$(MAKE) -C "../$(subst _ccsim,,$@)" clean
 	$(Q)$(MAKE) -C "../$(subst _ccsim,,$@)"
-	@echo -ne "$(ANSI_YELLOW)Running $@$(ANSI_RESET)\n"
+	@echo -ne "$(ANSI_COLOR)Running $@$(ANSI_RESET)\n"
 	$(Q)$(MAKE) -C "../$(subst _ccsim,,$@)" sim | tee -a "$(STDOUT_LOG)"
 
 before_tests:
@@ -46,3 +46,16 @@ parse_logs:
 	@echo -e "---------------------------------- SUMMARY -----------------------------------"   >> "$(STDOUT_LOG)"
 	@echo -e "------------------------------------------------------------------------------\n" >> "$(STDOUT_LOG)"
 	@./logParser.sh $(STDOUT_LOG)
+
+show_logs:
+	@echo -ne "$(ANSI_COLOR)\n------------------------------------------------------------------------------$(ANSI_RESET)\n"
+	@echo -ne "$(ANSI_COLOR)---------------------------------- SUMMARY -----------------------------------$(ANSI_RESET)\n"
+	@echo -ne "$(ANSI_COLOR)------------------------------------------------------------------------------\n\n$(ANSI_RESET)"
+	@tail -7 $(STDOUT_LOG)
+	@echo ""
+
+help:
+	@echo "Targets:"
+	@echo "  sim-test        - run regression tests with simulator"
+	@echo "  hw-tests        - run regression tests with hardware board"
+

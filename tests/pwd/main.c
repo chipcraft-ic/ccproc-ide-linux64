@@ -32,13 +32,13 @@
 * File Name : main.c
 * Author    : Krzysztof Marcinek
 * ******************************************************************************
-* $Date: 2018-10-08 11:52:38 +0200 (pon) $
-* $Revision: 320 $
+* $Date: 2019-06-25 14:24:19 +0200 (wto, 25 cze 2019) $
+* $Revision: 424 $
 *H*****************************************************************************/
 
 #include "board.h"
 #include <ccproc.h>
-#include <ccproc-irq.h>
+#include <ccproc-csr.h>
 #include <ccproc-pwd.h>
 #include <ccproc-mcore.h>
 #include <ccproc-dcache.h>
@@ -67,10 +67,10 @@ void isr5(void)
 
 void isr15(void){
     __lock_acquire(int_lock);
-    assertEq(IRQ_CTRL_PTR->ICORE_IRQF,1);
+    assertEq(CSR_CTRL_PTR->ICORE_IRQF,1);
     icore_flag_count++;
     __lock_release(int_lock);
-    IRQ_CTRL_PTR->ICORE_IRQF = 1;
+    CSR_CTRL_PTR->ICORE_IRQF = 1;
 }
 
 static void testSingleCoreShutDown(void){
@@ -82,8 +82,8 @@ static void testSingleCoreShutDown(void){
     AMBA_TIMER32_PTR(0)->IRQMAP = (1 << 5);
     AMBA_TIMER32_PTR(0)->IRQM = TIMER_OVFIE;
 
-    IRQ_CTRL_PTR->IRQ_MASK |= (1 << 5);
-    IRQ_CTRL_PTR->STATUS |= IRQ_STAT_CIEN;
+    CSR_CTRL_PTR->IRQ_MASK |= (1 << 5);
+    CSR_CTRL_PTR->STATUS |= CSR_STAT_CIEN;
 
     corePowerDown(1);
 
@@ -98,11 +98,11 @@ static void testSingleCoreShutDown(void){
 
 static void testCoresProc(){
 
-    IRQ_CTRL_PTR->IRQ_MASK |= (1 << INTER_CORE_IRQn) | (1 << EXCEPTION_IRQn); // IRQ 15 and exceptions
-    IRQ_CTRL_PTR->STATUS |= IRQ_STAT_CIEN;
+    CSR_CTRL_PTR->IRQ_MASK |= (1 << INTER_CORE_IRQn) | (1 << EXCEPTION_IRQn); // IRQ 15 and exceptions
+    CSR_CTRL_PTR->STATUS |= CSR_STAT_CIEN;
 
     while(power_down==0);
-    while(core_power_down < IRQ_STATUS_GET_CORE_ID(IRQ_CTRL_PTR->STATUS));
+    while(core_power_down < CSR_STATUS_GET_CORE_ID(CSR_CTRL_PTR->STATUS));
     core_power_down++;
 
     corePowerDown(1);
@@ -110,7 +110,7 @@ static void testCoresProc(){
     while(icore_flag_count != MCORE_PTR->CORE_NUM);
 
     // core powered up again
-    while(core_power_up < IRQ_STATUS_GET_CORE_ID(IRQ_CTRL_PTR->STATUS));
+    while(core_power_up < CSR_STATUS_GET_CORE_ID(CSR_CTRL_PTR->STATUS));
     core_power_up++;
 }
 
@@ -121,7 +121,7 @@ static void testMulticoreProc(){
 
     // wait a while and shutdown
     for(i=0;i<500;i++);
-    while(core_power_down < IRQ_STATUS_GET_CORE_ID(IRQ_CTRL_PTR->STATUS));
+    while(core_power_down < CSR_STATUS_GET_CORE_ID(CSR_CTRL_PTR->STATUS));
     core_power_down++;
     __lock_acquire(int_lock);
 
@@ -195,9 +195,9 @@ void testCores(void){
     else
         assertEq(1,1); // To mask unavailable function
 
-    // triger interrupt to wakeup core
+    // trigger interrupt to wakeup core
     for (k = 1; k < numOfCores; ++k){
-        IRQ_CTRL_PTR->ICORE_IRQTRIG = 1 << k;
+        CSR_CTRL_PTR->ICORE_IRQTRIG = 1 << k;
         for(i=0;i<500;++i);
     }
 
@@ -235,7 +235,9 @@ int main(void){
     if (MCORE_PTR->CORE_NUM > 1){
 
         // Disable lockstep mode if present
-        MCORE_PTR->CORE_SHDN = MCORE_SHDN_KEY | 2;
+        if (lockstepDisable() == 0){
+            printf("Disabling lockstep mode!\n");
+        }
 
         testSingleCoreShutDown();
         testShutDown();

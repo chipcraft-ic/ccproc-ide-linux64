@@ -32,8 +32,8 @@
 # File Name : core.S
 # Author    : Rafal Harabien
 # ******************************************************************************
-# $Date: 2018-10-08 11:52:38 +0200 (pon) $
-# $Revision: 320 $
+# $Date: 2019-05-16 23:26:56 +0200 (czw, 16 maj 2019) $
+# $Revision: 419 $
 #H******************************************************************************
 
 #include <specialreg.h>
@@ -53,6 +53,10 @@ core_entrypoint:
 
   jal common_start                    # common core init (startup.S)
   nop
+#ifdef _NO_SPRAM_MEMORY
+  jal __libc_impure_init              # initialize impure data
+  nop
+#endif
 
   add $sp, -16                        # call argument area
   jal core_main
@@ -69,10 +73,7 @@ core_entrypoint:
   sw $zero, DCACHE_STAT_OFFSET($t0)   # disable data cache
 
 write_buffer_wait:
-  lw $t1, DCACHE_STAT_OFFSET($t0)
-  andi $t1, $t1, DCACHE_BUSY_MASK
-  bgtz $t1, write_buffer_wait
-  nop
+  sync
 
   syscall SYSCALL_STOP_CORE
   nop

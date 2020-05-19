@@ -2,8 +2,8 @@
 *
 * Copyright (c) 2017 ChipCraft Sp. z o.o. All rights reserved
 *
-* $Date: 2019-02-15 14:56:41 +0100 (pią) $
-* $Revision: 383 $
+* $Date: 2019-11-14 09:00:25 +0100 (czw, 14 lis 2019) $
+* $Revision: 484 $
 *
 *  ----------------------------------------------------------------------
 * Redistribution and use in source and binary forms, with or without
@@ -63,11 +63,12 @@
 enum memory_layout_t
 {
     ROM_BASE        = 0x00000000,  /*!< ROM Memory base address                    */
+    ROM_EXT_BASE    = 0x10000000,  /*!< External ROM Memory base address           */
     SPRAM_BASE      = 0x20000000,  /*!< Scratch-Pad RAM Memory base address        */
-    PERIPH_BASE     = 0x30000000,  /*!< Core Peripherials base address             */
+    PERIPH_BASE     = 0x30000000,  /*!< Core Peripherals base address              */
     MCORE_BASE      = 0x30010000,  /*!< Multi-Core Controller base address         */
     PWD_BASE        = 0x30020000,  /*!< Power Controller base address              */
-    IRQ_CTRL_BASE   = 0x30030000,  /*!< Interrupt Controller base address          */
+    CSR_CTRL_BASE   = 0x30030000,  /*!< System Controller base address             */
     PERFCNT_BASE    = 0x30030200,  /*!< Performance Counter base address           */
     MPU_BASE        = 0x30032000,  /*!< MPU base address                           */
     GNSS_BASE       = 0x30040000,  /*!< GNSS Controller base address               */
@@ -76,6 +77,7 @@ enum memory_layout_t
     FFT_BASE        = 0x30080000,  /*!< FFT Controller base address                */
     MBIST_BASE      = 0x30090000,  /*!< Memory BIST Controller base address        */
     RAM_BASE        = 0x40000000,  /*!< RAM Memory base address                    */
+    RAM_EXT_BASE    = 0x50000000,  /*!< External RAM Memory base address           */
     AMBA_BASE       = 0x80000000,  /*!< AMBA Bus base address                      */
     DEBUG_BASE      = 0x90000000,  /*!< DEBUGGER base address                      */
 };
@@ -137,14 +139,16 @@ enum
  */
 
 /** Software Breakpoint */
-#define BREAKPOINT() __asm__ __volatile__(".set noreorder\n\tbreak 0,15\n\tnop\n\t.set reorder")
+#define BREAKPOINT() __asm__ __volatile__(".set noreorder\n\tbreak 15\n\tnop\n\t.set reorder")
 
 /** End Simulation */
 #define SYSCALLEXIT() __asm__ __volatile__(".set noreorder\n\tjal end_loop\n\tnop\n\t.set reorder")
 
+#ifndef _NO_SPRAM_MEMORY
 /** Puts variable into Scratchpad RAM */
 #define SPRAM_DATA __attribute__ ((section (".spram_data")))
 #define SPRAM_BSS  __attribute__ ((section (".spram_bss")))
+#endif /* _NO_SPRAM_MEMORY */
 /** @} */
 
 #endif /* __CCPROC_H */

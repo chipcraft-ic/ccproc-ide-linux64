@@ -2,8 +2,8 @@
 *
 * Copyright (c) 2017 ChipCraft Sp. z o.o. All rights reserved
 *
-* $Date: 2018-09-07 16:07:40 +0200 (pią) $
-* $Revision: 296 $
+* $Date: 2020-02-13 09:24:01 +0100 (czw, 13 lut 2020) $
+* $Revision: 523 $
 *
 *  ----------------------------------------------------------------------
 * Redistribution and use in source and binary forms, with or without
@@ -55,10 +55,15 @@ TEST_COUNTERS_MODIFIERS unsigned g_failedTests, g_totalTests;
 #define TEST_CONTEXT_VARS // empty
 #endif
 
+extern int DebugPrintf(const char* format, ...);
+#ifndef TEST_PRINTF
+#define TEST_PRINTF printf
+#endif
+
 #define ok(expr, fmt, ...) \
     do { \
         if (!(expr)) { \
-            printf("(%s:%u" TEST_CONTEXT_FMT ") Test failed: " fmt, __FILE__, __LINE__ TEST_CONTEXT_VARS, ##__VA_ARGS__); \
+            TEST_PRINTF("(%s:%u" TEST_CONTEXT_FMT ") Test failed: " fmt, __FILE__, __LINE__ TEST_CONTEXT_VARS, ##__VA_ARGS__); \
             ++g_failedTests; \
         } \
         ++g_totalTests; \
@@ -89,7 +94,7 @@ TEST_COUNTERS_MODIFIERS unsigned g_failedTests, g_totalTests;
 static inline void printTestSummary()
 {
     unsigned succeededTests = g_totalTests - g_failedTests;
-    printf("\n\n%u/%u tests succeeded, %u tests failed!\n\n", succeededTests, g_totalTests, g_failedTests);
+    TEST_PRINTF("\n\n%u/%u tests succeeded, %u tests failed!\n\n", succeededTests, g_totalTests, g_failedTests);
 }
 
 // deprecated names

@@ -2,8 +2,8 @@
 *
 * Copyright (c) 2017 ChipCraft Sp. z o.o. All rights reserved
 *
-* $Date: 2018-09-07 16:07:40 +0200 (pią) $
-* $Revision: 296 $
+* $Date: 2019-12-27 16:05:17 +0100 (pią, 27 gru 2019) $
+* $Revision: 494 $
 *
 *  ----------------------------------------------------------------------
 * Redistribution and use in source and binary forms, with or without
@@ -126,6 +126,7 @@ enum
     DMA_CTRL_TRU_SHIFT  = 4, /*!< Transfer Unit Offset  */
 };
 
+/** DMA Trunsfer Units */
 typedef enum
 {
     DMA_TRU32  = 0x0,  /*!< Transfer Unit Size - 32 bits (default) */
@@ -178,9 +179,9 @@ enum
  * @name Info Register helper macros
  * @{
  */
-#define DMA_GET_DOWNSTREAM_NUM(dma_info)  ((dma_info & DMA_INFO_DOWNSTEAM_MASK) >> DMA_INFO_DOWNSTREAM_SHIFT) /*!< DMA Downstream Channels Number */
-#define DMA_GET_UPSTREAM_NUM(dma_info)    ((dma_info & DMA_INFO_UPSTREAM_MASK)  >> DMA_INFO_UPSTREAM_SHIFT)   /*!< DMA Upstream Number */
-#define DMA_GET_PERIPH_NUM(dma_info)      ((dma_info & DMA_INFO_PERIPH_MASK)    >> DMA_INFO_PERIPH_SHIFT)     /*!< DMA Peripherals Number */
+#define DMA_GET_DS_NUM(dma_info)      ((dma_info & DMA_INFO_DS_MASK)        >> DMA_INFO_DS_SHIFT)     /*!< DMA Downstream Channels Number */
+#define DMA_GET_US_NUM(dma_info)      ((dma_info & DMA_INFO_US_MASK)        >> DMA_INFO_US_SHIFT)     /*!< DMA Upstream Number            */
+#define DMA_GET_PERIPH_NUM(dma_info)  ((dma_info & DMA_INFO_PERIPH_MASK)    >> DMA_INFO_PERIPH_SHIFT) /*!< DMA Peripherals Number         */
 /** @} */
 
 /** @} */

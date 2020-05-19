@@ -2,8 +2,8 @@
 *
 * Copyright (c) 2017 ChipCraft Sp. z o.o. All rights reserved
 *
-* $Date: 2019-01-30 15:24:26 +0100 (śro) $
-* $Revision: 381 $
+* $Date: 2019-12-27 16:05:17 +0100 (pią, 27 gru 2019) $
+* $Revision: 494 $
 *
 *  ----------------------------------------------------------------------
 * Redistribution and use in source and binary forms, with or without
@@ -46,6 +46,7 @@
 
 #define STDIO_UART              0
 #define STDIO_BAUDRATE          115200
+#define STDIO_RTSCTS            0
 
 #define TIME_SOURCE             TIMER32
 #define TIME_SOURCE_TIMER_ID    0

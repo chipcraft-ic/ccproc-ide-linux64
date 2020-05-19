@@ -2,8 +2,8 @@
 *
 * Copyright (c) 2018 ChipCraft Sp. z o.o. All rights reserved
 *
-* $Date: 2018-09-29 13:25:59 +0200 (sob) $
-* $Revision: 312 $
+* $Date: 2019-10-03 19:22:07 +0200 (czw, 03 paź 2019) $
+* $Revision: 474 $
 *
 *  ----------------------------------------------------------------------
 * Redistribution and use in source and binary forms, with or without
@@ -40,23 +40,27 @@
  */
 #pragma once
 
-/* allowed TIME_SOURCE values */
-#define RTC        1   /* RTC clock as time source           */
-#define TIMER32    2   /* 32-bit timer  as time source       */
-#define TIMER16    3   /* 16-bit timer  as time source       */
-#define SYSTICK    4   /* Systick Timer as time source       */
-#define PERFCNT    5   /* Performance Counter as time source */
-#define NONE       6   /* No time source                     */
+/** allowed TIME_SOURCE values */
+#define RTC        1   /*!< RTC clock as time source           */
+#define TIMER32    2   /*!< 32-bit timer as time source        */
+#define TIMER16    3   /*!< 16-bit timer as time source        */
+#define SYSTICK    4   /*!< Systick Timer as time source       */
+#define PERFCNT    5   /*!< Performance Counter as time source */
+#define NONE       6   /*!< No time source                     */
 
-/* allowed TIME_SOURCE values message sting */
+/** allowed TIME_SOURCE values message sting */
 #define ALLOWED_TIME_SOURCE "Allowed TIME_SOURCE values: RTC TIMER32 TIMER16 SYSTICK PERFCNT NONE"
 
-/* helper macro to expand define as string */
+/** helper macro to expand define as string */
 #define STR_HELPER(x) #x
+/** helper macro to expand define as string */
 #define STR(x) STR_HELPER(x)
 
-/* helper macro for emiting compiler memory barrier */
-#define COMPILER_BARRIER() __asm__ __volatile__ ("" ::: "memory")
+/** helper macro for emitting compiler memory barrier */
+static inline void __attribute__((nomips16)) MEMORY_BARRIER(void) { __asm__ __volatile__ (".word 0x0f" ::: "memory"); }
 
-/* helper macro for emiting nop instruction */
+/** helper macro for emitting nop instruction */
 #define NOP() __asm__ __volatile__ ("nop")
+
+/** helper macro for clearing the pipeline */
+#define CLEAR_PIPELINE() __asm__ __volatile__ ("nop;nop;nop;nop;nop;nop;")

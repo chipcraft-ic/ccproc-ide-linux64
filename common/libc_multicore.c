@@ -32,17 +32,24 @@
 * File Name : libc_multicore.c
 * Author    : Rafal Harabien
 * ******************************************************************************
-* $Date: 2018-10-08 11:52:38 +0200 (pon) $
-* $Revision: 320 $
+* $Date: 2020-03-23 18:54:21 +0100 (pon, 23 mar 2020) $
+* $Revision: 542 $
 *H*****************************************************************************/
 
 #include <sys/reent.h>
 #include <sys/lock.h>
 #include <ccproc.h>
-#include <ccproc-irq.h>
+#include <ccproc-csr.h>
+#include <ccproc-mcore.h>
 #include <ccproc-utils.h>
 
-static struct _reent SPRAM_DATA g_spramImpureData = _REENT_INIT(g_spramImpureData);
+#ifndef _NO_SPRAM_MEMORY
+  static struct _reent SPRAM_DATA g_spramImpureData = _REENT_INIT(g_spramImpureData);
+#else
+  static struct _reent * g_spramImpureData_array;
+#endif
+
+#ifndef NO_DEFAULT_LOCK
 
 static inline int __attribute__((nomips16)) __ll(int *ptr)
 {
@@ -88,7 +95,7 @@ void __libc_lock_close_recursive(_LOCK_RECURSIVE_T *lock)
 int __libc_lock_try_acquire(_LOCK_T *lock)
 {
     /* 0 is used for free lock so add 1 to core ID */
-    int currentCore = IRQ_STATUS_GET_CORE_ID(IRQ_CTRL_PTR->STATUS) + 1;
+    int currentCore = CSR_STATUS_GET_CORE_ID(CSR_CTRL_PTR->STATUS) + 1;
     int lockCore = __ll(&lock->core);
     if (lockCore != 0)
     {
@@ -98,7 +105,7 @@ int __libc_lock_try_acquire(_LOCK_T *lock)
     /* lock is free - try acquire */
     if (!__sc(&lock->core, currentCore))
     {
-        /* lock has been acquired by different core or exception occured */
+        /* lock has been acquired by different core or exception occurred */
         return -1;
     }
     /* Lock acquired successfully */
@@ -108,14 +115,14 @@ int __libc_lock_try_acquire(_LOCK_T *lock)
 int __libc_lock_try_acquire_recursive(_LOCK_RECURSIVE_T *lock)
 {
     /* 0 is used for free lock so add 1 to core ID */
-    int currentCore = IRQ_STATUS_GET_CORE_ID(IRQ_CTRL_PTR->STATUS) + 1;
+    int currentCore = CSR_STATUS_GET_CORE_ID(CSR_CTRL_PTR->STATUS) + 1;
     int lockCore = __ll(&lock->core);
     if (!lockCore)
     {
         /* lock is free - try acquire */
         if (!__sc(&lock->core, currentCore))
         {
-            /* lock has been acquired by different core or exception occured */
+            /* lock has been acquired by different core or exception occurred */
             return -1;
         }
     }
@@ -126,7 +133,7 @@ int __libc_lock_try_acquire_recursive(_LOCK_RECURSIVE_T *lock)
     }
     /* Make sure count is read after acquiring the lock by issuing
        a compiler memory barrier */
-    COMPILER_BARRIER();
+    MEMORY_BARRIER();
     /* Current core has exclusive access - update recursion counter */
     ++lock->count;
     return 0;
@@ -150,7 +157,7 @@ void __libc_lock_release(_LOCK_T *lock)
 void __libc_lock_release_recursive(_LOCK_RECURSIVE_T *lock)\
 {
     /* Assume lock was properly acquired and decrement recursion counter */
-    //int currentCore = IRQ_STATUS_GET_CORE_ID(IRQ_CTRL_PTR->STATUS) + 1;
+    //int currentCore = CSR_STATUS_GET_CORE_ID(CSR_CTRL_PTR->STATUS) + 1;
     //ASSERT(g_mlock == currentCore);
     /* Decrement the counter */
     --lock->count;
@@ -159,13 +166,36 @@ void __libc_lock_release_recursive(_LOCK_RECURSIVE_T *lock)\
     {
         /* Make sure count is written before releasing the lock by issuing
            a compiler memory barrier */
-        COMPILER_BARRIER();
+        MEMORY_BARRIER();
         /* Release the lock */
         lock->core = 0;
     }
 }
 
+#endif
+
+#ifndef _NO_SPRAM_MEMORY
 struct _reent * __getreent(void)
 {
     return &g_spramImpureData;
 }
+#else
+
+extern void *_sbrk_r(struct _reent *r, ptrdiff_t incr);
+
+struct _reent * __getreent(void)
+{
+    return &g_spramImpureData_array[CSR_STATUS_GET_CORE_ID(CSR_CTRL_PTR->STATUS)];
+}
+
+void __libc_impure_alloc(void)
+{
+    g_spramImpureData_array = (struct _reent *)((int)(_sbrk_r(0, (MCORE_PTR->CORE_NUM * sizeof(struct _reent))+3)+3)&(~3));
+}
+
+void __libc_impure_init(void)
+{
+    _REENT_INIT_PTR(__getreent());
+}
+
+#endif

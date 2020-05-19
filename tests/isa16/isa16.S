@@ -32,8 +32,8 @@
 # File Name : isa16.S
 # Author    : Krzysztof Marcinek
 # ******************************************************************************
-# $Date: 2018-12-04 14:27:17 +0100 (wto) $
-# $Revision: 362 $
+# $Date: 2019-08-21 14:53:23 +0200 (śro, 21 sie 2019) $
+# $Revision: 445 $
 #H******************************************************************************
 
 #include <specialreg.h>
@@ -58,6 +58,9 @@ exception_ret_addr:
 g_failedTests:
   .word 0
 g_totalTests:
+  .word 0
+
+_lsdata:
   .word 0
 
 .text
@@ -164,14 +167,39 @@ g_totalTests:
 
 intro_str:
   .asciiz "Starting ISA16 architecture tests...\n"
-
 noisa16_str:
   .asciiz "\nNo ISA16 found!\n\n"
+icache_str:
+  .asciiz "No icache test.\n"
+dcache_str:
+  .asciiz "No dcache test.\n"
 
 .text
 
 .global main
 main:
+
+#ifdef NO_ICACHE
+  lui $t0, 0x3007   # cache controller base
+  lw $t1, 0($t0)    # icache status
+  li $t2, 0xfffffffe
+  and $t1, $t1, $t2 # disable icache
+  sw $t1, 0($t0)
+  la $a0, icache_str
+  jal printf
+  nop
+#endif
+#ifdef NO_DCACHE
+  lui $t0, 0x3007   # cache controller base
+  lw $t1, 8192($t0) # dcache status
+  li $t2, 0xfffffffe
+  and $t1, $t1, $t2 # disable icache
+  sw $t1, 8192($t0)
+  la $a0, dcache_str
+  jal printf
+  nop
+#endif
+
   # Enable exceptions
   lui $t0, 0x3003  # IRQ Controller
   lw $t1, 0($t0)   # read STATUS
@@ -411,7 +439,7 @@ test_break:
 .insn
   test_begin "Testing BREAK"
 
-  expect_exception_begin IRQ_EXC_BRK, 3
+  expect_exception_begin CSR_EXC_BRK, 3
   break 3
   expect_exception_end
 
@@ -569,8 +597,10 @@ jalx_return:
 test_sblb:
   test_begin "Testing SB/LB"
 
-  li $s1, 0x2000
-  sll $s1, 16
+  li $s1, %hi(_lsdata)
+  sll $s1, $s1, 16
+  li $v0, %lo(_lsdata)
+  or $s1, $v0
 
   li $v0, 0xFFFF
   sll $v0, $v0, 16
@@ -588,8 +618,10 @@ test_sblb:
 test_lbu:
   test_begin "Testing LBU"
 
-  li $s1, 0x2000
-  sll $s1, 16
+  li $s1, %hi(_lsdata)
+  sll $s1, $s1, 16
+  li $v0, %lo(_lsdata)
+  or $s1, $v0
 
   lbu $s0, 2($s1)
   cmpi $s0, 0xAA
@@ -599,8 +631,10 @@ test_lbu:
 test_shlh:
   test_begin "Testing SH/LH"
 
-  li $s1, 0x2000
-  sll $s1, 16
+  li $s1, %hi(_lsdata)
+  sll $s1, $s1, 16
+  li $v0, %lo(_lsdata)
+  or $s1, $v0
 
   li $v0, 0xAA55
   li $v1, 0xFFFF
@@ -615,11 +649,11 @@ test_shlh:
   btnez fail
   inc_var g_totalTests
 
-  expect_exception_begin IRQ_EXC_LE
+  expect_exception_begin CSR_EXC_LE
   lh $s0, 1($s1)
   expect_exception_end
   nop
-  expect_exception_begin IRQ_EXC_SE
+  expect_exception_begin CSR_EXC_SE
   sh $s1, 1($s1)
   expect_exception_end
   nop
@@ -627,15 +661,17 @@ test_shlh:
 test_lhu:
   test_begin "Testing LHU"
 
-  li $s1, 0x2000
-  sll $s1, 16
+  li $s1, %hi(_lsdata)
+  sll $s1, $s1, 16
+  li $v0, %lo(_lsdata)
+  or $s1, $v0
 
   lhu $s0, 2($s1)
   cmpi $s0, 0xAA55
   btnez fail
   inc_var g_totalTests
 
-  expect_exception_begin IRQ_EXC_LE
+  expect_exception_begin CSR_EXC_LE
   lhu $s0, 1($s1)
   expect_exception_end
   nop
@@ -656,8 +692,10 @@ test_li:
 test_swlw:
   test_begin "Testing SW/LW"
 
-  li $s1, 0x2000
-  sll $s1, 16
+  li $s1, %hi(_lsdata)
+  sll $s1, $s1, 16
+  li $v0, %lo(_lsdata)
+  or $s1, $v0
 
   li $v0, 0x55AA
   li $v1, 0x55AA
@@ -673,27 +711,27 @@ test_swlw:
   btnez fail
   inc_var g_totalTests
 
-  expect_exception_begin IRQ_EXC_LE
+  expect_exception_begin CSR_EXC_LE
   lw $s0, 1($s1)
   expect_exception_end
   nop
-  expect_exception_begin IRQ_EXC_LE
+  expect_exception_begin CSR_EXC_LE
   lw $s0, 2($s1)
   expect_exception_end
   nop
-  expect_exception_begin IRQ_EXC_LE
+  expect_exception_begin CSR_EXC_LE
   lw $s0, 3($s1)
   expect_exception_end
   nop
-  expect_exception_begin IRQ_EXC_SE
+  expect_exception_begin CSR_EXC_SE
   sw $s1, 1($s1)
   expect_exception_end
   nop
-  expect_exception_begin IRQ_EXC_SE
+  expect_exception_begin CSR_EXC_SE
   sw $s1, 2($s1)
   expect_exception_end
   nop
-  expect_exception_begin IRQ_EXC_SE
+  expect_exception_begin CSR_EXC_SE
   sw $s1, 3($s1)
   expect_exception_end
   nop
@@ -701,8 +739,10 @@ test_swlw:
 test_lwpc:
   test_begin "Testing LW (PC relative)"
 
-  li $s1, 0x2000
-  sll $s1, 16
+  li $s1, %hi(_lsdata)
+  sll $s1, $s1, 16
+  li $v0, %lo(_lsdata)
+  or $s1, $v0
 
 .align 4
   jal test_lwpc1
@@ -1152,7 +1192,7 @@ exception_handler:
   sw $t1, ($t0)
 
   # Handle break code
-  li $t9, IRQ_EXC_BRK
+  li $t9, CSR_EXC_BRK
   bne $k0, $t9, .exit_exc
   nop
 .break_exc:
@@ -1182,7 +1222,7 @@ exception_handler:
   # check branch delay slot bit
   inc_var g_totalTests
   mfc0 $k0, C0_STATUS # read EXC_STATUS
-  lui $a3, IRQ_BD_MASK_HI
+  lui $a3, CSR_BD_MASK_HI
   and $k0, $k0, $a3
   bne $k0, $zero, mi32fail
   nop

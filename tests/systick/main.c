@@ -32,13 +32,14 @@
 * File Name : main.c
 * Author    : Rafal Harabien
 * ******************************************************************************
-* $Date: 2018-09-07 16:07:40 +0200 (pią) $
-* $Revision: 296 $
+* $Date: 2019-04-23 10:51:59 +0200 (wto, 23 kwi 2019) $
+* $Revision: 412 $
 *H*****************************************************************************/
 
 #include "board.h"
 #include <ccproc.h>
-#include <ccproc-irq.h>
+#include <ccproc-csr.h>
+#include <ccproc-icache.h>
 #include <ccproc-amba.h>
 #include <ccproc-amba-systick.h>
 #include <stdio.h>
@@ -143,8 +144,15 @@ int main(void)
 {
     printf("\nStarting SysTick test\n");
 
-    IRQ_CTRL_PTR->IRQ_MASK = 1 | (1 << 3) | (1 << 4); // enable exceptions, IRQ3 & IRQ4
-    IRQ_CTRL_PTR->STATUS |= IRQ_STAT_CIEN;
+    CSR_CTRL_PTR->IRQ_MASK = 1 | (1 << 3) | (1 << 4); // enable exceptions, IRQ3 & IRQ4
+    CSR_CTRL_PTR->STATUS |= CSR_STAT_CIEN;
+
+    if ((CSR_CTRL_PTR->CPU_INFO_0 & CPU_ICACHE) && (((ICACHE_PTR->INFO & ICACHE_IMPL_MASK) >> ICACHE_IMPL_SHIFT) == ICACHE_IMPL_FT))
+    {
+        printf("Fault-tolerant instruction cache detected. Skipping test.\n"); // error injection can impact timing
+        printTestSummary();
+        return 0;
+    }
 
     if (AMBA_APB0_CFG_PTR->INFO_0 & AMBA_STT)
         testSysTick();
@@ -155,3 +163,4 @@ int main(void)
 
     return 0;
 }
+

@@ -32,14 +32,14 @@
 * File Name : main.c
 * Author    : Krzysztof Marcinek
 * ******************************************************************************
-* $Date: 2018-10-25 10:58:01 +0200 (czw) $
-* $Revision: 324 $
+* $Date: 2020-02-18 18:08:25 +0100 (wto, 18 lut 2020) $
+* $Revision: 526 $
 *H*****************************************************************************/
 
 #include "board.h"
 #include <ccproc.h>
 #include <ccproc-utils.h>
-#include <ccproc-irq.h>
+#include <ccproc-csr.h>
 #include <ccproc-jtag.h>
 #include <ccproc-perfcnt.h>
 #include <ccproc-amba.h>
@@ -57,11 +57,11 @@
 
 #ifdef _BOARD_SUPPORTED_
 
-#define XTAL_FREQ 16000000
+#define XTAL_FREQ 16368000
 #define RTC_FREQ  32768
 #define FREQ_DEV  10
 
-#define N_CASE 10
+#define N_CASE 9
 #define M_CASE 1
 
 #define BIT(n) (1 << (n))
@@ -70,12 +70,19 @@ uint32_t expectIrq1 = 0;
 uint32_t enteredIrqs = 0;
 uint32_t sumIrqs = 0;
 
+extern void board_init(void);
+
+void waitLock(){
+    while ((CFG_REGS_PTR->CFGREG_COREFREQ_STAT & CFGREG_COREFREQ_STAT_PLL_LOCK_MASK) == 0);
+}
+
 void isr1(void){
     assertTrue(expectIrq1);
     expectIrq1 = 0;
     enteredIrqs++;
     CFG_REGS_PTR->CFGREG_UNLOCK = 0xA55A;
-    CFG_REGS_PTR->CFGREG_COREFREQ_PLL &= ~(1 << CFGREG_COREFREQ_PLL_PLL_TEST_SHIFT);
+    CFG_REGS_PTR->CFGREG_COREFREQ_PLL &= ~(1 << CFGREG_COREFREQ_PLL_TEST_SHIFT);
+    waitLock();
 }
 
 void startRTC(void){
@@ -106,12 +113,14 @@ void testPLL(void){
 
     /* Configure PLL */
     CFG_REGS_PTR->CFGREG_UNLOCK = 0xA55A;
-    CFG_REGS_PTR->CFGREG_COREFREQ_PLL = CFGREG_COREFREQ_PLL_PLL_EN_MASK | (5 << CFGREG_COREFREQ_PLL_PLL_N_SHIFT);
-    while ((CFG_REGS_PTR->CFGREG_COREFREQ_STAT & CFGREG_COREFREQ_STAT_PLL_LOCK_MASK) == 0);
+    CFG_REGS_PTR->CFGREG_COREFREQ_PLL = CFGREG_COREFREQ_PLL_EN_MASK | (5 << CFGREG_COREFREQ_PLL_N_SHIFT);
+    waitLock();
 
     /* Switch to PLL */
     CFG_REGS_PTR->CFGREG_UNLOCK = 0xA55A;
-    CFG_REGS_PTR->CFGREG_COREFREQ_CLK = 2 << CFGREG_COREFREQ_CLK_CLK_CORE_SEL_SHIFT;
+    CFG_REGS_PTR->CFGREG_COREFREQ_CLK = 2 << CFGREG_COREFREQ_CLK_CORE_SEL_SHIFT;
+
+    printf("\nTesting PLL coefficients\n");
 
     for (ref_sel=0; ref_sel<2;ref_sel++){
 
@@ -121,12 +130,12 @@ void testPLL(void){
 
             //printf("Testing N = %d\n",(int)i);
             val = CFG_REGS_PTR->CFGREG_COREFREQ_PLL;
-            val &= ~CFGREG_COREFREQ_PLL_PLL_N_MASK;
-            val &= ~CFGREG_COREFREQ_PLL_PLL_M_MASK;
-            val |= (i << CFGREG_COREFREQ_PLL_PLL_N_SHIFT) | (ref_sel << CFGREG_COREFREQ_PLL_REF_SEL_SHIFT);
+            val &= ~CFGREG_COREFREQ_PLL_N_MASK;
+            val &= ~CFGREG_COREFREQ_PLL_M_MASK;
+            val |= (i << CFGREG_COREFREQ_PLL_N_SHIFT) | (ref_sel << CFGREG_COREFREQ_PLL_REF_SEL_SHIFT);
             CFG_REGS_PTR->CFGREG_UNLOCK = 0xA55A;
             CFG_REGS_PTR->CFGREG_COREFREQ_PLL = val;
-            while ((CFG_REGS_PTR->CFGREG_COREFREQ_STAT & CFGREG_COREFREQ_STAT_PLL_LOCK_MASK) == 0);
+            waitLock();
 
             start_perf = PERFCNT_PTR->CYCLE_LO;
             while (AMBA_RTC_PTR->STATUS & RTC_STAT_BUSY);
@@ -143,18 +152,18 @@ void testPLL(void){
             pll_time = (stop_perf-start_perf) * (1000000000/pll_freq);
 
             //printf("pll_time = %d, rtc_time = %d\n",(int)pll_time,(int)rtc_time);
-            ok(pll_time > (rtc_time - rtc_time/FREQ_DEV) && pll_time < (rtc_time + rtc_time/FREQ_DEV), "Expected system frequency %uHz", (unsigned int)pll_freq);
+            ok(pll_time > (rtc_time - rtc_time/FREQ_DEV) && pll_time < (rtc_time + rtc_time/FREQ_DEV), "Expected system frequency %uHz\n", (unsigned int)pll_freq);
 
         }
 
         // Test one M case
         val = CFG_REGS_PTR->CFGREG_COREFREQ_PLL;
-        val &= ~CFGREG_COREFREQ_PLL_PLL_N_MASK;
-        val &= ~CFGREG_COREFREQ_PLL_PLL_M_MASK;
-        val |= (N_CASE << CFGREG_COREFREQ_PLL_PLL_N_SHIFT) | (M_CASE << CFGREG_COREFREQ_PLL_PLL_M_SHIFT);
+        val &= ~CFGREG_COREFREQ_PLL_N_MASK;
+        val &= ~CFGREG_COREFREQ_PLL_M_MASK;
+        val |= (N_CASE << CFGREG_COREFREQ_PLL_N_SHIFT) | (M_CASE << CFGREG_COREFREQ_PLL_M_SHIFT);
         CFG_REGS_PTR->CFGREG_UNLOCK = 0xA55A;
         CFG_REGS_PTR->CFGREG_COREFREQ_PLL = val;
-        while ((CFG_REGS_PTR->CFGREG_COREFREQ_STAT & CFGREG_COREFREQ_STAT_PLL_LOCK_MASK) == 0);
+        waitLock();
 
         start_perf = PERFCNT_PTR->CYCLE_LO;
         while (AMBA_RTC_PTR->STATUS & RTC_STAT_BUSY);
@@ -171,19 +180,21 @@ void testPLL(void){
         pll_time = (stop_perf-start_perf) * (1000000000/pll_freq);
 
         //printf("pll_time = %d, rtc_time = %d\n",(int)pll_time,(int)rtc_time);
-        ok(pll_time > (rtc_time - rtc_time/FREQ_DEV) && pll_time < (rtc_time + rtc_time/FREQ_DEV), "Expected system frequency %uHz", (unsigned int)pll_freq);
+        ok(pll_time > (rtc_time - rtc_time/FREQ_DEV) && pll_time < (rtc_time + rtc_time/FREQ_DEV), "Expected system frequency %uHz\n", (unsigned int)pll_freq);
 
     }
 
-    // Test interrupt on PLL fail
-    IRQ_CTRL_PTR->IRQ_MASK = BIT(1);
-    IRQ_CTRL_PTR->STATUS |= IRQ_STAT_CIEN;
+    board_init();
+
+    printf("\nTesting PLL fail\n");
+    CSR_CTRL_PTR->IRQ_MASK = BIT(1);
+    CSR_CTRL_PTR->STATUS |= CSR_STAT_CIEN;
     expectIrq1 = 1;
     sumIrqs++;
-    CFG_REGS_PTR->CFGREG_UNLOCK = 0xA55A;
+    CFG_REGS_PTR->CFGREG_UNLOCK = CFGREG_UNLOCK_DEF;
     CFG_REGS_PTR->CFGREG_IRQMAP = BIT(1);
-    CFG_REGS_PTR->CFGREG_UNLOCK = 0xA55A;
-    CFG_REGS_PTR->CFGREG_COREFREQ_PLL |= 1 << CFGREG_COREFREQ_PLL_PLL_TEST_SHIFT;
+    CFG_REGS_PTR->CFGREG_UNLOCK = CFGREG_UNLOCK_DEF;
+    CFG_REGS_PTR->CFGREG_COREFREQ_PLL |= 1 << CFGREG_COREFREQ_PLL_TEST_SHIFT;
 
     // wait for a while
     for (j=0;j<20000;j++);

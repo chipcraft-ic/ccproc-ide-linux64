@@ -32,13 +32,15 @@
 * File Name : main.c
 * Author    : Maciej Plasota
 * ******************************************************************************
-* $Date: 2018-09-07 16:07:40 +0200 (pią) $
-* $Revision: 296 $
+* $Date: 2020-03-01 10:46:31 +0100 (nie, 01 mar 2020) $
+* $Revision: 532 $
 *H*****************************************************************************/
 
 #include "board.h"
 #include <ccproc.h>
-#include <ccproc-irq.h>
+#include <ccproc-csr.h>
+#include <ccproc-dcache.h>
+#include <ccproc-icache.h>
 #include <ccproc-amba.h>
 #include <ccproc-amba-spi.h>
 #include <stdio.h>
@@ -97,13 +99,6 @@ void isr1(void)
     }
 }
 
-static unsigned long long getusec()
-{
-    struct timeval tv;
-    gettimeofday(&tv, NULL);
-    return tv.tv_sec*1000000ULL + tv.tv_usec;
-}
-
 static uint32_t getValueForFrameLength(uint32_t value, amba_spi_flen_t frameLength)
 {
     switch(frameLength)
@@ -127,109 +122,6 @@ static uint32_t getValueForFrameLength(uint32_t value, amba_spi_flen_t frameLeng
             break;
     }
     return value;
-}
-
-/* TODO: inaccurate results over different clock/periph frequencies, need to be rewritten */
-/*static uint32_t computeTransmissionTimeFromBaudRate(uint32_t numFrames, amba_spi_flen_t frameLength, uint32_t baudRate)
-{
-     return ((1000000 * 8 * numFrames * SPI_FRAME_LENGTH_IN_BYTES(frameLength))/baudRate);
-}*/
-
-/* TODO: inaccurate results over different clock/periph frequencies, need to be rewritten */
-/*static uint32_t computeBaudRateFromTransmissionTime(uint32_t numFrames, amba_spi_flen_t frameLength, uint64_t transmissionTime)
-{
-    return ((1000000 * 8 * numFrames * SPI_FRAME_LENGTH_IN_BYTES(frameLength))/ transmissionTime);
-}*/
-
-/* TODO: inaccurate results over different clock/periph frequencies, need to be rewritten */
-static void compareExpectedAndAchievedBaudRate(uint32_t acceptableDeviationPercents, uint32_t numFrames, amba_spi_flen_t frameLength, uint32_t baudRate ,uint64_t transmissionTime)
-{
-    /*
-    uint64_t delta_min;
-    uint64_t delta_max;
-    delta_min = delta_max = computeTransmissionTimeFromBaudRate(numFrames, frameLength, baudRate);
-    delta_min = delta_min - ((delta_min * acceptableDeviationPercents) / 100);
-    delta_max = delta_max + ((delta_max * acceptableDeviationPercents) / 100);
-    ok((transmissionTime > delta_min) && (transmissionTime < delta_max), "Expected baudrate %u, measured %u", (unsigned int)baudRate, (unsigned int)computeBaudRateFromTransmissionTime(numFrames, frameLength, transmissionTime));
-    */
-}
-
-static void interruptHandler_TDRE_RDRF_TXC(uint32_t status)
-{
-    static enum {TRANSMISSION_START, TRANSMISSION_IN_PROGRESS, TRANSMISSION_COMPLETING, TRANSMISSION_COMPLETE} current_state = TRANSMISSION_START;
-    static uint32_t sent_data_index = 0;
-    static uint32_t received_data_index = 0;
-    switch(current_state)
-    {
-        case TRANSMISSION_START:
-        {
-            g_irq_tx_in_progress = true;
-            assertFalse(spi_status_is_transmission_complete(status));
-            assertFalse(spi_status_is_data_received(status));
-            assertFalse(spi_status_is_received_data_overran(status));
-            assertTrue(spi_status_is_ready_for_data_to_send(status));
-            spi_put(gp_spi, g_data_to_send_array[sent_data_index]);
-            if(sent_data_index++)
-            {
-                assertTrue(spi_status_is_transmitting(status));
-                current_state = TRANSMISSION_IN_PROGRESS;
-            }
-            else
-            {
-                assertFalse(spi_status_is_transmitting(status));
-                current_state = TRANSMISSION_START;
-            }
-            break;
-        }
-        case TRANSMISSION_IN_PROGRESS:
-        {
-            g_data_received_array[received_data_index++] = spi_get(gp_spi);
-            g_irq_tx_in_progress = true;
-            assertFalse(spi_status_is_transmission_complete(status));
-            assertTrue(spi_status_is_transmitting(status));
-            assertTrue(spi_status_is_data_received(status));
-            assertFalse(spi_status_is_received_data_overran(status));
-            assertTrue(spi_status_is_ready_for_data_to_send(status));
-            if(sent_data_index == ARRAY_SIZE(g_data_to_send_array))
-            {
-                //need to disable TRDE interrupt or else it will be raised continuously
-                spi_disable_TDRE_interrupt(gp_spi);
-                current_state = TRANSMISSION_COMPLETING;
-            }
-            else
-            {
-                current_state = TRANSMISSION_IN_PROGRESS;
-            }
-            spi_put(gp_spi, g_data_to_send_array[sent_data_index++]);
-            break;
-        }
-        case TRANSMISSION_COMPLETING:
-        {
-            g_data_received_array[received_data_index++] = spi_get(gp_spi);
-            g_irq_tx_in_progress = true;
-            assertFalse(spi_status_is_transmission_complete(status));
-            assertTrue(spi_status_is_transmitting(status));
-            assertTrue(spi_status_is_data_received(status));
-            assertFalse(spi_status_is_received_data_overran(status));
-            assertTrue(spi_status_is_ready_for_data_to_send(status));
-            current_state = TRANSMISSION_COMPLETE;
-            break;
-        }
-        case TRANSMISSION_COMPLETE:
-        {
-            assertTrue(spi_status_is_transmission_complete(status));
-            assertFalse(spi_status_is_transmitting(status));
-            assertTrue(spi_status_is_data_received(status));
-            assertFalse(spi_status_is_received_data_overran(status));
-            assertTrue(spi_status_is_ready_for_data_to_send(status));
-            g_data_received_array[received_data_index] = spi_get(gp_spi);
-            received_data_index = 0;
-            sent_data_index = 0;
-            current_state = TRANSMISSION_START;
-            g_irq_tx_in_progress = false;
-            break;
-        }
-    }
 }
 
 static void interruptHandler_OVR(uint32_t status)
@@ -286,9 +178,7 @@ static bool test_polling_scheme_operation_in_loopback_mode(int spi_index,
     bool returned_value;
     uint32_t status_reg;
     volatile amba_spi_t *p_spi = AMBA_SPI_PTR(spi_index);
-    uint64_t startUsec;
     unsigned data_index;
-    uint64_t dt;
 
     //printf("\nConfigure for POLLING operation test");
     //pre-test configuration
@@ -321,7 +211,6 @@ static bool test_polling_scheme_operation_in_loopback_mode(int spi_index,
     //printf("\nTesting POLLING operation");
     memset(p_data_received_array, 0, array_size * sizeof(uint32_t));
     //spi_put(p_spi, p_data_to_send_array[0]);
-    startUsec = getusec();
     spi_put(p_spi, p_data_to_send_array[0]);
     for(data_index = 1; data_index < array_size; data_index++)
     {
@@ -348,15 +237,6 @@ static bool test_polling_scheme_operation_in_loopback_mode(int spi_index,
         status_reg = spi_get_status(p_spi);
         assertFalse(spi_status_is_received_data_overran(status_reg));
     }while (!spi_status_is_data_received(status_reg)); // wait for transmission complete
-    dt = (unsigned)(getusec() - startUsec);
-    if(((spi_mode == SPI_MODE1) || (spi_mode == SPI_MODE3)) && (spi_frame_length == SPI_FLEN8))
-    {//allow higher baud rate deviation to account for additional overhead of frame setup in those modes
-        compareExpectedAndAchievedBaudRate(14, array_size, spi_frame_length, baud_rate, dt);
-    }
-    else
-    {
-        compareExpectedAndAchievedBaudRate(7, array_size, spi_frame_length, baud_rate, dt);
-    }
     assertTrue(spi_status_is_transmission_complete(status_reg));
     assertFalse(spi_status_is_transmitting(status_reg));
     assertTrue(spi_status_is_ready_for_data_to_send(status_reg));
@@ -378,7 +258,6 @@ static bool test_polling_scheme_operation_in_loopback_mode(int spi_index,
     return returned_value;
 }
 
-
 static bool test_polling_scheme_overrun_condition(int spi_index,
                                                   bool transmit_MSB_first,
                                                   uint32_t baud_rate,
@@ -391,8 +270,6 @@ static bool test_polling_scheme_overrun_condition(int spi_index,
     bool returned_value;
     uint32_t status_reg;
     volatile amba_spi_t *p_spi = AMBA_SPI_PTR(spi_index);
-    uint64_t startUsec;
-    uint64_t dt;
 
     //printf("\nConfigure for OVERRUN indication test");
     //pre-test configuration
@@ -425,7 +302,6 @@ static bool test_polling_scheme_overrun_condition(int spi_index,
     //printf("\nTesting OVERRUN indication");
     memset(p_data_received_array, 0, array_size * sizeof(uint32_t));
     //spi_put(p_spi, p_data_to_send_array[0]);
-    startUsec = getusec();
     spi_put(p_spi, p_data_to_send_array[0]);
     do
     {
@@ -440,15 +316,6 @@ static bool test_polling_scheme_overrun_condition(int spi_index,
     {
         status_reg = spi_get_status(p_spi);
     }while (!spi_status_is_transmission_complete(status_reg)); // wait for transmission complete
-    dt = (unsigned)(getusec() - startUsec);
-    if(((spi_mode == SPI_MODE1) || (spi_mode == SPI_MODE3)) && (spi_frame_length == SPI_FLEN8))
-    {//allow higher baud rate deviation to account for additional overhead of frame setup in those modes
-        compareExpectedAndAchievedBaudRate(14, 2, spi_frame_length, baud_rate, dt);
-    }
-    else
-    {
-        compareExpectedAndAchievedBaudRate(7, 2, spi_frame_length, baud_rate, dt);
-    }
     assertTrue(spi_status_is_received_data_overran(status_reg));
     assertTrue(spi_status_is_transmission_complete(status_reg));
     assertFalse(spi_status_is_transmitting(status_reg));
@@ -474,71 +341,6 @@ static bool test_polling_scheme_overrun_condition(int spi_index,
 
     return returned_value;
 }
-
-static bool test_interrupt_driven_operation_in_loopback_mode(int spi_index,
-                                                           bool transmit_MSB_first,
-                                                           uint32_t baud_rate,
-                                                           amba_spi_mode_t spi_mode,
-                                                           amba_spi_flen_t spi_frame_length)
-{
-    bool returned_value;
-    volatile amba_spi_t *p_spi = AMBA_SPI_PTR(spi_index);
-    unsigned data_index;
-
-    //printf("\nConfigure for INTERRUPT operation test");
-    //pre-test configuration
-    spi_enable_master_mode(p_spi);
-    spi_enable_loopback_mode(p_spi);
-    returned_value = spi_set_baud_div(p_spi, baud_rate, PERIPH0_FREQ);
-    if(transmit_MSB_first)
-    {
-        spi_transmit_data_MSB_first(p_spi);
-    }
-    else
-    {
-        spi_transmit_data_LSB_first(p_spi);
-    }
-    spi_set_transmission_mode(p_spi, spi_mode);
-    spi_set_frame_length(p_spi, spi_frame_length);
-    spi_disable_TXC_interrupt(p_spi);
-    spi_disable_TDRE_interrupt(p_spi);
-    spi_disable_RDRF_interrupt(p_spi);
-    spi_disable_OVERRUN_interrupt(p_spi);
-    spi_enable(p_spi);
-    //verify configuration
-    assertTrue(returned_value);
-    assertEq(spi_get_status(p_spi), SPI_STAT_TDRE);
-    assertEq(p_spi->IRQM, 0);
-    assertEq(spi_get_mapping_of_interrupts(p_spi), 1 << 5);
-    assertEq(spi_get_frame_length(p_spi), spi_frame_length);
-    assertEq(spi_get_transmission_mode(p_spi), spi_mode);
-    //test
-    //printf("\nTesting INTERRUPT operation");
-    memset(g_data_received_array, 0, ARRAY_SIZE(g_data_received_array) * sizeof(uint32_t));
-    interruptHandlerFunction = interruptHandler_TDRE_RDRF_TXC;
-    spi_enable_TXC_interrupt(p_spi);
-    spi_enable_TDRE_interrupt(p_spi);
-    spi_enable_RDRF_interrupt(p_spi);
-    spi_disable_OVERRUN_interrupt(p_spi);
-    while(g_irq_tx_in_progress == false);
-    while(g_irq_tx_in_progress == true);
-    //compare received data
-    for(data_index = 0; data_index < ARRAY_SIZE(g_data_to_send_array); data_index++)
-    {
-        assertEq(getValueForFrameLength(g_data_to_send_array[data_index], spi_frame_length), g_data_received_array[data_index]);
-    }
-
-    //post-test clean up
-    //printf("\nCleaning up after test");
-    spi_disable_TXC_interrupt(p_spi);
-    spi_disable_TDRE_interrupt(p_spi);
-    spi_disable_RDRF_interrupt(p_spi);
-    spi_disable_OVERRUN_interrupt(p_spi);
-    spi_disable(p_spi);
-    interruptHandlerFunction = NULL;
-    return returned_value;
-}
-
 
 static bool test_overrun_interrupt_in_loopback_mode(int spi_index,
                                                        bool transmit_MSB_first,
@@ -837,7 +639,7 @@ void test_spi(int spiIndex)
     unsigned baud_rate_index;
     static const amba_spi_mode_t modes_under_test[] = {SPI_MODE0, SPI_MODE1, SPI_MODE2, SPI_MODE3};
     static const amba_spi_flen_t frame_lengths_under_test[] = {SPI_FLEN8, SPI_FLEN16, SPI_FLEN24, SPI_FLEN32};
-    static const uint32_t SPI_BAUD_RATE[] = {200000, 300000, 400000};//, 500000};
+    static const uint32_t SPI_BAUD_RATE[] = {200000, 350000, 500000};
     g_spi_index = spiIndex;
     gp_spi = AMBA_SPI_PTR(spiIndex);
 
@@ -845,7 +647,7 @@ void test_spi(int spiIndex)
     {
 
         // check if core frequency is enough to perform test
-        if ((CORE_FREQ < 25000000 || PERIPH0_FREQ < 25000000) && SPI_BAUD_RATE[baud_rate_index] > 300000)
+        if ((CORE_FREQ < 50000000 || PERIPH0_FREQ < 50000000) && SPI_BAUD_RATE[baud_rate_index] > 200000)
         continue;
 
         printf("\n\n===================");
@@ -904,25 +706,6 @@ void test_spi(int spiIndex)
         ////////////////
         // INTERRUPTS
         ////////////////
-        printf("\n\nTesting INTERRUPTS operation...");
-
-        for(direction_index = 0; direction_index < 2; direction_index++)
-        {// MSB FIRST / LSB FIRST
-            for(mode_index = 0; mode_index < ARRAY_SIZE(modes_under_test); mode_index++)
-            {
-                for(frame_index = 0; frame_index < ARRAY_SIZE(frame_lengths_under_test); frame_index++)
-                {
-                    //printf("\nData direction = %u , spi mode = %u, frame length = %u", direction_index, modes_under_test[mode_index], frame_lengths_under_test[frame_index]);
-                    returned_value = test_interrupt_driven_operation_in_loopback_mode(  spiIndex,
-                                                                                        (direction_index != 0),
-                                                                                        SPI_BAUD_RATE[baud_rate_index],
-                                                                                        modes_under_test[mode_index],
-                                                                                        frame_lengths_under_test[frame_index]);
-                    assertTrue(returned_value);
-                }
-            }
-        }
-
         printf("\n\nTesting OVERRUN interrupt...");
 
         for(direction_index = 0; direction_index < 2; direction_index++)
@@ -978,8 +761,8 @@ int main(void)
         assertEq(dma_get_mapping_of_interrupts(), 1 << AMBA_DMA_IRQn);
         dma_set_mapping_of_interrupts((1 << 1));
         // Enable exceptions and interrupts
-        IRQ_CTRL_PTR->IRQ_MASK = (1 << 5) | (1 << 1) | (1 << 0); // IRQ 1, 5 and exceptions
-        IRQ_CTRL_PTR->STATUS |= IRQ_STAT_CIEN;
+        CSR_CTRL_PTR->IRQ_MASK = (1 << 5) | (1 << 1) | (1 << 0); // IRQ 1, 5 and exceptions
+        CSR_CTRL_PTR->STATUS |= CSR_STAT_CIEN;
 
         printf("\n\nTesting SPI%u", i);
         test_spi(i);

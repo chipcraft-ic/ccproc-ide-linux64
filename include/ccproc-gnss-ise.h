@@ -2,8 +2,8 @@
 *
 * Copyright (c) 2017 ChipCraft Sp. z o.o. All rights reserved
 *
-* $Date: 2018-09-07 16:07:40 +0200 (pią) $
-* $Revision: 296 $
+* $Date: 2019-11-14 09:00:25 +0100 (czw, 14 lis 2019) $
+* $Revision: 484 $
 *
 *  ----------------------------------------------------------------------
 * Redistribution and use in source and binary forms, with or without
@@ -51,8 +51,22 @@
 #endif
 
 #ifndef INLINE
+/// define INLINE
 # define INLINE static __inline__
 #endif
+
+/** GNSS-ISE RF AFE Selection */
+enum gnss_ise_rfafe_enum
+{
+    GNSS_ISE_RFAFE_INVALID    = -1, /*!< GNSS-ISE Invalid RF AFE         */
+
+    GNSS_ISE_RFAFE_L1E1       = 0,  /*!< GNSS-ISE L1/E1 RF AFE           */
+    GNSS_ISE_RFAFE_L5E5       = 1,  /*!< GNSS-ISE L5/E5 RF AFE           */
+    GNSS_ISE_RFAFE_L2E6       = 2,  /*!< GNSS-ISE L2/E6 RF AFE           */
+    GNSS_ISE_RFAFE_VIRT       = 3,  /*!< GNSS-ISE Virtual RF AFE         */
+
+    GNSS_ISE_RFAFE_MAX        = 4,  /*!< GNSS-ISE Guard Value            */
+};
 
 /**
  * \defgroup common Common
@@ -275,8 +289,9 @@ INLINE int32_t GNSS_PLL_DISC(int32_t I, int32_t Q)
     return res;
 }
 
-/// compute costas discriminator
+/// define costas discriminator
 #define GNSS_COST_DISC GNSS_PLL_COST
+/// compute costas discriminator
 INLINE int32_t GNSS_PLL_COST(int32_t I, int32_t Q)
 {
     volatile int32_t res;
@@ -397,11 +412,12 @@ INLINE void GNSS_PCODE_WR(uint32_t val)
 }
 
 /// set code length
-INLINE void GNSS_PCODE_LEN(uint32_t len)
+INLINE void GNSS_PCODE_LEN(uint32_t len, uint32_t integr_mult, uint32_t coef, uint32_t scale)
 {
-    __asm__ __volatile__ ("gnss.pcode.len %0"
+    uint32_t val = (((integr_mult&31)<<16)|(scale&3)<<4)|(coef&15);
+    __asm__ __volatile__ ("gnss.pcode.len %0, %1"
         : /* output */
-        : "r" (len) /* input */
+        : "r" (len), "r" (val) /* input */
     );
 }
 
@@ -471,6 +487,8 @@ INLINE uint32_t GNSS_CODE_RNG(int32_t channel)
     );
     return res;
 }
+
+/** @} */
 
 #endif /* __CCPROC_GNSS_ISE_H__ */
 

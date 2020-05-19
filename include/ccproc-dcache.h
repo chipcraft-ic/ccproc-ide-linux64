@@ -2,8 +2,8 @@
 *
 * Copyright (c) 2017 ChipCraft Sp. z o.o. All rights reserved
 *
-* $Date: 2018-09-07 16:07:40 +0200 (pią) $
-* $Revision: 296 $
+* $Date: 2019-10-03 19:22:07 +0200 (czw, 03 paź 2019) $
+* $Revision: 474 $
 *
 *  ----------------------------------------------------------------------
 * Redistribution and use in source and binary forms, with or without
@@ -57,9 +57,13 @@
 /** Data Cache Registers */
 typedef struct
 {
-    uint32_t STATUS;    /*!< Control Register           */
-    uint32_t FLUSH;     /*!< Flush Tag Memory           */
-    uint32_t INFO;      /*!< Cache Info Register        */
+    uint32_t STATUS;            /*!< Control Register                 */
+    uint32_t FLUSH;             /*!< Flush Tag Memory                 */
+    uint32_t INFO;              /*!< Cache Info Register              */
+    uint32_t ERR_CNT_0;         /*!< Error Counter 0 (FT-only)        */
+    uint32_t ERR_CNT_1;         /*!< Error Counter 1 (FT-only)        */
+    uint32_t INJECT_MASK_LO;    /*!< Error Injection Mask (FT-only)   */
+    uint32_t INJECT_MASK_HI;    /*!< Error Injection Mask (FT-only)   */
 } dcache_regs_t;
 
 static volatile dcache_regs_t * const DCACHE_PTR = (dcache_regs_t*)DCACHE_BASE;
@@ -67,29 +71,45 @@ static volatile dcache_regs_t * const DCACHE_PTR = (dcache_regs_t*)DCACHE_BASE;
 /** DCC Status Register bits */
 enum
 {
-    DCACHE_STAT_EN    = 1 << 0,  /*!< Data Cache Enable                     */
-    DCACHE_STAT_FLUSH = 1 << 1,  /*!< Data Cache Flush in Progress          */
-    DCACHE_STAT_BUSY  = 1 << 2,  /*!< Data Cache Write Buffer Busy          */
+    DCACHE_STAT_EN                = 1 << 0,  /*!< Data Cache Enable                                             */
+    DCACHE_STAT_FLUSH             = 1 << 1,  /*!< Data Cache Flush in Progress (not available in lockstep mode) */
+    DCACHE_STAT_BUSY              = 1 << 2,  /*!< Data Cache Write Buffer Busy (not available in lockstep mode) */
+    DCACHE_STAT_PARITY_EN         = 1 << 3,  /*!< Parity Enable (FT-only)                                       */
+    DCACHE_STAT_ERR_TRIG          = 1 << 4,  /*!< Error Count Trigger (FT-only)                                 */
+    DCACHE_STAT_SCRAMBLE_EN       = 1 << 5,  /*!< Scramble Enable (FT-only)                                     */
+    DCACHE_STAT_MEM_ERR_INJECT    = 1 << 6,  /*!< Memory Error Injection Enable (FT-only)                       */
+    DCACHE_STAT_TAG_ERR_INJECT    = 1 << 7,  /*!< Tag Error Injection Enable (FT-only)                          */
 };
 
 /** DCC Info Register bit offsets */
 enum
 {
-    DCACHE_DCWAY_SHIFT   = 0,  /*!< Data Cache Ways Offset        */
-    DCACHE_DCSIZE_SHIFT  = 3,  /*!< Data Cache Size Offset        */
-    DCACHE_DCLINE_SHIFT  = 8,  /*!< Data Cache Line Offset        */
-    DCACHE_DCALG_SHIFT   = 13, /*!< Data Cache Algorithm Offset   */
-    DCACHE_DCTAG_SHIFT   = 15, /*!< Data Cache Tag Offset         */
+    DCACHE_DCWAY_SHIFT   = 0,  /*!< Data Cache Ways Offset            */
+    DCACHE_DCSIZE_SHIFT  = 3,  /*!< Data Cache Size Offset            */
+    DCACHE_DCLINE_SHIFT  = 8,  /*!< Data Cache Line Offset            */
+    DCACHE_DCALG_SHIFT   = 13, /*!< Data Cache Algorithm Offset       */
+    DCACHE_DCTAG_SHIFT   = 15, /*!< Data Cache Tag Offset             */
+    DCACHE_IMPL_SHIFT    = 28, /*!< Data Cache Implementation Offset  */
 };
 
 /** DCC Info Register masks */
 enum
 {
-    DCACHE_DCWAY_MASK  = 0x03 << DCACHE_DCWAY_SHIFT,   /*!< Data Cache Ways Mask       */
-    DCACHE_DCSIZE_MASK = 0x1F << DCACHE_DCSIZE_SHIFT,  /*!< Data Cache Size Mask       */
-    DCACHE_DCLINE_MASK = 0x0F << DCACHE_DCLINE_SHIFT,  /*!< Data Cache Line Mask       */
-    DCACHE_DCALG_MASK  = 0x03 << DCACHE_DCALG_SHIFT,   /*!< Data Cache Algorithm Mask  */
-    DCACHE_DCTAG_MASK  = 0x7F << DCACHE_DCTAG_SHIFT,   /*!< Data Cache Tag Mask        */
+    DCACHE_DCWAY_MASK  = 0x03 << DCACHE_DCWAY_SHIFT,   /*!< Data Cache Ways Mask           */
+    DCACHE_DCSIZE_MASK = 0x1F << DCACHE_DCSIZE_SHIFT,  /*!< Data Cache Size Mask           */
+    DCACHE_DCLINE_MASK = 0x0F << DCACHE_DCLINE_SHIFT,  /*!< Data Cache Line Mask           */
+    DCACHE_DCALG_MASK  = 0x03 << DCACHE_DCALG_SHIFT,   /*!< Data Cache Algorithm Mask      */
+    DCACHE_DCTAG_MASK  = 0x7F << DCACHE_DCTAG_SHIFT,   /*!< Data Cache Tag Mask            */
+    DCACHE_IMPL_MASK   = 0x0F << DCACHE_IMPL_SHIFT,    /*!< Data Cache Implementation Mask */
+};
+
+/** DCC Implementation */
+enum
+{
+    DCACHE_IMPL_HP = 0x00, /*!< High-performance data cache implementation */
+    DCACHE_IMPL_HS = 0x01, /*!< High-speed data cache implementation       */
+    DCACHE_IMPL_LP = 0x02, /*!< Low-power data cache implementation        */
+    DCACHE_IMPL_FT = 0x03, /*!< Fault-tolerant data cache implementation   */
 };
 
 /** @} */

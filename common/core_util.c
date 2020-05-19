@@ -32,12 +32,14 @@
 * File Name : core_util.c
 * Author    : Rafal Harabien
 * ******************************************************************************
-* $Date: 2018-09-07 16:07:40 +0200 (pią) $
-* $Revision: 296 $
+* $Date: 2020-02-10 14:53:19 +0100 (pon, 10 lut 2020) $
+* $Revision: 519 $
 *H*****************************************************************************/
 
 #include <ccproc.h>
 #include <ccproc-mcore.h>
+#include <ccproc-csr.h>
+#include <ccproc-utils.h>
 #include <sys/lock.h>
 #include <stddef.h>
 
@@ -48,7 +50,7 @@ void * volatile g_coreFnParam = NULL;
 volatile int g_coreStarted = 0;
 __LOCK_INIT(static, g_lock);
 
-void core_main(void)
+void __attribute__((weak)) core_main(void)
 {
     void (*fn)(void *param) = g_coreFnPtr;
     void *param = g_coreFnParam;
@@ -73,5 +75,34 @@ int coreStart(int core, void (*fn)(void *param), void *param)
     while (g_coreStarted == 0);
     g_coreStarted = 0;
     __lock_release(g_lock);
+    return 0;
+}
+
+int __attribute__((nomips16)) lockstepDisable()
+{
+    uint32_t status;
+    uint32_t mask;
+    register uint32_t shdn_address asm("v0");
+    register uint32_t shdn_key asm("v1");
+
+    shdn_address = (uint32_t)&(MCORE_PTR->CORE_SHDN);
+    shdn_key = MCORE_SHDN_KEY | 2;
+
+    if ((CSR_CTRL_PTR->STATUS & CSR_STAT_DCLS) == 0)
+        return -1;
+    if (MCORE_PTR->STATUS != 3)
+        return -1;
+    mask = CSR_CTRL_PTR->IRQ_MASK;
+    status = CSR_CTRL_PTR->STATUS;
+    CLEAR_PIPELINE();
+    CSR_CTRL_PTR->STATUS &= ~CSR_STAT_CIEN;
+    CSR_CTRL_PTR->IRQ_MASK = 0;
+    while (CSR_CTRL_PTR->IRQ_MASK != 1); // exception are always enabled
+    MEMORY_BARRIER();
+    CLEAR_PIPELINE();
+    __asm__ __volatile__ ("sw %0, 0(%1)"::"r"(shdn_key),"r"(shdn_address)); // disable lockstep
+    CLEAR_PIPELINE();
+    CSR_CTRL_PTR->STATUS = status;
+    CSR_CTRL_PTR->IRQ_MASK = mask;
     return 0;
 }

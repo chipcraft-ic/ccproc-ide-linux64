@@ -5,7 +5,7 @@ CORE_FILES = core_list_join core_main core_matrix core_state core_util
 SOURCES += $(addprefix coremark_v1.0/, $(addsuffix .c,$(CORE_FILES)))
 SOURCES += $(wildcard ccproc_port/*.c) $(wildcard ccproc_port/*.S)
 
-COMMON_SOURCES := syscalls.c uart.c core.S
+COMMON_SOURCES := syscalls.c uart.c core.S core_util.c
 
 CFLAGS_WARN := -Wall -Wno-format
 CFLAGS_OPT  := -O3 -fomit-frame-pointer -finline-functions -finline-limit=1000

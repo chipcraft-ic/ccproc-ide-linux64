@@ -32,13 +32,13 @@
 * File Name : pwd_util.c
 * Author    : Krzysztof Marcinek
 * ******************************************************************************
-* $Date: 2018-09-29 13:25:59 +0200 (sob) $
-* $Revision: 312 $
+* $Date: 2019-06-25 14:24:19 +0200 (wto, 25 cze 2019) $
+* $Revision: 424 $
 *H*****************************************************************************/
 
 #include <ccproc.h>
 #include <ccproc-pwd.h>
-#include <ccproc-irq.h>
+#include <ccproc-csr.h>
 #include <ccproc-dcache.h>
 #include <ccproc-utils.h>
 
@@ -51,15 +51,14 @@
 int mainPowerDown(uint32_t flush_dcache)
 {
     // check core id
-    if (IRQ_STATUS_GET_CORE_ID(IRQ_CTRL_PTR->STATUS) != 0) return -1;
+    if (CSR_STATUS_GET_CORE_ID(CSR_CTRL_PTR->STATUS) != 0) return -1;
     // flush data cache
     if (flush_dcache) DCACHE_PTR->FLUSH = 1;
     // flush write buffer
-    while (((DCACHE_PTR->STATUS)&DCACHE_STAT_BUSY)>0);
+    MEMORY_BARRIER();
     // main core power down
     PWD_PTR->CTRL |= PWD_CTRL_MAINPWD | PWD_CTRL_KEY;
-    NOP();
-    NOP();
+    CLEAR_PIPELINE();
     return 0;
 }
 
@@ -73,20 +72,18 @@ void corePowerDown(uint32_t flush_dcache)
     // flush data cache
     if (flush_dcache) DCACHE_PTR->FLUSH = 1;
     // flush write buffer
-    while (((DCACHE_PTR->STATUS)&DCACHE_STAT_BUSY)>0);
+    MEMORY_BARRIER();
     // core power down
     PWD_PTR->CTRL |= PWD_CTRL_COREPWD | PWD_CTRL_KEY;
-    NOP();
-    NOP();
+    CLEAR_PIPELINE();
 }
 
 /*! \brief Power down system. Wake-up on RTC or external GPIO only. */
 void systemPowerDown(void)
 {
     // flush write buffer
-    while (((DCACHE_PTR->STATUS)&DCACHE_STAT_BUSY)>0);
+    MEMORY_BARRIER();
     // system power down
     PWD_PTR->CTRL |= PWD_CTRL_SYSPWD | PWD_CTRL_KEY;
-    NOP();
-    NOP();
+    CLEAR_PIPELINE();
 }

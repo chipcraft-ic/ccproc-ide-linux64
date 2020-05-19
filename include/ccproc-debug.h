@@ -2,8 +2,8 @@
 *
 * Copyright (c) 2017 ChipCraft Sp. z o.o. All rights reserved
 *
-* $Date: 2018-09-07 16:07:40 +0200 (pią) $
-* $Revision: 296 $
+* $Date: 2019-06-25 14:24:19 +0200 (wto, 25 cze 2019) $
+* $Revision: 424 $
 *
 *  ----------------------------------------------------------------------
 * Redistribution and use in source and binary forms, with or without
@@ -78,6 +78,7 @@ enum
 #define DBG_OP_STEP          's'     /*!< Step                                        */
 #define DBG_OP_PROCRST       'r'     /*!< Reset processor                             */
 #define DBG_OP_DEBUGRST      'R'     /*!< Reset debugger                              */
+#define DBG_OP_MBIST         'M'     /*!< Run MBIST                                   */
 #define DBG_OP_CORESEL_BASE  '\xA0'  /*!< Change current core                         */
 /** @} */
 

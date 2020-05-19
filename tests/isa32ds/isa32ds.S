@@ -32,8 +32,8 @@
 # File Name : isa32ds.S
 # Author    : Krzysztof Marcinek, Rafal Harabien
 # ******************************************************************************
-# $Date: 2019-01-30 15:24:26 +0100 (śro) $
-# $Revision: 381 $
+# $Date: 2019-10-03 19:22:07 +0200 (czw, 03 paź 2019) $
+# $Revision: 474 $
 #H******************************************************************************
 
 #include <specialreg.h>
@@ -95,7 +95,7 @@ g_totalTests:
 .macro exception_common_start test_start
   inc_var g_totalTests
   mfc0 $k0, C0_STATUS # read EXC_STATUS
-  lui $a3, IRQ_BD_MASK_HI
+  lui $a3, CSR_BD_MASK_HI
   and $k0, $k0, $a3
   beq $k0, $zero, fail
   nop
@@ -119,11 +119,37 @@ g_totalTests:
 
 intro_str:
   .asciiz "Starting ISA32 delay slot exception tests...\n"
+icache_str:
+  .asciiz "No icache test.\n"
+dcache_str:
+  .asciiz "No dcache test.\n"
 
 .text
 
 .global main
 main:
+
+#ifdef NO_ICACHE
+  lui $t0, 0x3007   # cache controller base
+  lw $t1, 0($t0)    # icache status
+  li $t2, 0xfffffffe
+  and $t1, $t1, $t2 # disable icache
+  sw $t1, 0($t0)
+  la $a0, icache_str
+  jal printf
+  nop
+#endif
+#ifdef NO_DCACHE
+  lui $t0, 0x3007   # cache controller base
+  lw $t1, 8192($t0) # dcache status
+  li $t2, 0xfffffffe
+  and $t1, $t1, $t2 # disable icache
+  sw $t1, 8192($t0)
+  la $a0, dcache_str
+  jal printf
+  nop
+#endif
+
   # Enable exceptions
   lui $t0, 0x3003   # IRQ Controller
   lw $t1, 0($t0)    # read STATUS
@@ -186,7 +212,7 @@ tests_begin:
 
   test_begin "Testing dbus exception in delay slot"
   inc_var g_totalTests
-  lui $t5, 0x1FFF
+  lui $t5, 0x0FFF
   ori $t5, $t5, 0xEFFF
 .dbus_test:
   j .dbus_rest
@@ -266,7 +292,7 @@ exception_handler:
   mfc0 $k0, C0_CAUSE  # read EXC_CAUSE
 
 .unknown_check:
-  li $t9, IRQ_EXC_UNK
+  li $t9, CSR_EXC_UNK
   bne $k0, $t9, .no_unknown_check
   nop
   # check unknown exception
@@ -275,7 +301,7 @@ exception_handler:
 .no_unknown_check:
 
 .ovf_check:
-  li $t9, IRQ_EXC_OV
+  li $t9, CSR_EXC_OV
   bne $k0, $t9, .no_ovf_check
   nop
   # check overflow exception
@@ -284,7 +310,7 @@ exception_handler:
 .no_ovf_check:
 
 .break_check:
-  li $t9, IRQ_EXC_BRK
+  li $t9, CSR_EXC_BRK
   bne $k0, $t9, .no_break_check
   nop
   # check break exception
@@ -293,7 +319,7 @@ exception_handler:
 .no_break_check:
 
 .load_check:
-  li $t9, IRQ_EXC_LE
+  li $t9, CSR_EXC_LE
   bne $k0, $t9, .no_load_check
   nop
   # check load exception
@@ -307,7 +333,7 @@ exception_handler:
 .no_load_check:
 
 .store_check:
-  li $t9, IRQ_EXC_SE
+  li $t9, CSR_EXC_SE
   bne $k0, $t9, .no_store_check
   nop
   # check break exception
@@ -321,21 +347,21 @@ exception_handler:
 .no_store_check:
 
 .dbus_check:
-  li $t9, IRQ_EXC_DBUS
+  li $t9, CSR_EXC_DBUS
   bne $k0, $t9, .no_dbus_check
   nop
   # check data bus exception
   exception_common_start .dbus_test
   inc_var g_totalTests
   mfc0 $t8, C0_VADDR
-  li $t9, 0x1ffff000
+  li $t9, 0x0ffff000
   bne $t8, $t9, fail
   nop
   exception_common_rest .dbus_rest
 .no_dbus_check:
 
 .sys_check:
-  li $t9, IRQ_EXC_SYS
+  li $t9, CSR_EXC_SYS
   bne $k0, $t9, .no_sys_check
   nop
   # check syscall exception
@@ -344,7 +370,7 @@ exception_handler:
 .no_sys_check:
 
 .trap_check:
-  li $t9, IRQ_EXC_TRAP
+  li $t9, CSR_EXC_TRAP
   bne $k0, $t9, .no_trap_check
   nop
   # check trap exception

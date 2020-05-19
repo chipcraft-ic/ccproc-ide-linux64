@@ -32,9 +32,11 @@
 # File Name : exceptions.S
 # Author    : Krzysztof Marcinek
 # ******************************************************************************
-# $Date: 2018-09-07 16:07:40 +0200 (pią) $
-# $Revision: 296 $
+# $Date: 2019-04-23 10:51:59 +0200 (wto, 23 kwi 2019) $
+# $Revision: 412 $
 #H******************************************************************************
+
+#include <specialreg.h>
 
 .set noreorder
 
@@ -57,7 +59,7 @@ exception_handler:
   lw $k1, 0($k0)
   addi $k1, $k1, 1
   sw $k1, 0($k0)
-  lui $k0, 0x3003
+  lui $k0, CSR_CTRL_BASE
   lw $k1, 4($k0)
   add $k1, 4
   jr $k1

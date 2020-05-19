@@ -32,14 +32,16 @@
 * File Name : main.c
 * Author    : Krzysztof Marcinek
 * ******************************************************************************
-* $Date: 2019-02-26 16:15:44 +0100 (wto) $
-* $Revision: 386 $
+* $Date: 2019-04-23 10:51:59 +0200 (wto, 23 kwi 2019) $
+* $Revision: 412 $
 *H*****************************************************************************/
 
 #include "board.h"
 #include <ccproc.h>
-#include <ccproc-irq.h>
+#include <ccproc-csr.h>
 #include <ccproc-mcore.h>
+#include <ccproc-amba.h>
+#include <ccproc-amba-systick.h>
 #include <core_util.h>
 #include <stdio.h>
 #include "test.h"
@@ -51,11 +53,27 @@
 int fpu_ref[]       = {996154275,996596915,996656911,996675703,996683825,996688021,996690439,996691872,996692835,996693490,996693873,996694120,996694258,996694361,996694361,996694176};
 int fpu_res[16];
 
+void enable_interrupts(void){
+    CSR_CTRL_PTR->IRQ_MASK = -1;
+    CSR_CTRL_PTR->STATUS |= CSR_STAT_CIEN;
+}
+
+void config_systick(unsigned irqNum, unsigned period){
+    AMBA_SYSTICK_PTR->CTRL = 0;
+    AMBA_SYSTICK_PTR->COUNT = 0;
+    AMBA_SYSTICK_PTR->PRES = 2;
+    AMBA_SYSTICK_PTR->PER = period;
+    AMBA_SYSTICK_PTR->IRQMAP = 1 << irqNum;
+    AMBA_SYSTICK_PTR->CTRL = SYSTICK_CTRL_EN | SYSTICK_CTRL_IE;
+}
+
 static void testFpuArb(){
     float fpu_base;
     uint32_t i, res;
 
-    fpu_base = FPU_BASE + (FPU_SCALE * IRQ_STATUS_GET_CORE_ID(IRQ_CTRL_PTR->STATUS));
+    enable_interrupts();
+
+    fpu_base = FPU_BASE + (FPU_SCALE * CSR_STATUS_GET_CORE_ID(CSR_CTRL_PTR->STATUS));
     __asm__ __volatile__ ("mtc1 %0, $f0"
         : /* output */
         : "r" (fpu_base) /* input */
@@ -66,13 +84,18 @@ static void testFpuArb(){
             mul.s $f2, $f1, $f0;   \
             sub.s $f0, $f2, $f0;   \
         ");
+        __asm__ __volatile__ ("mfc1 %0, $f0"
+            : "=r" (res) /* output */
+        );
     }
-    __asm__ __volatile__ ("mfc1 %0, $f0"
-        : "=r" (res) /* output */
-    );
 
-    fpu_res[IRQ_STATUS_GET_CORE_ID(IRQ_CTRL_PTR->STATUS)] = res;
+    fpu_res[CSR_STATUS_GET_CORE_ID(CSR_CTRL_PTR->STATUS)] = res;
 
+}
+
+void isr5(void)
+{
+    AMBA_SYSTICK_PTR->IRQF = SYSTICK_IF;
 }
 
 int main(void)
@@ -80,7 +103,7 @@ int main(void)
 
     uint32_t i;
 
-    if (CPU_INFO_GET_FPU(IRQ_CTRL_PTR->CPU_INFO_1) == 0){
+    if (CPU_INFO_GET_FPU(CSR_CTRL_PTR->CPU_INFO_1) == 0){
         printf("No FPU found!\n");
         printTestSummary();
         return 0;
@@ -92,10 +115,12 @@ int main(void)
     }
 
     printf("\nStarting FPU arbiter test.\n");
+    config_systick(5,900);
 
     // check if in lockstep mode
     if (MCORE_PTR->STATUS == 3){
         testFpuArb();
+        assertEq(fpu_res[0],fpu_ref[0]);
         printTestSummary();
         return 0;
     }

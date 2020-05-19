@@ -5,6 +5,8 @@ self_dir=$(readlink -f "$(dirname "$BASH_SOURCE")")
 CCSDK_BOARD="sim"
 CCSDK_DBG_PORT=""
 CCSDK_UART_PORT=""
+CCSDK_USE_JTAG="No"
+CCSDK_JTAG_FLAG="--jtag"
 
 # Override defaults using file in home directory
 if [ -f "$HOME/.ccenv" ]; then
@@ -19,6 +21,9 @@ ls $CCSDK_HOME/boards
 read -p "Board [$CCSDK_BOARD]: " input
 export CCSDK_BOARD="${input:-$CCSDK_BOARD}"
 
+read -e -p "Use OLIMEX ARM-USB-OCD-H JTAG debugger? (Type Yes or No.) [$CCSDK_USE_JTAG]: " input
+export CCSDK_USE_JTAG="${input:-$CCSDK_USE_JTAG}"
+
 echo -n "Available ports: "
 ls /dev/ttyUSB*
 
@@ -28,12 +33,20 @@ export CCSDK_DBG_PORT="${input:-$CCSDK_DBG_PORT}"
 read -e -p "UART Port (e.g. /dev/ttyUSBn) [$CCSDK_UART_PORT]: " input
 export CCSDK_UART_PORT="${input:-$CCSDK_UART_PORT}"
 
-export PATH="$PATH:$CCSDK_HOME/toolchain/mips-cc-elf/bin"
+export PATH="$PATH:${CCSDK_TOOLCHAIN_PATH}:${CCSDK_HOME}/tools/linux/srecord"
+
+export CCSDK_USE_JTAG
+if [[ "$CCSDK_USE_JTAG" == "Yes" ]]; then
+	CCSDK_JTAG_FLAG="--jtag"
+	export CCSDK_JTAG_FLAG
+fi
 
 cat >"$HOME/.ccenv" <<EOF
 CCSDK_BOARD="$CCSDK_BOARD"
 CCSDK_DBG_PORT="$CCSDK_DBG_PORT"
 CCSDK_UART_PORT="$CCSDK_UART_PORT"
+CCSDK_USE_JTAG="$CCSDK_USE_JTAG"
+CCSDK_JTAG_FLAG="$CCSDK_JTAG_FLAG"
 EOF
 
 if [[ $PS1 != CC* ]]; then

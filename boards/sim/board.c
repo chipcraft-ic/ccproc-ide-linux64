@@ -2,8 +2,8 @@
 *
 * Copyright (c) 2018 ChipCraft Sp. z o.o. All rights reserved
 *
-* $Date: 2018-09-07 16:07:40 +0200 (pią) $
-* $Revision: 296 $
+* $Date: 2020-02-13 11:00:59 +0100 (czw, 13 lut 2020) $
+* $Revision: 524 $
 *
 *  ----------------------------------------------------------------------
 * Redistribution and use in source and binary forms, with or without
@@ -37,3 +37,9 @@
  * @brief Initialize the simulation board
  */
 void board_init(void){}
+
+/**
+ * @brief Initialize GNSS AFE
+ */
+void gnss_afe_init(void){}
+

@@ -32,18 +32,32 @@
 # File Name : generic.mk
 # Author    : Rafal Harabien
 # ******************************************************************************
-# $Date: 2018-11-15 16:04:20 +0100 (czw) $
-# $Revision: 342 $
+# $Date: 2020-05-12 20:30:52 +0200 (wto, 12 maj 2020) $
+# $Revision: 575 $
 #H******************************************************************************
+
+ifeq ($(OS),Windows_NT)
+    PLATFORM := windows
+    EXEEXT ?= .exe
+else ifeq ($(shell uname -s),Linux)
+    PLATFORM := linux
+    EXEEXT ?=
+else
+    $(error Unsupported platform)
+endif
 
 #CCSDK_HOME          ?= $(HOME)/ccsdk
 ifndef CCSDK_HOME
   $(error Define CCSDK_HOME variable, eg.: $(HOME)/ccsdk!)
 endif
 
+-include $(CCSDK_HOME)/common/customization.mk
+
 CCSDK_TRIPLET       ?= mips-cc-elf
-CCSDK_TOOLCHAIN_DIR ?= $(CCSDK_HOME)/toolchain/$(CCSDK_TRIPLET)/bin/
-PREFIX              ?= $(CCSDK_TOOLCHAIN_DIR)$(CCSDK_TRIPLET)-
+ifeq ($(CCSDK_TOOLCHAIN_PATH),)
+  $(error ChipCraft toolchain path not set, ensure chipcraft-toolchain is installed and CCSDK_TOOLCHAIN_PATH variable is set.)
+endif
+PREFIX              ?= $(CCSDK_TOOLCHAIN_PATH)/$(CCSDK_TRIPLET)-
 
 NULLSTR := # creating a null string
 SPACE   := $(NULLSTR) # end of the line
@@ -56,20 +70,28 @@ else
  PYTHON    := python2
 endif
 
-CC        := "$(PREFIX)gcc"
-CXX       := "$(PREFIX)g++"
-LINK      := $(CC)
-OBJCOPY   := "$(PREFIX)objcopy"
-OBJDUMP   := "$(PREFIX)objdump"
-SIZE      := "$(PREFIX)size"
-DEBUGGER  := "$(PREFIX)gdb"
-CCPROG    := "$(CCSDK_HOME)/tools/ccprog"
-CCTERM    := "$(CCSDK_HOME)/tools/ccterm"
-DBGSERVER := $(PYTHON) "$(CCSDK_HOME)/tools/dbgserver.py"
-CCSIM     := "$(CCSDK_HOME)/tools/ccsim"
+CC                := "$(PREFIX)gcc$(EXEEXT)"
+CXX               := "$(PREFIX)g++$(EXEEXT)"
+LINK              := $(CC)
+OBJCOPY           := "$(PREFIX)objcopy$(EXEEXT)"
+OBJDUMP           := "$(PREFIX)objdump$(EXEEXT)"
+SIZE              := "$(PREFIX)size$(EXEEXT)"
+DEBUGGER          := "$(PREFIX)gdb$(EXEEXT)"
+CCPROG            := "$(CCSDK_HOME)/build/tools/$(PLATFORM)/stripped/ccprog$(EXEEXT)"
+CCTERM            := "$(CCSDK_HOME)/build/tools/$(PLATFORM)/stripped/ccterm$(EXEEXT)"
+DBGSERVER_RS      := $(PYTHON) "$(CCSDK_HOME)/build/tools/$(PLATFORM)/stripped/dbgserver.py"
+DBGSERVER_JTAG    := $(CCSDK_HOME)/build/tools/$(PLATFORM)/stripped/debugserverjtag$(EXEEXT)
+DBGSERVER_SIM     := $(DBGSERVER_RS)
+CCSIM             := "$(CCSDK_HOME)/build/tools/$(PLATFORM)/stripped/ccsim"
 
-MINITERM  := miniterm.py
-ECHO      := @echo
+MINITERM          := miniterm.py
+ECHO              := @echo
+
+ifeq ($(CCSDK_USE_JTAG),Yes)
+ DBGSERVER := $(DBGSERVER_JTAG)
+else
+ DBGSERVER := $(DBGSERVER_RS)
+endif
 
 ifdef windir
  # native_path(path)
@@ -114,6 +136,17 @@ include $(CCSDK_HOME)/boards/$(CCSDK_BOARD)/board.properties
 CCSDK_MCU             ?= $(MCU)
 CCSDK_DBG_BAUDRATE    ?= $(DBG_BAUDRATE)
 CCSDK_UART_BAUDRATE   ?= $(UART_BAUDRATE)
+
+CCPROG_FLAGS          += --mcu $(CCSDK_MCU)
+DBGSERVER_FLAGS += --mcu $(CCSDK_MCU)
+ifeq ($(CCSDK_USE_JTAG),Yes)
+ $(info Using JTAG connection.)
+ CCPROG_FLAGS          += $(CCSDK_JTAG_FLAG)
+else
+ CCPROG_FLAGS          += -p $(CCSDK_DBG_PORT) -b auto
+ DBGSERVER_FLAGS += -p $(CCSDK_DBG_PORT) -b $(CCSDK_DBG_BAUDRATE)
+endif
+
 include $(CCSDK_HOME)/boards/$(CCSDK_BOARD)/board.mk
 
 
@@ -142,6 +175,7 @@ CPPFLAGS += -I$(CCSDK_HOME)/include/flash
 CPPFLAGS += -I$(CCSDK_HOME)/common/include
 CPPFLAGS += -I$(CCSDK_HOME)/drivers/include
 CPPFLAGS += -I$(CCSDK_HOME)/drivers/flash/include
+CPPFLAGS += -I$(CCSDK_HOME)/drivers/max2771/include
 CPPFLAGS += -I$(CCSDK_HOME)/boards/$(CCSDK_BOARD)
 CPPFLAGS += -I$(CCSDK_HOME)/boards/$(CCSDK_BOARD)/include
 CPPFLAGS += -MMD -MP
@@ -174,8 +208,6 @@ ifndef windir
 else
   DEBUGGER_FLAGS  ?= -q -x "$(CCSDK_HOME)/common/gdbinit"
 endif
-DBGSERVER_FLAGS += -p $(CCSDK_DBG_PORT) -b $(CCSDK_DBG_BAUDRATE) --mcu=$(CCSDK_MCU)
-CCPROG_FLAGS    += -p $(CCSDK_DBG_PORT) -b auto --mcu $(CCSDK_MCU)
 
 GDB_UNIX_SOCK ?= 0
 SIM_DEBUG ?= 1
@@ -197,7 +229,7 @@ GDB_PIPE ?= 1
 ifeq ($(GDB_PIPE),1)
   DBGSERVER_FLAGS_PIPE       ?= --pipe --log-file $(BUILDDIR)/dbgserver.log --log DEBUG
   DEBUGGER_FLAGS_TARGET      ?= -ex "target remote | $(subst \,/,$(DBGSERVER)) $(DBGSERVER_FLAGS) $(DBGSERVER_FLAGS_PIPE)"
-  DEBUGGER_FLAGS_TARGET_SIM  ?= -ex "target remote | $(subst \,/,$(DBGSERVER)) $(DBGSERVER_FLAGS_SIM) $(DBGSERVER_FLAGS_PIPE)"
+  DEBUGGER_FLAGS_TARGET_SIM  ?= -ex "target remote | $(subst \,/,$(DBGSERVER_SIM)) $(DBGSERVER_FLAGS_SIM) $(DBGSERVER_FLAGS_PIPE)"
 else ifeq ($(GDB_UNIX_SOCK),0)
   GDB_TCP_PORT               ?= 3333
   DEBUGGER_FLAGS_TARGET      ?= -ex "target remote localhost:$(GDB_TCP_PORT)"
@@ -239,7 +271,7 @@ define buildrules
 $(1)/%.o: $(2)%.c
 	$(ECHO) Compiling $$@
 	$(Q)$$(call mkdir_recursive,$$(dir $$@))
-	$(Q)$(CC) $(CPPFLAGS) $(CFLAGS) -c $$< -o $$@
+	$(Q)$(CC) $(CPPFLAGS) $(CFLAGS) $(EXTFLAGS) -c $$< -o $$@
 
 $(1)/%.o: $(2)%.cpp
 	$(ECHO) Compiling $$@
@@ -249,12 +281,12 @@ $(1)/%.o: $(2)%.cpp
 $(1)/%.o: $(2)%.s
 	$(ECHO) Compiling $$@
 	$(Q)$$(call mkdir_recursive,$$(dir $$@))
-	$(Q)$(CC) $(ASFLAGS) -c $$< -o $$@
+	$(Q)$(CC) $(ASFLAGS) $(EXTFLAGS) -c $$< -o $$@
 
 $(1)/%.o: $(2)%.S
 	$(ECHO) Compiling $$@
 	$(Q)$$(call mkdir_recursive,$$(dir $$@))
-	$(Q)$(CC) $(CPPFLAGS) $(ASFLAGS) -c $$< -o $$@
+	$(Q)$(CC) $(CPPFLAGS) $(ASFLAGS) $(EXTFLAGS) -c $$< -o $$@
 endef
 
 $(BUILDDIR):
@@ -297,7 +329,7 @@ ifeq ($(SIM_DEBUG),1)
 sim-debug:
 	$(Q)$(DEBUGGER) $(DEBUGGER_FLAGS) $(DEBUGGER_FLAGS_TARGET_SIM) $(PROGBIN)
 sim-debug-server:
-	$(Q)$(DBGSERVER) $(DBGSERVER_FLAGS_SIM)
+	$(Q)$(DBGSERVER_SIM) $(DBGSERVER_FLAGS_SIM)
 endif
 
 reset:

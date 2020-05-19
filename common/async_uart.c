@@ -32,13 +32,13 @@
 * File Name : async_uart.c
 * Author    : Rafal Harabien
 * ******************************************************************************
-* $Date: 2018-09-07 16:07:40 +0200 (pią) $
-* $Revision: 296 $
+* $Date: 2020-05-05 19:26:31 +0200 (wto, 05 maj 2020) $
+* $Revision: 572 $
 *H*****************************************************************************/
 
 #include "board.h"
 #include <ccproc.h>
-#include <ccproc-irq.h>
+#include <ccproc-csr.h>
 #include <ccproc-amba.h>
 #include <ccproc-amba-uart.h>
 #include <stdio.h>
@@ -115,6 +115,6 @@ void uartWriteAsync(unsigned uart, const char *data, unsigned int count)
 void uartInitAsync(unsigned uart)
 {
     volatile amba_uart_t *uartPtr = AMBA_UART_PTR(uart);
-    IRQ_CTRL_PTR->IRQ_MASK |= (1 << 1);
-    IRQ_CTRL_PTR->STATUS |= IRQ_STAT_CIEN;
+    CSR_CTRL_PTR->IRQ_MASK |= (1 << 1);
+    CSR_CTRL_PTR->STATUS |= CSR_STAT_CIEN;
 }

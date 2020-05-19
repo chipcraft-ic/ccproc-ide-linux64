@@ -32,8 +32,8 @@
 * File Name : uart.c
 * Author    : Rafal Harabien
 * ******************************************************************************
-* $Date: 2018-09-07 16:07:40 +0200 (pią) $
-* $Revision: 296 $
+* $Date: 2019-12-27 16:05:17 +0100 (pią, 27 gru 2019) $
+* $Revision: 494 $
 *H*****************************************************************************/
 
 #include <stddef.h>
@@ -42,7 +42,7 @@
 #include <ccproc-amba-uart.h>
 #include <board.h>
 
-int uart_init_blocking(int uart, uint32_t baudrate)
+int uart_init_blocking(int uart, uint32_t baudrate, int rtscts)
 {
     /* Check if baudrate is valid */
     if (PERIPH0_FREQ / baudrate / 16 == 0 || PERIPH0_FREQ / baudrate / 16 > 65535) {
@@ -53,7 +53,10 @@ int uart_init_blocking(int uart, uint32_t baudrate)
     volatile amba_uart_t *u = AMBA_UART_PTR(uart);
     u->PRES = AMBA_UART_PRES((PERIPH0_FREQ / baudrate) / 16, (PERIPH0_FREQ / baudrate) % 16);
     u->MODE = UART_MODE_CHRL8 | UART_MODE_STOP_BITS_1 | UART_MODE_PARITY_NONE;
-    u->CTRL = UART_CTRL_TXEN | UART_CTRL_RXEN; // | UART_CTRL_RTSEN | UART_CTRL_CTSEN; // RX enable, TX enable, RTS/CTS enable
+    u->CTRL = UART_CTRL_TXEN | UART_CTRL_RXEN; // RX enable, TX enable
+    if (rtscts) {
+        u->CTRL |= UART_CTRL_RTSEN | UART_CTRL_CTSEN; // RTS/CTS enable
+    }
     return 0;
 }
 

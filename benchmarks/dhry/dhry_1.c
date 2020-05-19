@@ -202,7 +202,8 @@ main ()
 #endif
 
   printf ("Execution ends\n\n");
-  /*printf ("\n");
+#ifdef PRINT_ALL
+  printf ("\n");
   printf ("Final values of the variables used in the benchmark:\n");
   printf ("\n");
   printf ("Int_Glob:            %d\n", Int_Glob);
@@ -252,7 +253,8 @@ main ()
   printf ("        should be:   DHRYSTONE PROGRAM, 1'ST STRING\n");
   printf ("Str_2_Loc:           %s\n", Str_2_Loc);
   printf ("        should be:   DHRYSTONE PROGRAM, 2'ND STRING\n");
-  printf ("\n");*/
+  printf ("\n");
+#endif
 
   /* added for self test */
   if (Int_Glob != 5)

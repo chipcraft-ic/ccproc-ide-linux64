@@ -34,7 +34,7 @@
  * -------------------------------------------------------------------- */
 
 #include <ccproc.h>
-#include <ccproc-irq.h>
+#include <ccproc-csr.h>
 
 /**
  * @brief Initialize the ML605 board
@@ -42,11 +42,11 @@
 void board_init(void)
 {
     /* check if external DDR3 instruction memory is used, if yes, overwrite to 256MB */
-    if (CPU_INFO_GET_IMSIZE_LOG(IRQ_CTRL_PTR->CPU_INFO_0) == 0){
-        IRQ_CTRL_PTR->CPU_INFO_0 |= 28;
+    if (CPU_INFO_GET_IMSIZE_LOG(CSR_CTRL_PTR->CPU_INFO_0) == 0){
+        CSR_CTRL_PTR->CPU_INFO_0 |= 28;
     }
     /* check if external DDR3 data memory is used, if yes, overwrite to 256MB        */
-    if (CPU_INFO_GET_DMSIZE_LOG(IRQ_CTRL_PTR->CPU_INFO_0) == 0){
-        IRQ_CTRL_PTR->CPU_INFO_0 |= 28 << CPU_DMSIZE_SHIFT;
+    if (CPU_INFO_GET_DMSIZE_LOG(CSR_CTRL_PTR->CPU_INFO_0) == 0){
+        CSR_CTRL_PTR->CPU_INFO_0 |= 28 << CPU_DMSIZE_SHIFT;
     }
 }

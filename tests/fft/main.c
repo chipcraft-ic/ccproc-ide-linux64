@@ -32,13 +32,13 @@
 * File Name : main.c
 * Author    : Krzysztof Marcinek
 * ******************************************************************************
-* $Date: 2019-01-09 12:10:59 +0100 (śro) $
-* $Revision: 374 $
+* $Date: 2019-05-16 23:26:56 +0200 (czw, 16 maj 2019) $
+* $Revision: 419 $
 *H*****************************************************************************/
 
 #include "board.h"
 #include <ccproc.h>
-#include <ccproc-irq.h>
+#include <ccproc-csr.h>
 #include <ccproc-mcore.h>
 #include <ccproc-fft.h>
 #include <ccproc-pwd.h>
@@ -100,7 +100,7 @@ static void testFFTProc(){
 
     fftWait();
 
-    while(core_started > IRQ_STATUS_GET_CORE_ID(IRQ_CTRL_PTR->STATUS));
+    while(core_started > CSR_STATUS_GET_CORE_ID(CSR_CTRL_PTR->STATUS));
 
     for (i=0; i<fft_size; i++){
         assertEq(re_ref_res[i], loc_re[i]);
@@ -135,8 +135,8 @@ void testFFT(void){
     int k, i, numOfCores;
 
     // enable interrupts
-    IRQ_CTRL_PTR->IRQ_MASK |= (1 << FFT_IRQn);
-    IRQ_CTRL_PTR->STATUS |= IRQ_STAT_CIEN;
+    CSR_CTRL_PTR->IRQ_MASK |= (1 << FFT_IRQn);
+    CSR_CTRL_PTR->STATUS |= CSR_STAT_CIEN;
 
     // start cores
     numOfCores = MCORE_PTR->CORE_NUM;
@@ -490,7 +490,7 @@ void testScaling(void){
 
 static void coreMain()
 {
-    if (IRQ_CTRL_PTR->CPU_INFO_0 & CPU_FFT){
+    if (CSR_CTRL_PTR->CPU_INFO_0 & CPU_FFT){
 
         fft_size = 1 << FFT_STATUS_GET_SIZE(FFT_PTR->STATUS);
         if (fft_size == 1)
@@ -507,8 +507,13 @@ static void coreMain()
             printf("Test SqrAbs\n");
             testSqrAbs();
             if (fft_size == 256){
-                printf("Test FFT %d\n",fft_size);
-                testFFT();
+                if (CSR_CTRL_PTR->CPU_INFO_0 & CPU_SPRAM) {
+                    printf("Test FFT %d\n",fft_size);
+                    testFFT();
+                }
+                else {
+                    printf("No SPRAM to test FFT.\n");
+                }
             }
             else{
                 printf("FFT 512 test TBD!\n");
@@ -537,7 +542,9 @@ int main(void)
     }
 
     // Disable lockstep mode if present
-    MCORE_PTR->CORE_SHDN = MCORE_SHDN_KEY | 2;
+    if (lockstepDisable() == 0){
+        printf("Disabling lockstep mode!\n");
+    }
 
     coreStart(1, &coreMain, NULL);
     mainPowerDown(0);

@@ -32,8 +32,8 @@
 # File Name : specialreg.h
 # Author    : Krzysztof Marcinek
 # ******************************************************************************
-# $Date: 2019-01-25 11:13:38 +0100 (pią) $
-# $Revision: 376 $
+# $Date: 2019-08-06 09:08:30 +0200 (wto, 06 sie 2019) $
+# $Revision: 436 $
 #H******************************************************************************
 
 #ifndef _SPECIALREG_H_
@@ -50,25 +50,25 @@
 /*
  * Exception codes definitions
  */
-#define IRQ_EXC_OV              0x00000001   /* Overflow Exception                               */
-#define IRQ_EXC_LE              0x00000002   /* Load Exception                                   */
-#define IRQ_EXC_SE              0x00000003   /* Store Exception                                  */
-#define IRQ_EXC_SYS             0x00000004   /* Syscall Exception                                */
-#define IRQ_EXC_BRK             0x00000005   /* Break Exception                                  */
-#define IRQ_EXC_UNK             0x00000006   /* Unknown Exception                                */
-#define IRQ_EXC_ADD             0x00000007   /* Address Exception                                */
-#define IRQ_EXC_PIPE            0x00000008   /* Pipeline Error Exception                         */
-#define IRQ_EXC_SP              0x00000009   /* Stack Protection Exception                       */
-#define IRQ_EXC_PDATA           0x0000000A   /* Privileged Data Exception                        */
-#define IRQ_EXC_PINST           0x0000000B   /* Privileged Instruction Exception                 */
-#define IRQ_EXC_TRAP            0x0000000C   /* Trap Exception                                   */
-#define IRQ_EXC_PERIPH          0x0000000D   /* Tightly-coupled Peripheral Exception             */
-#define IRQ_EXC_AMBA            0x0000000E   /* AMBA Peripheral Exception                        */
-#define IRQ_EXC_IBUS            0x0000000F   /* Instruction Bus Exception                        */
-#define IRQ_EXC_DBUS            0x00000010   /* Data Bus Exception                               */
-#define IRQ_EXC_FPU             0x00000011   /* Floating Point Unit Exception (deferred)         */
+#define CSR_EXC_OV              0x00000001   /* Overflow Exception                               */
+#define CSR_EXC_LE              0x00000002   /* Load Exception                                   */
+#define CSR_EXC_SE              0x00000003   /* Store Exception                                  */
+#define CSR_EXC_SYS             0x00000004   /* Syscall Exception                                */
+#define CSR_EXC_BRK             0x00000005   /* Break Exception                                  */
+#define CSR_EXC_UNK             0x00000006   /* Unknown Exception                                */
+#define CSR_EXC_ADD             0x00000007   /* Address Exception                                */
+#define CSR_EXC_PIPE            0x00000008   /* Pipeline Error Exception                         */
+#define CSR_EXC_SP              0x00000009   /* Stack Protection Exception                       */
+#define CSR_EXC_PDATA           0x0000000A   /* Privileged Data Exception                        */
+#define CSR_EXC_PINST           0x0000000B   /* Privileged Instruction Exception                 */
+#define CSR_EXC_TRAP            0x0000000C   /* Trap Exception                                   */
+#define CSR_EXC_PERIPH          0x0000000D   /* Tightly-coupled Peripheral Exception             */
+#define CSR_EXC_AMBA            0x0000000E   /* AMBA Peripheral Exception                        */
+#define CSR_EXC_IBUS            0x0000000F   /* Instruction Bus Exception                        */
+#define CSR_EXC_DBUS            0x00000010   /* Data Bus Exception                               */
+#define CSR_EXC_FPU             0x00000011   /* Floating Point Unit Exception (deferred)         */
 
-#define IRQ_EXC_IRQ             0x80000000   /* Interrupt Exception                              */
+#define CSR_EXC_IRQ             0x80000000   /* Interrupt Exception                              */
 
 /*
  * BREAK/SYSCALL codes
@@ -91,10 +91,10 @@
  * Processor Startup Utils
  */
 #define PWD_CTRL_BASE           0x3002       /* Upper base address of Power Management           */
-#define IRQ_CTRL_BASE           0x3003       /* Upper base address of Interrupt Controller       */
+#define CSR_CTRL_BASE           0x3003       /* Upper base address of System Controller          */
 #define IRQ_MASK_OFFSET         0x00C0       /* Interrupt Mask offset                            */
 #define IRQ_EN_MASK             0x0100       /* Interrupt Enable bit mask                        */
-#define IRQ_BD_MASK_HI          0x8          /* STATUS register branch delay mask slot           */
+#define CSR_BD_MASK_HI          0x8          /* STATUS register branch delay mask slot           */
 #define CORE_ID_SHIFT           24           /* STATUS register Core ID field shift              */
 #define CPU_INFO0_OFFSET        0x001C       /* CPU Features 0 offset                            */
 #define CPU_INFO1_OFFSET        0x0020       /* CPU Features 1 offset                            */
@@ -105,6 +105,9 @@
 #define MIPS16_EN_MASK          0x100        /* MIPS16 ISE mask                                  */
 #define FPU_MASK                0xF          /* FPU mask                                         */
 #define FPU_SHIFT               12           /* FPU shift                                        */
+#define ROM_SIZE_SHIFT          0            /* ROM size shift                                   */
+#define ROM_SIZE_MASK           0x1F         /* ROM size mask                                    */
+#define ROM_BASE                0x0000       /* ROM memory upper base address                    */
 #define RAM_SIZE_SHIFT          5            /* RAM size shift                                   */
 #define RAM_SIZE_MASK           0x1F         /* RAM size mask                                    */
 #define RAM_BASE                0x4000       /* RAM memory upper base address                    */
@@ -123,5 +126,8 @@
 #define WDT_PRES_OFFSET         0x14         /* watchdog prescaler offset                        */
 #define WDT_RESET_MASK          0x8          /* watchdog reset mask                              */
 #define RST_RSN_OFFSET          0x4          /* power management reset reason offset             */
+#define CACHE_EN_MASK           0x1          /* cache enable mask                                */
+#define CACHE_FT_MASK           0x8          /* cache parity/ecc enable mask                     */
+#define CACHE_SC_MASK           0x20         /* cache scrambling enable mask                     */
 
 #endif /* _SPECIALREG_H_ */

@@ -32,8 +32,8 @@
 * File Name : main.c
 * Author    : Krzysztof Marcinek
 * ******************************************************************************
-* $Date: 2018-10-08 11:52:38 +0200 (pon) $
-* $Revision: 320 $
+* $Date: 2019-08-01 12:24:46 +0200 (czw, 01 sie 2019) $
+* $Revision: 434 $
 *H*****************************************************************************/
 
 #include "board.h"
@@ -43,6 +43,7 @@
 #include <ccproc-amba.h>
 #include <ccproc-amba-rtc.h>
 #include <pwd_util.h>
+#include <rtc_util.h>
 #include <stdio.h>
 #include "test.h"
 
@@ -52,8 +53,6 @@
 #define BACK1       0x55667788
 #define BACK2       0x99AABBCC
 #define BACK3       0xDDEEFF00
-
-int test;
 
 static void reset(void){
     printf("Reseting...\n");
@@ -66,25 +65,14 @@ static void TICKwait(void){
     for (i=0;i<CORE_FREQ/RTC_FREQ;i++);
 }
 
-static void RTCwait(void){
-    while((AMBA_RTC_PTR->STATUS & RTC_STAT_BUSY) != 0);
-}
-
 static void testRTCpwd(void){
 
     printf("Entering deep power down...\n");
 
-    RTCwait();
-    AMBA_RTC_PTR->COMPARE = 1024;
-    RTCwait();
-    AMBA_RTC_PTR->COUNT = 0;
-    RTCwait();
-    AMBA_RTC_PTR->PRES = 0;
-    RTCwait();
-    AMBA_RTC_PTR->CTRL |= RTC_CTRL_WKUPCMP;
-    RTCwait();
-
-    PWD_PTR->CTRL |= (1<<PWD_CTRL_COREINT_SHIFT) | (3<<PWD_CTRL_PER2INT_SHIFT) | (2<<PWD_CTRL_PER0INT_SHIFT) | PWD_CTRL_KEY;
+    RTCwrite((uint32_t*)&AMBA_RTC_PTR->COMPARE, 1024);
+    RTCwrite((uint32_t*)&AMBA_RTC_PTR->COUNT, 0);
+    RTCwrite((uint32_t*)&AMBA_RTC_PTR->PRES, 0);
+    RTCwrite((uint32_t*)&AMBA_RTC_PTR->CTRL, RTCread((uint32_t*)&AMBA_RTC_PTR->CTRL) | RTC_CTRL_WKUPCMP);
 
     // flush data cache
     DCACHE_PTR->FLUSH = 1;
@@ -96,6 +84,8 @@ static void testRTCpwd(void){
 
 int main(void){
 
+    int count;
+
     if (PWD_PTR->RSTRSN != PWD_RSN_SOFT){
 
         printf("\nStarting RTC test\n");
@@ -106,52 +96,30 @@ int main(void){
             return 0;
         }
 
-        do{
-            AMBA_RTC_PTR->CTRL |= RTC_CTRL_EN;
-        } while (((AMBA_RTC_PTR->IRQF & RTC_TRERRIF) != 0) || ((AMBA_RTC_PTR->CTRL & RTC_CTRL_EN) == 0));
+        RTCenable();
 
-        RTCwait();
-        AMBA_RTC_PTR->PRES = 0;
+        RTCwrite((uint32_t*)&AMBA_RTC_PTR->PRES, 0);
 
-        assertEq(AMBA_RTC_PTR->COUNT, 0);
+        RTCwrite((uint32_t*)&AMBA_RTC_PTR->PER, 0xFFFFFFFF);
+        RTCwrite((uint32_t*)&AMBA_RTC_PTR->COMPARE, 0xFFFFFFFF);
+        RTCwrite((uint32_t*)&AMBA_RTC_PTR->BACKUP0, BACK0);
+        RTCwrite((uint32_t*)&AMBA_RTC_PTR->BACKUP1, BACK1);
+        RTCwrite((uint32_t*)&AMBA_RTC_PTR->BACKUP2, BACK2);
+        RTCwrite((uint32_t*)&AMBA_RTC_PTR->BACKUP3, BACK3);
+        RTCwrite((uint32_t*)&AMBA_RTC_PTR->COUNT, 0);
 
-        RTCwait();
-        AMBA_RTC_PTR->PER = 0xFFFFFFFF;
-
-        RTCwait();
-        AMBA_RTC_PTR->COMPARE = 0xFFFFFFFF;
-
-        RTCwait();
-        AMBA_RTC_PTR->BACKUP0 = BACK0;
-        RTCwait();
-        AMBA_RTC_PTR->BACKUP1 = BACK1;
-        RTCwait();
-        AMBA_RTC_PTR->BACKUP2 = BACK2;
-        RTCwait();
-        AMBA_RTC_PTR->BACKUP3 = BACK3;
-
-        RTCwait();
-        AMBA_RTC_PTR->COUNT = 0;
-
-        assertEq(AMBA_RTC_PTR->COUNT, 0);
-
-        test = 0;
+        count = AMBA_RTC_PTR->COUNT;
         TICKwait();
-        if (AMBA_RTC_PTR->COUNT > 0)
-            test++;
+        assertTrue(AMBA_RTC_PTR->COUNT > count);
 
-        assertEq(test, 1);
         assertEq(AMBA_RTC_PTR->BACKUP0, BACK0);
         assertEq(AMBA_RTC_PTR->BACKUP1, BACK1);
         assertEq(AMBA_RTC_PTR->BACKUP2, BACK2);
         assertEq(AMBA_RTC_PTR->BACKUP3, BACK3);
 
-        RTCwait();
-        AMBA_RTC_PTR->BACKUP0 = AMBA_RTC_PTR->COUNT;
-        RTCwait();
-        AMBA_RTC_PTR->BACKUP1 = g_totalTests;
-        RTCwait();
-        AMBA_RTC_PTR->BACKUP2 = g_failedTests;
+        RTCwrite((uint32_t*)&AMBA_RTC_PTR->BACKUP0, AMBA_RTC_PTR->COUNT);
+        RTCwrite((uint32_t*)&AMBA_RTC_PTR->BACKUP1, g_totalTests);
+        RTCwrite((uint32_t*)&AMBA_RTC_PTR->BACKUP2, g_failedTests);
 
         reset();
 
@@ -160,26 +128,17 @@ int main(void){
 
         printf("Continuing RTC test...\n");
 
-        do{
-            AMBA_RTC_PTR->CTRL |= RTC_CTRL_EN;
-        } while (((AMBA_RTC_PTR->IRQF & RTC_TRERRIF) != 0) || ((AMBA_RTC_PTR->CTRL & RTC_CTRL_EN) == 0));
+        RTCenable();
 
-        RTCwait();
-        g_totalTests = AMBA_RTC_PTR->BACKUP1;
-        RTCwait();
-        g_failedTests = AMBA_RTC_PTR->BACKUP2;
+        g_totalTests = RTCread((uint32_t*)&AMBA_RTC_PTR->BACKUP1);
+        g_failedTests = RTCread((uint32_t*)&AMBA_RTC_PTR->BACKUP2);
 
-        test = 0;
-        RTCwait();
-        if (AMBA_RTC_PTR->COUNT > AMBA_RTC_PTR->BACKUP0)
-            test++;
-
-        assertEq(test, 1);
+        assertTrue(RTCread((uint32_t*)&AMBA_RTC_PTR->COUNT) > AMBA_RTC_PTR->BACKUP0);
         assertEq(AMBA_RTC_PTR->BACKUP3, BACK3);
 
     }
 
-    assertTrue(g_totalTests>8);
+    assertTrue(g_totalTests>6);
 
     testRTCpwd();
 

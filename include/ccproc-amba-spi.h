@@ -2,8 +2,8 @@
 *
 * Copyright (c) 2017 ChipCraft Sp. z o.o. All rights reserved
 *
-* $Date: 2018-12-06 22:15:13 +0100 (czw) $
-* $Revision: 366 $
+* $Date: 2019-10-03 19:22:07 +0200 (czw, 03 paź 2019) $
+* $Revision: 474 $
 *
 *  ----------------------------------------------------------------------
 * Redistribution and use in source and binary forms, with or without
@@ -117,7 +117,7 @@ typedef enum
     SPI_FLEN32  = 3,  /*!< 32 Bits Per Frame                                                  */
 } amba_spi_flen_t;
 
-#define SPI_FRAME_LENGTH_IN_BYTES(spi_frame_length_code) (spi_frame_length_code + 1)
+#define SPI_FRAME_LENGTH_IN_BYTES(spi_frame_length_code) (spi_frame_length_code + 1) /*!< SPI Frame Length in bytes */
 
 /** SPI control bits */
 enum

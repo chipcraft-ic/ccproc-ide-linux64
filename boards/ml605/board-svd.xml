@@ -13,8 +13,8 @@
   <licenseText>
     Copyright (c) 2018 ChipCraft Sp. z o.o. All rights reserved\n
 \n
-    $Date$\n
-    $Revision$\n
+    $Date: 2020-04-17 23:13:49 +0200 (pią, 17 kwi 2020) $\n
+    $Revision: 555 $\n
 \n
      ----------------------------------------------------------------------\n
     Redistribution and use in source and binary forms, with or without\n
@@ -189,6 +189,18 @@
           <addressOffset>0xD8</addressOffset>
           <access>write-only</access>
         </register>
+        <register>
+          <name>INJECT_MASK_0</name>
+          <description>Core 0 Lockstep Error Injection Mask (FT-only)</description>
+          <addressOffset>0x1dc</addressOffset>
+          <access>read-write</access>
+        </register>
+        <register>
+          <name>INJECT_MASK_1</name>
+          <description>Core 1 Lockstep Error Injection Mask (FT-only)</description>
+          <addressOffset>0x1e0</addressOffset>
+          <access>read-write</access>
+        </register>
       </registers>
     </peripheral>
     <!--  Power Management Controller  -->
@@ -357,6 +369,21 @@
               <description>Watchdog Reset</description>
               <bitRange>[3:3]</bitRange>
             </field>
+            <field>
+              <name>MBIST</name>
+              <description>MBIST Reset</description>
+              <bitRange>[4:4]</bitRange>
+            </field>
+            <field>
+              <name>DCLS_ERR</name>
+              <description>Lockstep Hard Error</description>
+              <bitRange>[5:5]</bitRange>
+            </field>
+            <field>
+              <name>DCACHE_ERR</name>
+              <description>Data Cache Hard Error</description>
+              <bitRange>[6:6]</bitRange>
+            </field>
           </fields>
         </register>
         <register>
@@ -417,10 +444,10 @@
         </register>
       </registers>
     </peripheral>
-    <!--  IRQ Controller  -->
+    <!--  System Controller  -->
     <peripheral>
-      <name>IRQ</name>
-      <description>Interrupt Controller</description>
+      <name>CSR</name>
+      <description>System Controller</description>
       <baseAddress>0x30030000</baseAddress>
       <addressBlock>
         <offset>0</offset>
@@ -460,6 +487,12 @@
               <name>IR</name>
               <description>Interrupt Pending</description>
               <bitRange>[4:4]</bitRange>
+              <access>read-write</access>
+            </field>
+            <field>
+              <name>DCLS</name>
+              <description>Dual-core Lockstep Mode</description>
+              <bitRange>[5:5]</bitRange>
               <access>read-write</access>
             </field>
             <field>
@@ -769,13 +802,33 @@
               <bitRange>[15:12]</bitRange>
             </field>
             <field>
-              <name>HARDCODE</name>
-              <description>Hardcoded hardware version</description>
-              <bitRange>[23:16]</bitRange>
+              <name>AROPT</name>
+              <description>Area Optimizations</description>
+              <bitRange>[16:16]</bitRange>
             </field>
             <field>
-              <name>M16</name>
-              <description>16bit Mode Support</description>
+              <name>MULSCHEME</name>
+              <description>Multiplier Implementation</description>
+              <bitRange>[18:17]</bitRange>
+            </field>
+            <field>
+              <name>FPGA</name>
+              <description>FPGA Implementation</description>
+              <bitRange>[19:19]</bitRange>
+            </field>
+            <field>
+              <name>MULFAST</name>
+              <description>Fat 16-bit Multiplier</description>
+              <bitRange>[20:20]</bitRange>
+            </field>
+            <field>
+              <name>BPRED</name>
+              <description>Branch Prediction Scheme</description>
+              <bitRange>[23:21]</bitRange>
+            </field>
+            <field>
+              <name>MI16</name>
+              <description>16-bit Mode Support</description>
               <bitRange>[24:24]</bitRange>
             </field>
             <field>
@@ -785,8 +838,26 @@
             </field>
             <field>
               <name>GNSSNUM</name>
-              <description>GNSS Channels</description>
+              <description>GNSS Channels Number per Bank</description>
               <bitRange>[31:26]</bitRange>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>CPU_INFO_2</name>
+          <description>CPU Features 2</description>
+          <addressOffset>0x24</addressOffset>
+          <access>read-only</access>
+          <fields>
+            <field>
+              <name>DCLS</name>
+              <description>Dual-core Lockstep</description>
+              <bitRange>[3:3]</bitRange>
+            </field>
+            <field>
+              <name>GNSS_BANKS</name>
+              <description>GNSS Banks Number</description>
+              <bitRange>[7:4]</bitRange>
             </field>
           </fields>
         </register>
@@ -900,6 +971,38 @@
               <bitRange>[0:0]</bitRange>
             </field>
             <field>
+              <name>SOURCE</name>
+              <description>Counter Clock Source</description>
+              <bitRange>[7:4]</bitRange>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>Core_Clock</name>
+                  <description>processor core clock</description>
+                  <value>0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>GNSS_L1_Clock</name>
+                  <description>GNSS L1 AFE Clock</description>
+                  <value>1</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>GNSS_L5_Clock</name>
+                  <description>GNSS L5 AFE Clock</description>
+                  <value>2</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>GNSS_L2_Clock</name>
+                  <description>GNSS L2 AFE Clock</description>
+                  <value>3</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>GNSS_Virt_Clock</name>
+                  <description>GNSS Virtual AFE Clock</description>
+                  <value>4</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <field>
               <name>BITS</name>
               <description>Counter Bits</description>
               <bitRange>[22:16]</bitRange>
@@ -1003,1175 +1106,6 @@
         </register>
       </registers>
     </peripheral>
-    <!--  Memory Protection Unit  -->
-    <peripheral>
-      <name>MPU</name>
-      <description>Memory Protection Unit</description>
-      <baseAddress>0x30032000</baseAddress>
-      <addressBlock>
-        <offset>0</offset>
-        <size>0x100</size>
-        <usage>registers</usage>
-      </addressBlock>
-      <registers>
-        <register>
-          <name>STATUS</name>
-          <description>MPU Status</description>
-          <addressOffset>0x0</addressOffset>
-          <access>read-write</access>
-          <fields>
-            <field>
-              <name>EN</name>
-              <description>MPU Enable</description>
-              <bitRange>[0:0]</bitRange>
-            </field>
-          </fields>
-        </register>
-        <register>
-          <name>INFO</name>
-          <description>MPU Info</description>
-          <addressOffset>0x4</addressOffset>
-          <access>read-only</access>
-          <fields>
-            <field>
-              <name>EXEC_NUM</name>
-              <description>Number of execution regions</description>
-              <bitRange>[7:0]</bitRange>
-            </field>
-            <field>
-              <name>DATA_NUM</name>
-              <description>Number of data regions</description>
-              <bitRange>[15:8]</bitRange>
-            </field>
-            <field>
-              <name>PERIPH_NUM</name>
-              <description>Number of peripherals regions</description>
-              <bitRange>[23:16]</bitRange>
-            </field>
-          </fields>
-        </register>
-        <register>
-          <name>EXEC0_EXEC</name>
-          <description>Execution Region Register</description>
-          <addressOffset>0x10</addressOffset>
-          <access>read-write</access>
-          <fields>
-            <field>
-              <name>UEXEC</name>
-              <description>Enable execute in user mode</description>
-              <bitRange>[2:2]</bitRange>
-            </field>
-            <field>
-              <name>KERN</name>
-              <description>Enable execute in kernel mode</description>
-              <bitRange>[3:3]</bitRange>
-            </field>
-            <field>
-              <name>SIZE</name>
-              <description>Region Size</description>
-              <bitRange>[7:4]</bitRange>
-              <enumeratedValues>
-                <enumeratedValue>
-                  <name>2kB</name>
-                  <description>Region Size: 2kB</description>
-                  <value>0</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>4kB</name>
-                  <description>Region Size: 4kB</description>
-                  <value>1</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>8kB</name>
-                  <description>Region Size: 8kB</description>
-                  <value>2</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>16kB</name>
-                  <description>Region Size: 16kB</description>
-                  <value>3</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>32kB</name>
-                  <description>Region Size: 32kB</description>
-                  <value>4</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>64kB</name>
-                  <description>Region Size: 64kB</description>
-                  <value>5</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>128kB</name>
-                  <description>Region Size: 128kB</description>
-                  <value>6</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>256kB</name>
-                  <description>Region Size: 256kB</description>
-                  <value>7</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>512kB</name>
-                  <description>Region Size: 512kB</description>
-                  <value>8</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>1MB</name>
-                  <description>Region Size: 1MB</description>
-                  <value>9</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>2MB</name>
-                  <description>Region Size: 2MB</description>
-                  <value>10</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>4MB</name>
-                  <description>Region Size: 4MB</description>
-                  <value>11</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>8MB</name>
-                  <description>Region Size: 8MB</description>
-                  <value>12</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>16MB</name>
-                  <description>Region Size: 16MB</description>
-                  <value>13</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>32MB</name>
-                  <description>Region Size: 32MB</description>
-                  <value>14</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>64MB</name>
-                  <description>Region Size: 64MB</description>
-                  <value>15</value>
-                </enumeratedValue>
-              </enumeratedValues>
-            </field>
-            <field>
-              <name>ADDRESS</name>
-              <description>Region Address</description>
-              <bitRange>[31:11]</bitRange>
-            </field>
-          </fields>
-        </register>
-        <register>
-          <name>EXEC1_EXEC</name>
-          <description>Execution Region Register</description>
-          <addressOffset>0x14</addressOffset>
-          <access>read-write</access>
-          <fields>
-            <field>
-              <name>UEXEC</name>
-              <description>Enable execute in user mode</description>
-              <bitRange>[2:2]</bitRange>
-            </field>
-            <field>
-              <name>KERN</name>
-              <description>Enable execute in kernel mode</description>
-              <bitRange>[3:3]</bitRange>
-            </field>
-            <field>
-              <name>SIZE</name>
-              <description>Region Size</description>
-              <bitRange>[7:4]</bitRange>
-              <enumeratedValues>
-                <enumeratedValue>
-                  <name>2kB</name>
-                  <description>Region Size: 2kB</description>
-                  <value>0</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>4kB</name>
-                  <description>Region Size: 4kB</description>
-                  <value>1</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>8kB</name>
-                  <description>Region Size: 8kB</description>
-                  <value>2</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>16kB</name>
-                  <description>Region Size: 16kB</description>
-                  <value>3</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>32kB</name>
-                  <description>Region Size: 32kB</description>
-                  <value>4</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>64kB</name>
-                  <description>Region Size: 64kB</description>
-                  <value>5</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>128kB</name>
-                  <description>Region Size: 128kB</description>
-                  <value>6</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>256kB</name>
-                  <description>Region Size: 256kB</description>
-                  <value>7</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>512kB</name>
-                  <description>Region Size: 512kB</description>
-                  <value>8</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>1MB</name>
-                  <description>Region Size: 1MB</description>
-                  <value>9</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>2MB</name>
-                  <description>Region Size: 2MB</description>
-                  <value>10</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>4MB</name>
-                  <description>Region Size: 4MB</description>
-                  <value>11</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>8MB</name>
-                  <description>Region Size: 8MB</description>
-                  <value>12</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>16MB</name>
-                  <description>Region Size: 16MB</description>
-                  <value>13</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>32MB</name>
-                  <description>Region Size: 32MB</description>
-                  <value>14</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>64MB</name>
-                  <description>Region Size: 64MB</description>
-                  <value>15</value>
-                </enumeratedValue>
-              </enumeratedValues>
-            </field>
-            <field>
-              <name>ADDRESS</name>
-              <description>Region Address</description>
-              <bitRange>[31:11]</bitRange>
-            </field>
-          </fields>
-        </register>
-        <register>
-          <name>EXEC2_EXEC</name>
-          <description>Execution Region Register</description>
-          <addressOffset>0x18</addressOffset>
-          <access>read-write</access>
-          <fields>
-            <field>
-              <name>UEXEC</name>
-              <description>Enable execute in user mode</description>
-              <bitRange>[2:2]</bitRange>
-            </field>
-            <field>
-              <name>KERN</name>
-              <description>Enable execute in kernel mode</description>
-              <bitRange>[3:3]</bitRange>
-            </field>
-            <field>
-              <name>SIZE</name>
-              <description>Region Size</description>
-              <bitRange>[7:4]</bitRange>
-              <enumeratedValues>
-                <enumeratedValue>
-                  <name>2kB</name>
-                  <description>Region Size: 2kB</description>
-                  <value>0</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>4kB</name>
-                  <description>Region Size: 4kB</description>
-                  <value>1</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>8kB</name>
-                  <description>Region Size: 8kB</description>
-                  <value>2</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>16kB</name>
-                  <description>Region Size: 16kB</description>
-                  <value>3</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>32kB</name>
-                  <description>Region Size: 32kB</description>
-                  <value>4</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>64kB</name>
-                  <description>Region Size: 64kB</description>
-                  <value>5</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>128kB</name>
-                  <description>Region Size: 128kB</description>
-                  <value>6</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>256kB</name>
-                  <description>Region Size: 256kB</description>
-                  <value>7</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>512kB</name>
-                  <description>Region Size: 512kB</description>
-                  <value>8</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>1MB</name>
-                  <description>Region Size: 1MB</description>
-                  <value>9</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>2MB</name>
-                  <description>Region Size: 2MB</description>
-                  <value>10</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>4MB</name>
-                  <description>Region Size: 4MB</description>
-                  <value>11</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>8MB</name>
-                  <description>Region Size: 8MB</description>
-                  <value>12</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>16MB</name>
-                  <description>Region Size: 16MB</description>
-                  <value>13</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>32MB</name>
-                  <description>Region Size: 32MB</description>
-                  <value>14</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>64MB</name>
-                  <description>Region Size: 64MB</description>
-                  <value>15</value>
-                </enumeratedValue>
-              </enumeratedValues>
-            </field>
-            <field>
-              <name>ADDRESS</name>
-              <description>Region Address</description>
-              <bitRange>[31:11]</bitRange>
-            </field>
-          </fields>
-        </register>
-        <register>
-          <name>EXEC3_EXEC</name>
-          <description>Execution Region Register</description>
-          <addressOffset>0x1C</addressOffset>
-          <access>read-write</access>
-          <fields>
-            <field>
-              <name>UEXEC</name>
-              <description>Enable execute in user mode</description>
-              <bitRange>[2:2]</bitRange>
-            </field>
-            <field>
-              <name>KERN</name>
-              <description>Enable execute in kernel mode</description>
-              <bitRange>[3:3]</bitRange>
-            </field>
-            <field>
-              <name>SIZE</name>
-              <description>Region Size</description>
-              <bitRange>[7:4]</bitRange>
-              <enumeratedValues>
-                <enumeratedValue>
-                  <name>2kB</name>
-                  <description>Region Size: 2kB</description>
-                  <value>0</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>4kB</name>
-                  <description>Region Size: 4kB</description>
-                  <value>1</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>8kB</name>
-                  <description>Region Size: 8kB</description>
-                  <value>2</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>16kB</name>
-                  <description>Region Size: 16kB</description>
-                  <value>3</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>32kB</name>
-                  <description>Region Size: 32kB</description>
-                  <value>4</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>64kB</name>
-                  <description>Region Size: 64kB</description>
-                  <value>5</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>128kB</name>
-                  <description>Region Size: 128kB</description>
-                  <value>6</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>256kB</name>
-                  <description>Region Size: 256kB</description>
-                  <value>7</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>512kB</name>
-                  <description>Region Size: 512kB</description>
-                  <value>8</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>1MB</name>
-                  <description>Region Size: 1MB</description>
-                  <value>9</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>2MB</name>
-                  <description>Region Size: 2MB</description>
-                  <value>10</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>4MB</name>
-                  <description>Region Size: 4MB</description>
-                  <value>11</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>8MB</name>
-                  <description>Region Size: 8MB</description>
-                  <value>12</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>16MB</name>
-                  <description>Region Size: 16MB</description>
-                  <value>13</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>32MB</name>
-                  <description>Region Size: 32MB</description>
-                  <value>14</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>64MB</name>
-                  <description>Region Size: 64MB</description>
-                  <value>15</value>
-                </enumeratedValue>
-              </enumeratedValues>
-            </field>
-            <field>
-              <name>ADDRESS</name>
-              <description>Region Address</description>
-              <bitRange>[31:11]</bitRange>
-            </field>
-          </fields>
-        </register>
-        <register>
-          <name>DATA0_DATA</name>
-          <description>Data Region Register</description>
-          <addressOffset>0x50</addressOffset>
-          <access>read-write</access>
-          <fields>
-            <field>
-              <name>UREAD</name>
-              <description>Enable read in user mode</description>
-              <bitRange>[0:0]</bitRange>
-            </field>
-            <field>
-              <name>UWRITE</name>
-              <description>Enable write in user mode</description>
-              <bitRange>[1:1]</bitRange>
-            </field>
-            <field>
-              <name>KERN</name>
-              <description>Enable read and write in kernel mode</description>
-              <bitRange>[3:3]</bitRange>
-            </field>
-            <field>
-              <name>SIZE</name>
-              <description>Region Size</description>
-              <bitRange>[7:4]</bitRange>
-              <enumeratedValues>
-                <enumeratedValue>
-                  <name>2kB</name>
-                  <description>Region Size: 2kB</description>
-                  <value>0</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>4kB</name>
-                  <description>Region Size: 4kB</description>
-                  <value>1</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>8kB</name>
-                  <description>Region Size: 8kB</description>
-                  <value>2</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>16kB</name>
-                  <description>Region Size: 16kB</description>
-                  <value>3</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>32kB</name>
-                  <description>Region Size: 32kB</description>
-                  <value>4</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>64kB</name>
-                  <description>Region Size: 64kB</description>
-                  <value>5</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>128kB</name>
-                  <description>Region Size: 128kB</description>
-                  <value>6</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>256kB</name>
-                  <description>Region Size: 256kB</description>
-                  <value>7</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>512kB</name>
-                  <description>Region Size: 512kB</description>
-                  <value>8</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>1MB</name>
-                  <description>Region Size: 1MB</description>
-                  <value>9</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>2MB</name>
-                  <description>Region Size: 2MB</description>
-                  <value>10</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>4MB</name>
-                  <description>Region Size: 4MB</description>
-                  <value>11</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>8MB</name>
-                  <description>Region Size: 8MB</description>
-                  <value>12</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>16MB</name>
-                  <description>Region Size: 16MB</description>
-                  <value>13</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>32MB</name>
-                  <description>Region Size: 32MB</description>
-                  <value>14</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>64MB</name>
-                  <description>Region Size: 64MB</description>
-                  <value>15</value>
-                </enumeratedValue>
-              </enumeratedValues>
-            </field>
-            <field>
-              <name>ADDRESS</name>
-              <description>Region Address</description>
-              <bitRange>[31:11]</bitRange>
-            </field>
-          </fields>
-        </register>
-        <register>
-          <name>DATA1_DATA</name>
-          <description>Data Region Register</description>
-          <addressOffset>0x54</addressOffset>
-          <access>read-write</access>
-          <fields>
-            <field>
-              <name>UREAD</name>
-              <description>Enable read in user mode</description>
-              <bitRange>[0:0]</bitRange>
-            </field>
-            <field>
-              <name>UWRITE</name>
-              <description>Enable write in user mode</description>
-              <bitRange>[1:1]</bitRange>
-            </field>
-            <field>
-              <name>KERN</name>
-              <description>Enable read and write in kernel mode</description>
-              <bitRange>[3:3]</bitRange>
-            </field>
-            <field>
-              <name>SIZE</name>
-              <description>Region Size</description>
-              <bitRange>[7:4]</bitRange>
-              <enumeratedValues>
-                <enumeratedValue>
-                  <name>2kB</name>
-                  <description>Region Size: 2kB</description>
-                  <value>0</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>4kB</name>
-                  <description>Region Size: 4kB</description>
-                  <value>1</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>8kB</name>
-                  <description>Region Size: 8kB</description>
-                  <value>2</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>16kB</name>
-                  <description>Region Size: 16kB</description>
-                  <value>3</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>32kB</name>
-                  <description>Region Size: 32kB</description>
-                  <value>4</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>64kB</name>
-                  <description>Region Size: 64kB</description>
-                  <value>5</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>128kB</name>
-                  <description>Region Size: 128kB</description>
-                  <value>6</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>256kB</name>
-                  <description>Region Size: 256kB</description>
-                  <value>7</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>512kB</name>
-                  <description>Region Size: 512kB</description>
-                  <value>8</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>1MB</name>
-                  <description>Region Size: 1MB</description>
-                  <value>9</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>2MB</name>
-                  <description>Region Size: 2MB</description>
-                  <value>10</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>4MB</name>
-                  <description>Region Size: 4MB</description>
-                  <value>11</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>8MB</name>
-                  <description>Region Size: 8MB</description>
-                  <value>12</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>16MB</name>
-                  <description>Region Size: 16MB</description>
-                  <value>13</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>32MB</name>
-                  <description>Region Size: 32MB</description>
-                  <value>14</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>64MB</name>
-                  <description>Region Size: 64MB</description>
-                  <value>15</value>
-                </enumeratedValue>
-              </enumeratedValues>
-            </field>
-            <field>
-              <name>ADDRESS</name>
-              <description>Region Address</description>
-              <bitRange>[31:11]</bitRange>
-            </field>
-          </fields>
-        </register>
-        <register>
-          <name>DATA2_DATA</name>
-          <description>Data Region Register</description>
-          <addressOffset>0x58</addressOffset>
-          <access>read-write</access>
-          <fields>
-            <field>
-              <name>UREAD</name>
-              <description>Enable read in user mode</description>
-              <bitRange>[0:0]</bitRange>
-            </field>
-            <field>
-              <name>UWRITE</name>
-              <description>Enable write in user mode</description>
-              <bitRange>[1:1]</bitRange>
-            </field>
-            <field>
-              <name>KERN</name>
-              <description>Enable read and write in kernel mode</description>
-              <bitRange>[3:3]</bitRange>
-            </field>
-            <field>
-              <name>SIZE</name>
-              <description>Region Size</description>
-              <bitRange>[7:4]</bitRange>
-              <enumeratedValues>
-                <enumeratedValue>
-                  <name>2kB</name>
-                  <description>Region Size: 2kB</description>
-                  <value>0</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>4kB</name>
-                  <description>Region Size: 4kB</description>
-                  <value>1</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>8kB</name>
-                  <description>Region Size: 8kB</description>
-                  <value>2</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>16kB</name>
-                  <description>Region Size: 16kB</description>
-                  <value>3</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>32kB</name>
-                  <description>Region Size: 32kB</description>
-                  <value>4</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>64kB</name>
-                  <description>Region Size: 64kB</description>
-                  <value>5</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>128kB</name>
-                  <description>Region Size: 128kB</description>
-                  <value>6</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>256kB</name>
-                  <description>Region Size: 256kB</description>
-                  <value>7</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>512kB</name>
-                  <description>Region Size: 512kB</description>
-                  <value>8</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>1MB</name>
-                  <description>Region Size: 1MB</description>
-                  <value>9</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>2MB</name>
-                  <description>Region Size: 2MB</description>
-                  <value>10</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>4MB</name>
-                  <description>Region Size: 4MB</description>
-                  <value>11</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>8MB</name>
-                  <description>Region Size: 8MB</description>
-                  <value>12</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>16MB</name>
-                  <description>Region Size: 16MB</description>
-                  <value>13</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>32MB</name>
-                  <description>Region Size: 32MB</description>
-                  <value>14</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>64MB</name>
-                  <description>Region Size: 64MB</description>
-                  <value>15</value>
-                </enumeratedValue>
-              </enumeratedValues>
-            </field>
-            <field>
-              <name>ADDRESS</name>
-              <description>Region Address</description>
-              <bitRange>[31:11]</bitRange>
-            </field>
-          </fields>
-        </register>
-        <register>
-          <name>DATA3_DATA</name>
-          <description>Data Region Register</description>
-          <addressOffset>0x5C</addressOffset>
-          <access>read-write</access>
-          <fields>
-            <field>
-              <name>UREAD</name>
-              <description>Enable read in user mode</description>
-              <bitRange>[0:0]</bitRange>
-            </field>
-            <field>
-              <name>UWRITE</name>
-              <description>Enable write in user mode</description>
-              <bitRange>[1:1]</bitRange>
-            </field>
-            <field>
-              <name>KERN</name>
-              <description>Enable read and write in kernel mode</description>
-              <bitRange>[3:3]</bitRange>
-            </field>
-            <field>
-              <name>SIZE</name>
-              <description>Region Size</description>
-              <bitRange>[7:4]</bitRange>
-              <enumeratedValues>
-                <enumeratedValue>
-                  <name>2kB</name>
-                  <description>Region Size: 2kB</description>
-                  <value>0</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>4kB</name>
-                  <description>Region Size: 4kB</description>
-                  <value>1</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>8kB</name>
-                  <description>Region Size: 8kB</description>
-                  <value>2</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>16kB</name>
-                  <description>Region Size: 16kB</description>
-                  <value>3</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>32kB</name>
-                  <description>Region Size: 32kB</description>
-                  <value>4</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>64kB</name>
-                  <description>Region Size: 64kB</description>
-                  <value>5</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>128kB</name>
-                  <description>Region Size: 128kB</description>
-                  <value>6</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>256kB</name>
-                  <description>Region Size: 256kB</description>
-                  <value>7</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>512kB</name>
-                  <description>Region Size: 512kB</description>
-                  <value>8</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>1MB</name>
-                  <description>Region Size: 1MB</description>
-                  <value>9</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>2MB</name>
-                  <description>Region Size: 2MB</description>
-                  <value>10</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>4MB</name>
-                  <description>Region Size: 4MB</description>
-                  <value>11</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>8MB</name>
-                  <description>Region Size: 8MB</description>
-                  <value>12</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>16MB</name>
-                  <description>Region Size: 16MB</description>
-                  <value>13</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>32MB</name>
-                  <description>Region Size: 32MB</description>
-                  <value>14</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>64MB</name>
-                  <description>Region Size: 64MB</description>
-                  <value>15</value>
-                </enumeratedValue>
-              </enumeratedValues>
-            </field>
-            <field>
-              <name>ADDRESS</name>
-              <description>Region Address</description>
-              <bitRange>[31:11]</bitRange>
-            </field>
-          </fields>
-        </register>
-        <register>
-          <name>PERIPH0_PERIPH</name>
-          <description>Peripheral Region Register</description>
-          <addressOffset>0x90</addressOffset>
-          <access>read-write</access>
-          <fields>
-            <field>
-              <name>PREAD</name>
-              <description>Enable peripheral read</description>
-              <bitRange>[0:0]</bitRange>
-            </field>
-            <field>
-              <name>PWRITE</name>
-              <description>Enable peripheral write</description>
-              <bitRange>[1:1]</bitRange>
-            </field>
-            <field>
-              <name>SIZE</name>
-              <description>Region Size</description>
-              <bitRange>[7:4]</bitRange>
-              <enumeratedValues>
-                <enumeratedValue>
-                  <name>2kB</name>
-                  <description>Region Size: 2kB</description>
-                  <value>0</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>4kB</name>
-                  <description>Region Size: 4kB</description>
-                  <value>1</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>8kB</name>
-                  <description>Region Size: 8kB</description>
-                  <value>2</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>16kB</name>
-                  <description>Region Size: 16kB</description>
-                  <value>3</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>32kB</name>
-                  <description>Region Size: 32kB</description>
-                  <value>4</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>64kB</name>
-                  <description>Region Size: 64kB</description>
-                  <value>5</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>128kB</name>
-                  <description>Region Size: 128kB</description>
-                  <value>6</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>256kB</name>
-                  <description>Region Size: 256kB</description>
-                  <value>7</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>512kB</name>
-                  <description>Region Size: 512kB</description>
-                  <value>8</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>1MB</name>
-                  <description>Region Size: 1MB</description>
-                  <value>9</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>2MB</name>
-                  <description>Region Size: 2MB</description>
-                  <value>10</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>4MB</name>
-                  <description>Region Size: 4MB</description>
-                  <value>11</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>8MB</name>
-                  <description>Region Size: 8MB</description>
-                  <value>12</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>16MB</name>
-                  <description>Region Size: 16MB</description>
-                  <value>13</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>32MB</name>
-                  <description>Region Size: 32MB</description>
-                  <value>14</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>64MB</name>
-                  <description>Region Size: 64MB</description>
-                  <value>15</value>
-                </enumeratedValue>
-              </enumeratedValues>
-            </field>
-            <field>
-              <name>ADDRESS</name>
-              <description>Region Address</description>
-              <bitRange>[31:11]</bitRange>
-            </field>
-          </fields>
-        </register>
-        <register>
-          <name>PERIPH1_PERIPH</name>
-          <description>Peripheral Region Register</description>
-          <addressOffset>0x94</addressOffset>
-          <access>read-write</access>
-          <fields>
-            <field>
-              <name>PREAD</name>
-              <description>Enable peripheral read</description>
-              <bitRange>[0:0]</bitRange>
-            </field>
-            <field>
-              <name>PWRITE</name>
-              <description>Enable peripheral write</description>
-              <bitRange>[1:1]</bitRange>
-            </field>
-            <field>
-              <name>SIZE</name>
-              <description>Region Size</description>
-              <bitRange>[7:4]</bitRange>
-              <enumeratedValues>
-                <enumeratedValue>
-                  <name>2kB</name>
-                  <description>Region Size: 2kB</description>
-                  <value>0</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>4kB</name>
-                  <description>Region Size: 4kB</description>
-                  <value>1</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>8kB</name>
-                  <description>Region Size: 8kB</description>
-                  <value>2</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>16kB</name>
-                  <description>Region Size: 16kB</description>
-                  <value>3</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>32kB</name>
-                  <description>Region Size: 32kB</description>
-                  <value>4</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>64kB</name>
-                  <description>Region Size: 64kB</description>
-                  <value>5</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>128kB</name>
-                  <description>Region Size: 128kB</description>
-                  <value>6</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>256kB</name>
-                  <description>Region Size: 256kB</description>
-                  <value>7</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>512kB</name>
-                  <description>Region Size: 512kB</description>
-                  <value>8</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>1MB</name>
-                  <description>Region Size: 1MB</description>
-                  <value>9</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>2MB</name>
-                  <description>Region Size: 2MB</description>
-                  <value>10</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>4MB</name>
-                  <description>Region Size: 4MB</description>
-                  <value>11</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>8MB</name>
-                  <description>Region Size: 8MB</description>
-                  <value>12</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>16MB</name>
-                  <description>Region Size: 16MB</description>
-                  <value>13</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>32MB</name>
-                  <description>Region Size: 32MB</description>
-                  <value>14</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>64MB</name>
-                  <description>Region Size: 64MB</description>
-                  <value>15</value>
-                </enumeratedValue>
-              </enumeratedValues>
-            </field>
-            <field>
-              <name>ADDRESS</name>
-              <description>Region Address</description>
-              <bitRange>[31:11]</bitRange>
-            </field>
-          </fields>
-        </register>
-      </registers>
-    </peripheral>
     <!--  GNSS Controller Registers  -->
     <peripheral>
       <name>GNSS</name>
@@ -2191,33 +1125,33 @@
           <!--  GNSS Controller Status Register Flags  -->
           <fields>
             <field>
-              <name>L1</name>
-              <description>GNSS L1 Available</description>
+              <name>L1E1</name>
+              <description>GNSS L1/E1 Available</description>
               <bitRange>[0:0]</bitRange>
             </field>
             <field>
-              <name>L5</name>
-              <description>GNSS L5 Available</description>
+              <name>L5E5</name>
+              <description>GNSS L5/E5 Available</description>
               <bitRange>[1:1]</bitRange>
             </field>
             <field>
-              <name>L2</name>
-              <description>GNSS L2 Available</description>
+              <name>L2E6</name>
+              <description>GNSS L2/E6 Available</description>
               <bitRange>[2:2]</bitRange>
             </field>
             <field>
-              <name>L1_EN</name>
-              <description>Enable L1 FIFO</description>
+              <name>L1E1_EN</name>
+              <description>Enable L1/E1 FIFO</description>
               <bitRange>[4:4]</bitRange>
             </field>
             <field>
-              <name>L5_EN</name>
-              <description>Enable L5 FIFO</description>
+              <name>L5E5_EN</name>
+              <description>Enable L5/E5 FIFO</description>
               <bitRange>[5:5]</bitRange>
             </field>
             <field>
-              <name>L2_EN</name>
-              <description>Enable L2 FIFO</description>
+              <name>L2E6_EN</name>
+              <description>Enable L2E6 FIFO</description>
               <bitRange>[6:6]</bitRange>
             </field>
             <field>
@@ -2226,35 +1160,40 @@
               <bitRange>[9:8]</bitRange>
               <enumeratedValues>
                 <enumeratedValue>
-                  <name>L1</name>
-                  <description>GNSS L1 RF AFE</description>
+                  <name>L1E1</name>
+                  <description>GNSS L1/E1 RF AFE</description>
                   <value>0x0</value>
                 </enumeratedValue>
                 <enumeratedValue>
-                  <name>L5</name>
-                  <description>GNSS L5 RF AFE</description>
+                  <name>L5E5</name>
+                  <description>GNSS L5/E5 RF AFE</description>
                   <value>0x1</value>
                 </enumeratedValue>
                 <enumeratedValue>
-                  <name>L2</name>
-                  <description>GNSS L2 RF AFE</description>
+                  <name>L2E6</name>
+                  <description>GNSS L2/E6 RF AFE</description>
                   <value>0x2</value>
                 </enumeratedValue>
               </enumeratedValues>
             </field>
             <field>
               <name>MODE</name>
-              <description>GNSS FIFO Mode</description>
+              <description>GNSS Sample Mode</description>
               <bitRange>[10:10]</bitRange>
             </field>
             <field>
+              <name>PLAY</name>
+              <description>GNSS Playback Mode</description>
+              <bitRange>[11:11]</bitRange>
+            </field>
+            <field>
               <name>BUSY</name>
-              <description>GNSS FIFO Busy</description>
+              <description>GNSS Busy</description>
               <bitRange>[12:12]</bitRange>
             </field>
             <field>
               <name>START</name>
-              <description>GNSS FIFO Start</description>
+              <description>GNSS Start</description>
               <bitRange>[13:13]</bitRange>
             </field>
             <field>
@@ -2273,14 +1212,29 @@
               <bitRange>[18:18]</bitRange>
             </field>
             <field>
-              <name>ACQIE</name>
-              <description>Acquisition Interrupt Enable</description>
+              <name>ACQPLAYIE</name>
+              <description>Acquisition/Playback Interrupt Enable</description>
               <bitRange>[20:20]</bitRange>
             </field>
             <field>
-              <name>ACQIF</name>
-              <description>Acquisition Interrupt Flag</description>
+              <name>ACQPLAYIF</name>
+              <description>Acquisition/Playback Interrupt Flag</description>
               <bitRange>[21:21]</bitRange>
+            </field>
+            <field>
+              <name>RNGIE</name>
+              <description>Range Generation Interrupt Enable</description>
+              <bitRange>[22:22]</bitRange>
+            </field>
+            <field>
+              <name>RNGIF</name>
+              <description>Range Generation Interrupt Flag</description>
+              <bitRange>[23:23]</bitRange>
+            </field>
+            <field>
+              <name>ACQDEC</name>
+              <description>Acquisition Decimator</description>
+              <bitRange>[27:24]</bitRange>
             </field>
           </fields>
         </register>
@@ -2375,14 +1329,14 @@
           <access>read-write</access>
         </register>
         <register>
-          <name>TMSTMP_LO</name>
-          <description>Timestamp LO</description>
+          <name>TMSTMP_ACQ_LO</name>
+          <description>Acquisition Timestamp LO</description>
           <addressOffset>0x34</addressOffset>
           <access>read-only</access>
         </register>
         <register>
-          <name>TMSTMP_HI</name>
-          <description>Timestamp HI</description>
+          <name>TMSTMP_ACQ_HI</name>
+          <description>Acquisition Timestamp HI</description>
           <addressOffset>0x38</addressOffset>
           <access>read-only</access>
         </register>
@@ -2390,6 +1344,114 @@
           <name>ADCVAL</name>
           <description>Test ADC input (for diagnostics only)</description>
           <addressOffset>0x3C</addressOffset>
+          <access>read-only</access>
+        </register>
+        <register>
+          <name>RNG_NCO</name>
+          <description>Range Generation NCO Register</description>
+          <addressOffset>0x40</addressOffset>
+          <access>read-write</access>
+        </register>
+        <register>
+          <name>RNG_PERIOD</name>
+          <description>Range Generation Period Register</description>
+          <addressOffset>0x44</addressOffset>
+          <access>read-write</access>
+        </register>
+        <!-- &lt;register&gt;
+          &lt;name&gt;PPS_PERIOD&lt;/name&gt;
+          &lt;description&gt;PPS Generation Period Register&lt;/description&gt;
+          &lt;addressOffset&gt;0x48&lt;/addressOffset&gt;
+          &lt;access&gt;read-write&lt;/access&gt;
+          &lt;fields&gt;
+            &lt;field&gt;
+              &lt;name&gt;PPS_PERIOD&lt;/name&gt;
+              &lt;description&gt;PPS Generation Period&lt;/description&gt;
+              &lt;bitRange&gt;[15:0]&lt;/bitRange&gt;
+            &lt;/field&gt;
+            &lt;field&gt;
+              &lt;name&gt;PPS_HIGH_TIME&lt;/name&gt;
+              &lt;description&gt;PPS High State Time&lt;/description&gt;
+              &lt;bitRange&gt;[31:16]&lt;/bitRange&gt;
+            &lt;/field&gt;
+          &lt;/fields&gt;
+        &lt;/register&gt;  -->
+        <register>
+          <name>TMSTMP_RNG_LO</name>
+          <description>Range Generation Timestamp LO</description>
+          <addressOffset>0x4C</addressOffset>
+          <access>read-only</access>
+        </register>
+        <register>
+          <name>TMSTMP_RNG_HI</name>
+          <description>Range Generation Timestamp HI</description>
+          <addressOffset>0x50</addressOffset>
+          <access>read-only</access>
+        </register>
+        <register>
+          <name>BANKSEL</name>
+          <description>GNSS-ISE Bank Selection</description>
+          <addressOffset>0x54</addressOffset>
+          <access>read-write</access>
+        </register>
+        <register>
+          <name>PPS_IN_CFG</name>
+          <description>PPS Input Configuration Register</description>
+          <addressOffset>0x58</addressOffset>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>PPS_IN_PIN</name>
+              <description>PPS Input Pin Selection</description>
+              <bitRange>[4:0]</bitRange>
+            </field>
+            <field>
+              <name>PPS_IN_EN</name>
+              <description>PPS Input Pin Enable</description>
+              <bitRange>[5:5]</bitRange>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>PPS_PERIOD</name>
+          <description>PPS Generation Period Register</description>
+          <addressOffset>0x5C</addressOffset>
+          <access>read-write</access>
+        </register>
+        <register>
+          <name>PPS_HI</name>
+          <description>PPS Generation Period High Register</description>
+          <addressOffset>0x60</addressOffset>
+          <access>read-write</access>
+        </register>
+        <register>
+          <name>PPS_PHASE</name>
+          <description>PPS Output Phase Correction Register</description>
+          <addressOffset>0x64</addressOffset>
+          <access>read-write</access>
+        </register>
+        <register>
+          <name>TMSTMP_PPS_IN_LO</name>
+          <description>PPS Input Timestamp LO</description>
+          <addressOffset>0x68</addressOffset>
+          <access>read-only</access>
+        </register>
+        <register>
+          <name>TMSTMP_PPS_IN_HI</name>
+          <description>PPS Input Timestamp HI</description>
+          <addressOffset>0x6C</addressOffset>
+          <access>read-only</access>
+        </register>
+        <register>
+          <name>TMSTMP_PPS_OUT_LO</name>
+          <description>PPS Output Timestamp LO</description>
+          <addressOffset>0x70</addressOffset>
+          <access>read-only</access>
+        </register>
+        <register>
+          <name>TMSTMP_PPS_OUT_HI</name>
+          <description>PPS Output Timestamp HI</description>
+          <addressOffset>0x74</addressOffset>
           <access>read-only</access>
         </register>
       </registers>
@@ -2415,6 +1477,31 @@
               <name>EN</name>
               <description>Instruction Cache Enable</description>
               <bitRange>[0:0]</bitRange>
+            </field>
+            <field>
+              <name>PARITY_EN</name>
+              <description>Enable Parity (FT-only)</description>
+              <bitRange>[3:3]</bitRange>
+            </field>
+            <field>
+              <name>ERR_CNT_TRIG</name>
+              <description>Error Counter Trigger (FT-only)</description>
+              <bitRange>[4:4]</bitRange>
+            </field>
+            <field>
+              <name>SCRAMBLE_EN</name>
+              <description>Enable Scrambling (FT-only)</description>
+              <bitRange>[5:5]</bitRange>
+            </field>
+            <field>
+              <name>MEM_ERR_INJECT</name>
+              <description>Inject Memory Error (FT-only)</description>
+              <bitRange>[6:6]</bitRange>
+            </field>
+            <field>
+              <name>TAG_ERR_INJECT</name>
+              <description>Inject Tag Error (FT-only)</description>
+              <bitRange>[7:7]</bitRange>
             </field>
           </fields>
         </register>
@@ -2460,7 +1547,48 @@
               <description>Instruction Cache Tag</description>
               <bitRange>[21:15]</bitRange>
             </field>
+            <field>
+              <name>VER</name>
+              <description>Instruction Cache Version</description>
+              <bitRange>[31:28]</bitRange>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>HP</name>
+                  <description>High-performance</description>
+                  <value>0x0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>FT</name>
+                  <description>Fault-tolerant</description>
+                  <value>0x3</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
           </fields>
+        </register>
+        <register>
+          <name>ERR_CNT_0</name>
+          <description>Core 0 Error Count</description>
+          <addressOffset>0xC</addressOffset>
+          <access>read-write</access>
+        </register>
+        <register>
+          <name>ERR_CNT_1</name>
+          <description>Core 1 Error Count</description>
+          <addressOffset>0x10</addressOffset>
+          <access>read-write</access>
+        </register>
+        <register>
+          <name>INJECT_MASK_LO</name>
+          <description>Error Injection Mask Low</description>
+          <addressOffset>0x14</addressOffset>
+          <access>read-write</access>
+        </register>
+        <register>
+          <name>INJECT_MASK_HI</name>
+          <description>Error Injection Mask High</description>
+          <addressOffset>0x18</addressOffset>
+          <access>read-write</access>
         </register>
       </registers>
     </peripheral>
@@ -2488,13 +1616,38 @@
             </field>
             <field>
               <name>FLUSH</name>
-              <description>Data Cache Flush in Progress</description>
+              <description>Data Cache Flush in Progress (not in FT)</description>
               <bitRange>[1:1]</bitRange>
             </field>
             <field>
               <name>BUSY</name>
-              <description>Data Cache Write Buffer Busy</description>
+              <description>Data Cache Write Buffer Busy (not in FT)</description>
               <bitRange>[2:2]</bitRange>
+            </field>
+            <field>
+              <name>PARITY_EN</name>
+              <description>Enable Parity (FT-only)</description>
+              <bitRange>[3:3]</bitRange>
+            </field>
+            <field>
+              <name>ERR_CNT_TRIG</name>
+              <description>Error Counter Trigger (FT-only)</description>
+              <bitRange>[4:4]</bitRange>
+            </field>
+            <field>
+              <name>SCRAMBLE_EN</name>
+              <description>Enable Scrambling (FT-only)</description>
+              <bitRange>[5:5]</bitRange>
+            </field>
+            <field>
+              <name>MEM_ERR_INJECT</name>
+              <description>Inject Memory Error (FT-only)</description>
+              <bitRange>[6:6]</bitRange>
+            </field>
+            <field>
+              <name>TAG_ERR_INJECT</name>
+              <description>Inject Tag Error (FT-only)</description>
+              <bitRange>[7:7]</bitRange>
             </field>
           </fields>
         </register>
@@ -2544,8 +1697,54 @@
               <name>VER</name>
               <description>Data Cache Version</description>
               <bitRange>[31:28]</bitRange>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>HP</name>
+                  <description>High-performance</description>
+                  <value>0x0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>HS</name>
+                  <description>High-speed</description>
+                  <value>0x1</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>LP</name>
+                  <description>Low-power</description>
+                  <value>0x2</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>FT</name>
+                  <description>Fault-tolerant</description>
+                  <value>0x3</value>
+                </enumeratedValue>
+              </enumeratedValues>
             </field>
           </fields>
+        </register>
+        <register>
+          <name>ERR_CNT_0</name>
+          <description>Core 0 Error Count</description>
+          <addressOffset>0xC</addressOffset>
+          <access>read-write</access>
+        </register>
+        <register>
+          <name>ERR_CNT_1</name>
+          <description>Core 1 Error Count</description>
+          <addressOffset>0x10</addressOffset>
+          <access>read-write</access>
+        </register>
+        <register>
+          <name>INJECT_MASK_LO</name>
+          <description>Error Injection Mask Low</description>
+          <addressOffset>0x14</addressOffset>
+          <access>read-write</access>
+        </register>
+        <register>
+          <name>INJECT_MASK_HI</name>
+          <description>Error Injection Mask High</description>
+          <addressOffset>0x18</addressOffset>
+          <access>read-write</access>
         </register>
       </registers>
     </peripheral>
@@ -10763,22 +9962,9 @@
           <addressOffset>0x1C</addressOffset>
           <access>read-only</access>
         </register>
-        <!--  &lt;register&gt;
-          &lt;name&gt;BURST_CNT&lt;/name&gt;
-          &lt;description&gt;Burst Counter&lt;/description&gt;
-          &lt;addressOffset&gt;0x20&lt;/addressOffset&gt;
-          &lt;access&gt;write-only&lt;/access&gt;
-          &lt;fields&gt;
-            &lt;field&gt;
-              &lt;name&gt;BURST_CNT&lt;/name&gt;
-              &lt;description&gt;Burst Count&lt;/description&gt;
-              &lt;bitRange&gt;[12:2]&lt;/bitRange&gt;
-            &lt;/field&gt;
-          &lt;/fields&gt;
-        &lt;/register&gt;  -->
         <register>
-          <name>INFO</name>
-          <description>Debug Info</description>
+          <name>VERSION</name>
+          <description>Debug Version</description>
           <addressOffset>0x24</addressOffset>
           <access>read-only</access>
           <fields>
@@ -10788,9 +9974,44 @@
               <bitRange>[0:0]</bitRange>
             </field>
             <field>
+              <name>MBIST_EN</name>
+              <description>MBIST Support</description>
+              <bitRange>[1:1]</bitRange>
+            </field>
+            <field>
               <name>BURST_CNT</name>
               <description>Burst Counter Size</description>
               <bitRange>[7:4]</bitRange>
+            </field>
+            <field>
+              <name>PROC_ARCH</name>
+              <description>Processor Architecture</description>
+              <bitRange>[11:8]</bitRange>
+            </field>
+            <field>
+              <name>ROM_START</name>
+              <description>ROM Region Start</description>
+              <bitRange>[15:12]</bitRange>
+            </field>
+            <field>
+              <name>RAM_START</name>
+              <description>RAM Region Start</description>
+              <bitRange>[19:16]</bitRange>
+            </field>
+            <field>
+              <name>PERIPH_START</name>
+              <description>Peripherals Region Start</description>
+              <bitRange>[23:20]</bitRange>
+            </field>
+            <field>
+              <name>AMBA_START</name>
+              <description>AMBA Region Start</description>
+              <bitRange>[27:24]</bitRange>
+            </field>
+            <field>
+              <name>DEBUG_START</name>
+              <description>Debug Region Start</description>
+              <bitRange>[31:28]</bitRange>
             </field>
           </fields>
         </register>

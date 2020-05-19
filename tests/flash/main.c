@@ -32,8 +32,8 @@
  * File Name : main.c
  * Author    : Maciej Plasota
  * ******************************************************************************
- * $Date: 2018-10-25 10:58:01 +0200 (czw) $
- * $Revision: 324 $
+ * $Date: 2019-10-21 09:43:30 +0200 (pon, 21 paź 2019) $
+ * $Revision: 477 $
  *H*****************************************************************************/
 
 #include "board.h"
@@ -73,7 +73,12 @@
 static const uint32_t PAGE_SIZE_BYTES = 512;
 static const uint32_t MODULE_SIZE_PAGES = 512;
 static const uint32_t REGION_SIZE_PAGES = 16;
+#ifdef BOARD_CCNV1_A1
 static const uint32_t NUMBER_OF_FLASH_MACRO_CELLS = 3;
+#else
+static const uint32_t NUMBER_OF_FLASH_MACRO_CELLS = 4;
+#endif
+
 /*
 static void printRegDump()
 {
@@ -92,6 +97,27 @@ static void printRegDump()
     printf("REGION_LOCKS[1](%08X): %08X\n", & (AMBA_FLASH_PTR->REGION_LOCKS[1]), (unsigned int)AMBA_FLASH_PTR->REGION_LOCKS[1]);
 }
 */
+
+static flash_access_status_t util_waitForReady(flash_access_status_t status)
+{
+    if(status == BUSY)
+    {
+        status = flash_loop_while_busy();
+    }
+    ok_eq(status, READY);
+    return status;
+}
+
+static flash_access_status_t util_waitForProgrammingError(flash_access_status_t status)
+{
+    if(status == BUSY)
+    {
+        status = flash_loop_while_busy();
+    }
+    ok_eq(status, PROGRAMMING_ERROR);
+    return status;
+}
+
 static void testFLASH_INFO()
 {
     printf("\nFLASH info test\n");
@@ -103,30 +129,30 @@ static void testFLASH_INFO()
 
 static void testFLASH_DebuggerReadLock()
 {
+#ifdef BOARD_CCNV1_A1
+	printf("\nDebugger Read Lock test are disabled for CCNV1_A1 board\n");
+#else
     flash_access_status_t status;
     printf("\nDebugger Read Lock test\n");
     assertFalse(flash_is_debugger_read_locked());
     status = flash_lock_debugger_read();
-    if(status == BUSY)
-    {
-        status = flash_loop_while_busy();
-    }
-    ok_eq(status, READY);
+    status = util_waitForReady(status);
     assertTrue(flash_is_debugger_read_locked());
+#endif
 }
 
 static void testFLASH_DebuggerAccessLock()
 {
+#ifdef BOARD_CCNV1_A1
+	printf("\nDebugger Access Lock test are disabled for CCNV1_A1 board\n");
+#else
     flash_access_status_t status;
     printf("\nDebugger Access Lock test\n");
     assertFalse(flash_is_debugger_access_locked());
     status = flash_lock_debugger_access();
-    if(status == BUSY)
-    {
-        status = flash_loop_while_busy();
-    }
-    ok_eq(status, READY);
+    status = util_waitForReady(status);
     assertTrue(flash_is_debugger_access_locked());
+#endif
 }
 
 static void testFLASH_ChipEraseLock()
@@ -135,19 +161,11 @@ static void testFLASH_ChipEraseLock()
     printf("\nChip Erase Lock test\n");
     assertFalse(flash_is_chip_erase_locked());
     status = flash_lock_chip_erase();
-    if(status == BUSY)
-    {
-        status = flash_loop_while_busy();
-    }
-    ok_eq(status, READY);
+    status = util_waitForReady(status);
     assertTrue(flash_is_chip_erase_locked());
 
     status = flash_chip_erase();
-    if(status == BUSY)
-    {
-        status = flash_loop_while_busy();
-    }
-    ok_eq(status, PROGRAMMING_ERROR);
+    status = util_waitForProgrammingError(status);
 }
 
 static void testFLASH_MemoryWriteRead()
@@ -187,22 +205,14 @@ static void testFLASH_MemoryWriteRead()
 
 //            printf("\n - Erase");
             status = flash_erase_page(dataPointer);
-            if(status == BUSY)
-            {
-                status = flash_loop_while_busy();
-            }
-            ok_eq(status, READY);
+            status = util_waitForReady(status);
 
 //            printf("\n - Write");
             if(idx_row == 0)
             {
 //                printf(" Page slow");
                 status = flash_write_page_slow(dataPointer, testVector, PAGE_SIZE_BYTES / 4);
-                if(status == BUSY)
-                {
-                    status = flash_loop_while_busy();
-                }
-                ok_eq(status, READY);
+                status = util_waitForReady(status);
             }
             else if(idx_row == 1)
             {
@@ -210,11 +220,7 @@ static void testFLASH_MemoryWriteRead()
                 for(uint32_t idx_data = 0; idx_data < PAGE_SIZE_BYTES/4; ++idx_data)
                 {
                     status = flash_write_word_immediate(&dataPointer[idx_data], testVector[idx_data]);
-                    if(status == BUSY)
-                    {
-                        status = flash_loop_while_busy();
-                    }
-                    ok_eq(status, READY);
+                    status = util_waitForReady(status);
                 }
             }
             else if(idx_row == 2)
@@ -224,22 +230,14 @@ static void testFLASH_MemoryWriteRead()
                 for(uint32_t idx_data = 0; idx_data < PAGE_SIZE_BYTES/4; ++idx_data)
                 {
                     status = flash_write_word(&dataPointer[idx_data], testVector[idx_data]);
-                    if(status == BUSY)
-                    {
-                        status = flash_loop_while_busy();
-                    }
-                    ok_eq(status, READY);
+                    status = util_waitForReady(status);
                 }
             }
             else
             {
 //                printf(" Page");
                 status = flash_write_page(dataPointer, testVector, PAGE_SIZE_BYTES / 4);
-                if(status == BUSY)
-                {
-                    status = flash_loop_while_busy();
-                }
-                ok_eq(status, READY);
+                status = util_waitForReady(status);
             }
 //            printf("\n - Verify");
             for(uint32_t idx_col = 0; idx_col < PAGE_SIZE_BYTES/4; ++idx_col)
@@ -269,19 +267,11 @@ static void testFLASH_MemoryLock()
 
 //        printf("\n - Erase");
         status = flash_erase_page(dataPointer);
-        if(status == BUSY)
-        {
-            status = flash_loop_while_busy();
-        }
-        ok_eq(status, READY);
+        status = util_waitForReady(status);
 
 //        printf("\n - Write Page");
         status = flash_write_page(dataPointer, testVector, PAGE_SIZE_BYTES / 4);
-        if(status == BUSY)
-        {
-            status = flash_loop_while_busy();
-        }
-        ok_eq(status, READY);
+        status = util_waitForReady(status);
 
 //        printf("\n - Verify");
         for(uint32_t idx_col = 0; idx_col < PAGE_SIZE_BYTES/4; ++idx_col)
@@ -291,21 +281,13 @@ static void testFLASH_MemoryLock()
 
 //        printf("\n - Lock Region");
         status = flash_lock_region(dataPointer);
-        if(status == BUSY)
-        {
-            status = flash_loop_while_busy();
-        }
-        ok_eq(status, READY);
+        status = util_waitForReady(status);
 
         assertTrue(flash_is_region_locked(dataPointer));
 
 //        printf("\n - Erase");
         status = flash_erase_page(dataPointer);
-        if(status == BUSY)
-        {
-            status = flash_loop_while_busy();
-        }
-        ok_eq(status, PROGRAMMING_ERROR);
+        status = util_waitForProgrammingError(status);
 
 //        printf("\n - Verify not erased");
         for(uint32_t idx_col = 0; idx_col < PAGE_SIZE_BYTES/4; ++idx_col)
@@ -315,11 +297,7 @@ static void testFLASH_MemoryLock()
 
 //        printf("\n - Locked Write Page");
         status = flash_write_page(dataPointer, testVector, PAGE_SIZE_BYTES / 4);
-        if(status == BUSY)
-        {
-            status = flash_loop_while_busy();
-        }
-        ok_eq(status, PROGRAMMING_ERROR);
+        status = util_waitForProgrammingError(status);
     }
 }
 
@@ -342,11 +320,7 @@ static void testFLASH_ManufacturerWriteRead()
             ok_eq(status, READY);
         } else {
             status = flash_write_manufacturer_row_word(idx, testVector[idx]);
-            if(status == BUSY)
-            {
-                status = flash_loop_while_busy();
-            }
-            ok_eq(status, READY);
+            status = util_waitForReady(status);
         }
     }
 
@@ -360,11 +334,7 @@ static void testFLASH_ManufacturerWriteRead()
 
 //    printf("\n - Erase\n");
     status = flash_erase_manufacturer_row();
-    if(status == BUSY)
-    {
-        status = flash_loop_while_busy();
-    }
-    ok_eq(status, READY);
+    status = util_waitForReady(status);
 
 //    printf("\n - Verify Erased\n");
     for(uint32_t idx = 0; idx < sizeof (testVector) / sizeof (*testVector); idx++)
@@ -387,11 +357,7 @@ static void testFLASH_ManufacturerLock()
 
 //    printf("\n - Erase\n");
     status = flash_erase_manufacturer_row();
-    if(status == BUSY)
-    {
-        status = flash_loop_while_busy();
-    }
-    ok_eq(status, READY);
+    status = util_waitForReady(status);
 
 //    printf("\n - Write\n");
     for(uint32_t idx = 0; idx < sizeof (testVector) / sizeof (*testVector); idx++)
@@ -402,11 +368,7 @@ static void testFLASH_ManufacturerLock()
             ok_eq(status, READY);
         } else {
             status = flash_write_manufacturer_row_word(idx, testVector[idx]);
-            if(status == BUSY)
-            {
-                status = flash_loop_while_busy();
-            }
-            ok_eq(status, READY);
+            status = util_waitForReady(status);
         }
     }
 
@@ -420,22 +382,14 @@ static void testFLASH_ManufacturerLock()
 
 //    printf("\n - Lock Manufacturer Region\n");
     status = flash_lock_manufacturer_row();
-    if(status == BUSY)
-    {
-        status = flash_loop_while_busy();
-    }
-    ok_eq(status, READY);
+    status = util_waitForReady(status);
 
     //check if it's locked
     assertTrue(flash_is_manufacturer_row_locked());
 
 //    printf("\n - Erase\n");
     status = flash_erase_manufacturer_row();
-    if(status == BUSY)
-    {
-        status = flash_loop_while_busy();
-    }
-    ok_eq(status, PROGRAMMING_ERROR);
+    status = util_waitForProgrammingError(status);
 
 //    printf("\n - Verify not Erased\n");
     for(uint32_t idx = 0; idx < sizeof (testVector) / sizeof (*testVector); idx++)
@@ -465,11 +419,7 @@ static void testFLASH_UserWriteRead()
             ok_eq(status, READY);
         } else {
             status = flash_write_user_row_word(idx, testVector[idx]);
-            if(status == BUSY)
-            {
-                status = flash_loop_while_busy();
-            }
-            ok_eq(status, READY);
+            status = util_waitForReady(status);
         }
     }
 
@@ -483,11 +433,7 @@ static void testFLASH_UserWriteRead()
 
 //    printf("\n - Erase\n");
     status = flash_erase_user_row();
-    if(status == BUSY)
-    {
-        status = flash_loop_while_busy();
-    }
-    ok_eq(status, READY);
+    status = util_waitForReady(status);
 
 //    printf("\n - Verify Erased\n");
     for(uint32_t idx = 0; idx < sizeof (testVector) / sizeof (*testVector); idx++)
@@ -510,11 +456,7 @@ static void testFLASH_UserLock()
 
     //    printf("\n - Erase\n");
     status = flash_erase_user_row();
-    if(status == BUSY)
-    {
-        status = flash_loop_while_busy();
-    }
-    ok_eq(status, READY);
+    status = util_waitForReady(status);
 
 //    printf("\n - Write\n");
     for(uint32_t idx = 0; idx < sizeof (testVector) / sizeof (*testVector); idx++)
@@ -525,11 +467,7 @@ static void testFLASH_UserLock()
             ok_eq(status, READY);
         } else {
             status = flash_write_user_row_word(idx, testVector[idx]);
-            if(status == BUSY)
-            {
-                status = flash_loop_while_busy();
-            }
-            ok_eq(status, READY);
+            status = util_waitForReady(status);
         }
     }
 
@@ -543,22 +481,14 @@ static void testFLASH_UserLock()
 
 //    printf("\n - Lock Manufacturer Region\n");
     status = flash_lock_user_row();
-    if(status == BUSY)
-    {
-        status = flash_loop_while_busy();
-    }
-    ok_eq(status, READY);
+    status = util_waitForReady(status);
 
     //check if it's locked
     assertTrue(flash_is_user_row_locked());
 
 //    printf("\n - Erase\n");
     status = flash_erase_user_row();
-    if(status == BUSY)
-    {
-        status = flash_loop_while_busy();
-    }
-    ok_eq(status, PROGRAMMING_ERROR);
+    status = util_waitForProgrammingError(status);
 
 //    printf("\n - Verify not Erased\n");
     for(uint32_t idx = 0; idx < sizeof (testVector) / sizeof (*testVector); idx++)
@@ -601,20 +531,12 @@ static void testFLASH_FactoryWriteRead()
 
 //    printf("\n - Erase\n");
     status = flash_erase_factory_row();
-    if(status == BUSY)
-    {
-        status = flash_loop_while_busy();
-    }
-    ok_eq(status, READY);
+    status = util_waitForReady(status);
 
 //    printf("\n - Write random data\n");
     readWord = rand();
     status = flash_write_factory_row_word(0, rand());
-    if(status == BUSY)
-    {
-        status = flash_loop_while_busy();
-    }
-    ok_eq(status, READY);
+    status = util_waitForReady(status);
 
 //    printf("\n - Verify\n");
     status = flash_read_factory_row_word(0, &readWord);
@@ -623,19 +545,11 @@ static void testFLASH_FactoryWriteRead()
 
 //    printf("\n - Erase\n");
     status = flash_erase_factory_row();
-    if(status == BUSY)
-    {
-        status = flash_loop_while_busy();
-    }
-    ok_eq(status, READY);
+    status = util_waitForReady(status);
 
 //    printf("\n - Write back the old data\n");
     status = flash_write_factory_row_word(0, testVector[0]);
-    if(status == BUSY)
-    {
-        status = flash_loop_while_busy();
-    }
-    ok_eq(status, READY);
+    status = util_waitForReady(status);
 }
 
 static void testFLASH_FactoryLock()
@@ -650,22 +564,14 @@ static void testFLASH_FactoryLock()
 
 //    printf("\n - Lock Factory Region\n");
     status = flash_lock_factory_row();
-    if(status == BUSY)
-    {
-        status = flash_loop_while_busy();
-    }
-    ok_eq(status, READY);
+    status = util_waitForReady(status);
 
     //check if it's locked
     assertTrue(flash_is_factory_row_locked());
 
 //    printf("\n - Erase\n");
     status = flash_erase_factory_row();
-    if(status == BUSY)
-    {
-        status = flash_loop_while_busy();
-    }
-    ok_eq(status, PROGRAMMING_ERROR);
+    status = util_waitForProgrammingError(status);
 
 //    printf("\n - Verify not Erased\n");
     for(uint32_t idx = 0; idx < sizeof (testVector) / sizeof (*testVector); idx++)
@@ -684,10 +590,7 @@ static void testFLASH_PageBufferWriteRead()
     flash_access_status_t status;
 
     status = flash_clear_page_buffer();
-    if(status == BUSY)
-    {
-        status = flash_loop_while_busy();
-    }
+    status = util_waitForReady(status);
 
 //    printf("\n - Write\n");
     for(uint32_t idx = 0; idx < sizeof (testVector) / sizeof (*testVector); idx++)
@@ -698,11 +601,7 @@ static void testFLASH_PageBufferWriteRead()
             ok_eq(status, READY);
         } else {
             status = flash_write_word_to_page_buffer(idx, testVector[idx]);
-            if(status == BUSY)
-            {
-                status = flash_loop_while_busy();
-            }
-            ok_eq(status, READY);
+            status = util_waitForReady(status);
         }
     }
 
@@ -716,11 +615,7 @@ static void testFLASH_PageBufferWriteRead()
 
 //    printf("\n - Erase\n");
     status = flash_clear_page_buffer();
-    if(status == BUSY)
-    {
-        status = flash_loop_while_busy();
-    }
-    ok_eq(status, READY);
+    status = util_waitForReady(status);
 
 //    printf("\n - Verify Erased\n");
     for(uint32_t idx = 0; idx < sizeof (testVector) / sizeof (*testVector); idx++)

@@ -12,6 +12,14 @@ Install required Python modules:
 
     pip install pyserial
 
+Add program srec_cat to PATH variable. The binary for Linux is distributed as:
+tools/resources/linux/srecord/srec_cat
+This binary will be needed by ccprog.
+
+Building ccsim from sources for Windows with PGO-optimization shall require
+'wine'. It's recommended to install 'wine' using guide posted on WineHQ page:
+https://wiki.winehq.org/Ubuntu
+
 Usage (with GUI)
 ----------------
 
@@ -30,10 +38,21 @@ Essential environment variables:
 * `CCSDK_DBG_PORT` - debug UART port, e.g. `/dev/ttyUSB1` (Linux), `COM1` (Windows)
 * `CCSDK_UART_PORT` - console UART port, e.g. `/dev/ttyUSB2` (Linux), `COM2` (Windows)
 * `CCSDK_BOARD` - board identifier (see `boards` directory for example names), e.g. `ml605`
+* `CCSDK_TOOLCHAIN_PATH` - path to MIPS toolchain binaries, e.g. /usr/local/mips-cc-elf/x86_64-chipcraft-linux-gnu/bin
+* `CCSDK_LINUX_IDE_PATH` - path to Eclipse-based IDE for Linux platform, used to generate distribution package
+* `CCSDK_WINDOWS_IDE_PATH` - path to Eclipse-based IDE for Windows platform, used to generate distribution package
 
 CCSDK contains script for quick definition of those variables.
 Please run `ccenv.cmd` on Windows or `ccenv.sh` on Linux.
 `ccenv` script sets `CCSDK_HOME` to current directory and asks user for values for the rest of variables.
+
+Optional environment variables:
+
+* `VERILATOR_ROOT` - Verilator installation root directory, e.g. `/usr/local/share/verilator`
+* `CCSDK_VTESTBENCH_ROOT` - VTestbench project files directory`
+
+To build ccsim from source, both of these variables have to be defined.
+Otherwise prebuilt ccsim version will be used.
 
 Building example projects (in terminal)
 ---------------------------------------
@@ -91,5 +110,4 @@ Directory        | Description
 `linker`         | GNU LD compatible linker script
 `svd`            | System View Description files
 `tests`          | Source code of microcontroller tests. Can be used as examples of peripherial usage.
-`toolchain`      | GNU compiler toolchain (GCC, BinUtils, GDB, NewLib)
 `tools`          | Tools for programming and debugging (e.g. ccprog, dbgserver)

@@ -32,8 +32,8 @@
 # File Name : stackprotect.S
 # Author    : Rafal Harabien
 # ******************************************************************************
-# $Date: 2018-09-07 16:07:40 +0200 (pią) $
-# $Revision: 296 $
+# $Date: 2019-05-16 23:26:56 +0200 (czw, 16 maj 2019) $
+# $Revision: 419 $
 #H******************************************************************************
 
 #include <specialreg.h>
@@ -86,9 +86,9 @@ OK_LABEL: \
 .data
 
 safe_printf_buffer:
-  .word 0 # IRQ Controller Status Register
+  .word 0 # System Controller Status Register
   .word 0 # Stack Pointer
-  .word 0 # Resturn Address
+  .word 0 # Return Address
 
 test_val:
   .word 0xFFFFFFFF
@@ -97,45 +97,45 @@ test_val:
 
 safe_printf:
   la $t7, safe_printf_buffer
-  sw $sp, 4($t7)     # save Stack Pointer in buffer
-  sw $ra, 8($t7)     # save Return Address in buffer
-  li $t9, 0x30030000 # IRQ Controller base address
-  lw $t8, ($t9)      # load Status Register
-  sw $t8, 0($t7)     # save Status Register in buffer
-  li $t6, ~0x8       # disable Stack Protection
+  sw $sp, 4($t7)                 # save Stack Pointer in buffer
+  sw $ra, 8($t7)                 # save Return Address in buffer
+  li $t9, (CSR_CTRL_BASE << 16)  # System Controller base address
+  lw $t8, ($t9)                  # load Status Register
+  sw $t8, 0($t7)                 # save Status Register in buffer
+  li $t6, ~(SPROT_EN_MASK)       # disable Stack Protection
   and $t8, $t6
-  sw $t8, ($t9)      # update Status Register
+  sw $t8, ($t9)                  # update Status Register
   la $sp, safe_printf_stack_end
-  jal printf         # do the printing job
+  jal printf                     # do the printing job
   nop
-  li $t9, 0x30030000 # IRQ Controller base address
+  li $t9, (CSR_CTRL_BASE << 16)  # System Controller base address
   la $t7, safe_printf_buffer
-  lw $t8, 0($t7)     # read old Status Register value
-  lw $sp, 4($t7)     # restore Stack Pointer
-  lw $ra, 8($t7)     # restore Return Address
-  sw $t8, 0($t9)     # restore Status Register
+  lw $t8, 0($t7)                 # read old Status Register value
+  lw $sp, 4($t7)                 # restore Stack Pointer
+  lw $ra, 8($t7)                 # restore Return Address
+  sw $t8, 0($t9)                 # restore Status Register
   jr $ra
   nop
 
 .global testStackProtection
 testStackProtection:
-  add $sp, -16       # alloc stack
-  sw $s0, 0($sp)     # save s0 on stack
-  sw $s1, 4($sp)     # save s1 on stack
-  sw $s2, 8($sp)     # save s2 on stack
-  sw $s3, 12($sp)    # save s3 on stack
+  add $sp, -16                   # alloc stack
+  sw $s0, 0($sp)                 # save s0 on stack
+  sw $s1, 4($sp)                 # save s1 on stack
+  sw $s2, 8($sp)                 # save s2 on stack
+  sw $s3, 12($sp)                # save s3 on stack
 
-  move $s0, $sp      # save current Stack Pointer
-  move $s1, $ra      # save Return Address
+  move $s0, $sp                  # save current Stack Pointer
+  move $s1, $ra                  # save Return Address
 
-  la $sp, stack_end  # set temporary stack
-  li $s2, 0x30030000 # IRQ Controller
+  la $sp, stack_end              # set temporary stack
+  li $s2, (CSR_CTRL_BASE << 16)  # System Controller Base base address
   la $t2, stack_begin
-  sw $t2, 0x38($s2)  # update SP_MIN register
-  sw $sp, 0x3C($s2)  # update SP_MAX register
-  lw $s3, 0($s2)     # load Status Register
-  ori $s3, 0x8       # enable Stack Protection
-  sw $s3, 0($s2)     # store Status Register
+  sw $t2, SPROT_MIN_OFFSET($s2)  # update SP_MIN register
+  sw $sp, SPROT_MAX_OFFSET($s2)  # update SP_MAX register
+  lw $s3, 0($s2)                 # load Status Register
+  ori $s3, SPROT_EN_MASK         # enable Stack Protection
+  sw $s3, 0($s2)                 # store Status Register
   addi $sp, $sp, -4
 
   # now test Stack Protection
@@ -186,113 +186,113 @@ testStackProtection:
   lw $zero, 0($sp)  # ok
   lw $zero, 4($sp)  # ok
 
-  EXPECT_EXCEPTION_BEGIN(IRQ_EXC_SP)
+  EXPECT_EXCEPTION_BEGIN(CSR_EXC_SP)
   sb $zero, 5($sp)  # fail
   EXPECT_EXCEPTION_END
-  EXPECT_EXCEPTION_BEGIN(IRQ_EXC_SP)
+  EXPECT_EXCEPTION_BEGIN(CSR_EXC_SP)
   sb $zero, 6($sp)  # fail
   EXPECT_EXCEPTION_END
-  EXPECT_EXCEPTION_BEGIN(IRQ_EXC_SP)
+  EXPECT_EXCEPTION_BEGIN(CSR_EXC_SP)
   sb $zero, 7($sp)  # fail
   EXPECT_EXCEPTION_END
-  EXPECT_EXCEPTION_BEGIN(IRQ_EXC_SP)
+  EXPECT_EXCEPTION_BEGIN(CSR_EXC_SP)
   sb $zero, 8($sp)  # fail
   EXPECT_EXCEPTION_END
 
-  EXPECT_EXCEPTION_BEGIN(IRQ_EXC_SP)
+  EXPECT_EXCEPTION_BEGIN(CSR_EXC_SP)
   sh $zero, 6($sp)  # fail
   EXPECT_EXCEPTION_END
-  EXPECT_EXCEPTION_BEGIN(IRQ_EXC_SP)
+  EXPECT_EXCEPTION_BEGIN(CSR_EXC_SP)
   sh $zero, 8($sp)  # fail
   EXPECT_EXCEPTION_END
 
-  EXPECT_EXCEPTION_BEGIN(IRQ_EXC_SP)
+  EXPECT_EXCEPTION_BEGIN(CSR_EXC_SP)
   sw $zero, 8($sp)  # fail
   EXPECT_EXCEPTION_END
 
-  EXPECT_EXCEPTION_BEGIN(IRQ_EXC_SP)
+  EXPECT_EXCEPTION_BEGIN(CSR_EXC_SP)
   lb $zero, 5($sp)  # fail
   EXPECT_EXCEPTION_END
-  EXPECT_EXCEPTION_BEGIN(IRQ_EXC_SP)
+  EXPECT_EXCEPTION_BEGIN(CSR_EXC_SP)
   lb $zero, 6($sp)  # fail
   EXPECT_EXCEPTION_END
-  EXPECT_EXCEPTION_BEGIN(IRQ_EXC_SP)
+  EXPECT_EXCEPTION_BEGIN(CSR_EXC_SP)
   lb $zero, 7($sp)  # fail
   EXPECT_EXCEPTION_END
-  EXPECT_EXCEPTION_BEGIN(IRQ_EXC_SP)
+  EXPECT_EXCEPTION_BEGIN(CSR_EXC_SP)
   lb $zero, 8($sp)  # fail
   EXPECT_EXCEPTION_END
 
-  EXPECT_EXCEPTION_BEGIN(IRQ_EXC_SP)
+  EXPECT_EXCEPTION_BEGIN(CSR_EXC_SP)
   lh $zero, 6($sp)  # fail
   EXPECT_EXCEPTION_END
-  EXPECT_EXCEPTION_BEGIN(IRQ_EXC_SP)
+  EXPECT_EXCEPTION_BEGIN(CSR_EXC_SP)
   lh $zero, 8($sp)  # fail
   EXPECT_EXCEPTION_END
 
-  EXPECT_EXCEPTION_BEGIN(IRQ_EXC_SP)
+  EXPECT_EXCEPTION_BEGIN(CSR_EXC_SP)
   lw $zero, 8($sp)  # fail
   EXPECT_EXCEPTION_END
 
-  EXPECT_EXCEPTION_BEGIN(IRQ_EXC_SP)
+  EXPECT_EXCEPTION_BEGIN(CSR_EXC_SP)
   sb $zero, -5($sp)  # fail
   EXPECT_EXCEPTION_END
-  EXPECT_EXCEPTION_BEGIN(IRQ_EXC_SP)
+  EXPECT_EXCEPTION_BEGIN(CSR_EXC_SP)
   sb $zero, -6($sp)  # fail
   EXPECT_EXCEPTION_END
-  EXPECT_EXCEPTION_BEGIN(IRQ_EXC_SP)
+  EXPECT_EXCEPTION_BEGIN(CSR_EXC_SP)
   sb $zero, -7($sp)  # fail
   EXPECT_EXCEPTION_END
-  EXPECT_EXCEPTION_BEGIN(IRQ_EXC_SP)
+  EXPECT_EXCEPTION_BEGIN(CSR_EXC_SP)
   sb $zero, -8($sp)  # fail
   EXPECT_EXCEPTION_END
 
-  EXPECT_EXCEPTION_BEGIN(IRQ_EXC_SP)
+  EXPECT_EXCEPTION_BEGIN(CSR_EXC_SP)
   sh $zero, -6($sp)  # fail
   EXPECT_EXCEPTION_END
-  EXPECT_EXCEPTION_BEGIN(IRQ_EXC_SP)
+  EXPECT_EXCEPTION_BEGIN(CSR_EXC_SP)
   sh $zero, -8($sp)  # fail
   EXPECT_EXCEPTION_END
 
-  EXPECT_EXCEPTION_BEGIN(IRQ_EXC_SP)
+  EXPECT_EXCEPTION_BEGIN(CSR_EXC_SP)
   sw $zero, -8($sp)  # fail
   EXPECT_EXCEPTION_END
 
-  EXPECT_EXCEPTION_BEGIN(IRQ_EXC_SP)
+  EXPECT_EXCEPTION_BEGIN(CSR_EXC_SP)
   lb $zero, -5($sp)  # fail
   EXPECT_EXCEPTION_END
-  EXPECT_EXCEPTION_BEGIN(IRQ_EXC_SP)
+  EXPECT_EXCEPTION_BEGIN(CSR_EXC_SP)
   lb $zero, -6($sp)  # fail
   EXPECT_EXCEPTION_END
-  EXPECT_EXCEPTION_BEGIN(IRQ_EXC_SP)
+  EXPECT_EXCEPTION_BEGIN(CSR_EXC_SP)
   lb $zero, -7($sp)  # fail
   EXPECT_EXCEPTION_END
-  EXPECT_EXCEPTION_BEGIN(IRQ_EXC_SP)
+  EXPECT_EXCEPTION_BEGIN(CSR_EXC_SP)
   lb $zero, -8($sp)  # fail
   EXPECT_EXCEPTION_END
 
-  EXPECT_EXCEPTION_BEGIN(IRQ_EXC_SP)
+  EXPECT_EXCEPTION_BEGIN(CSR_EXC_SP)
   lh $zero, -6($sp)  # fail
   EXPECT_EXCEPTION_END
-  EXPECT_EXCEPTION_BEGIN(IRQ_EXC_SP)
+  EXPECT_EXCEPTION_BEGIN(CSR_EXC_SP)
   lh $zero, -8($sp)  # fail
   EXPECT_EXCEPTION_END
 
-  EXPECT_EXCEPTION_BEGIN(IRQ_EXC_SP)
+  EXPECT_EXCEPTION_BEGIN(CSR_EXC_SP)
   lw $zero, -8($sp)  # fail
   EXPECT_EXCEPTION_END
 
-  xor $s3, 0x8       # disable Stack Protection
-  sw $s3, 0($s2)     # store Status Register
+  xor $s3, SPROT_EN_MASK         # disable Stack Protection
+  sw $s3, 0($s2)                 # store Status Register
 
-  move $sp, $s0      # restore Stack Pointer
-  move $ra, $s1      # restore Return Address
-  lw $s0, 0($sp)     # restore s0 from stack
-  lw $s1, 4($sp)     # restore s1 from stack
-  lw $s2, 8($sp)     # restore s2 from stack
-  lw $s3, 12($sp)    # restore s3 from stack
-  add $sp, 16        # free stack
-  jr $ra             # return
+  move $sp, $s0                  # restore Stack Pointer
+  move $ra, $s1                  # restore Return Address
+  lw $s0, 0($sp)                 # restore s0 from stack
+  lw $s1, 4($sp)                 # restore s1 from stack
+  lw $s2, 8($sp)                 # restore s2 from stack
+  lw $s3, 12($sp)                # restore s3 from stack
+  add $sp, 16                    # free stack
+  jr $ra                         # return
   nop
 
 
@@ -308,8 +308,7 @@ syscall_handler:
 .global exception_handler
 exception_handler:
 .common_handler:
-  lui $k0, 0x3003  # IRQ Controller base address
-  lw  $k0, 8($k0)  # read EXC_CAUSE
+  mfc0 $k0, C0_CAUSE             # read EXC_CAUSE
 
   #j .exit_exc
   #nop
@@ -324,8 +323,7 @@ exception_handler:
   # Invalid handler
 .invalid_handler:
   la $a0, invalid_handler_str
-  lui $k0, 0x3003  # IRQ Controller base address
-  lw  $a1, 4($k0)  # read RET_PC
+  mfc0 $a1, C0_EPC               # read RET_PC
   jal safe_printf
   nop
 
@@ -333,13 +331,12 @@ exception_handler:
   # Update expected exception variable
   la $k1, expected_exception
   lw $k1, ($k1)
-  beq $k0, $k1, .exc_rsn_ok # check if this is expected exception
+  beq $k0, $k1, .exc_rsn_ok      # check if this is expected exception
   nop
 
   # Invalid exception
   la $a0, unexp_exc_str
-  lui $k0, 0x3003  # IRQ Controller base address
-  lw  $a1, 4($k0)  # read RET_PC
+  mfc0 $a1, C0_EPC               # read RET_PC
   move $a2, $k1
   move $a3, $k0
   jal safe_printf
@@ -349,16 +346,19 @@ exception_handler:
 
 .exc_rsn_ok:
   la $k1, expected_exception
-  sw $zero, ($k1)  # clear expected_exception
+  sw $zero, ($k1)                # clear expected_exception
 
 .exit_exc:
-  lui $k0, 0x3003  # IRQ Controller base address
-  lw  $k1, 4($k0)  # read RET_PC
-  addiu $k1, 4     # go to next instruction
-  jr $k1           # return
-  rfe              # end of exception handler
+  mfc0 $k1, C0_EPC               # read RET_PC
+  addiu $k1, 4                   # go to next instruction
+  jr $k1                         # return
+  rfe                            # end of exception handler
 
+#ifndef _NO_SPRAM_MEMORY
 .section .spram_bss, "aw", @nobits
+#else
+.data
+#endif
   .space 8, 0 # space before
 stack_begin:
   .space 8, 0

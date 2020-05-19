@@ -2,8 +2,8 @@
 *
 * Copyright (c) 2018 ChipCraft Sp. z o.o. All rights reserved
 *
-* $Date: 2018-12-08 16:50:56 +0100 (sob) $
-* $Revision: 369 $
+* $Date: 2019-11-03 23:10:21 +0100 (nie, 03 lis 2019) $
+* $Revision: 481 $
 *
 *  ----------------------------------------------------------------------
 * Redistribution and use in source and binary forms, with or without
@@ -173,6 +173,8 @@ typedef enum
     FLASH_COMMAND_LOCK_CHIP_ERASE               = 26,             /*!< Lock access to Chip Erase command        */
     FLASH_COMMAND_WRITE_PAGE_BUFFER_WORD        = 27,             /*!< Write Data Word to Page Buffer command   */
     FLASH_COMMAND_READ_PAGE_BUFFER_WORD         = 28,             /*!< Read Data Word from Page Buffer command  */
+    FLASH_COMMAND_LOCK_DIRECT_NVR_ACCESS        = 32,             /*!< Lock direct access to NVR registers      */
+    FLASH_COMMAND_LOCK_CONFIG_LATCH_ACCESS      = 35              /*!< Lock access to config latches            */
 } amba_flash_command_t;
 
 /** Flash Lock Register Flags */
@@ -200,6 +202,8 @@ enum
     FLASH_MASTER_LOCKS_MANUFACTURER_ROW_LOCKED  = 0x00000004,  /*!< Flash Manufacturer Row locked bit mask    */
     FLASH_MASTER_LOCKS_FACTORY_ROW_LOCKED       = 0x00000008,  /*!< Flash Factory Row locked bit mask         */
     FLASH_MASTER_LOCKS_USER_ROW_LOCKED          = 0x00000010,  /*!< Flash User Row locked bit mask            */
+    FLASH_MASTER_LOCKS_CONFIG_ACCESS_LOCKED     = 0x20000000,  /*!< Flash User Row locked bit mask            */
+    FLASH_MASTER_LOCKS_NVR_ACCESS_LOCKED        = 0x40000000,  /*!< Flash User Row locked bit mask            */
     FLASH_MASTER_LOCKS_CHIP_ERASE_LOCKED        = 0x80000000,  /*!< Flash Chip Erase command locked bit mask  */
 };
 

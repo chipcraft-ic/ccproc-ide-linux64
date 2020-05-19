@@ -7,8 +7,8 @@
 #
 # Author: Rafal Harabien
 #
-# $Date: 2018-11-22 22:21:32 +0100 (czw) $
-# $Revision: 358 $
+# $Date: 2020-04-14 16:02:50 +0200 (wto, 14 kwi 2020) $
+# $Revision: 547 $
 #
 
 import time, sys, os, stat, select, threading, logging, re, struct, binascii, socket, serial, getopt, signal
@@ -1322,7 +1322,7 @@ def create_dbg_stream(opts):
 		dsrdtr = (os.name != 'nt')
 
 		# Note: pyserial doesnt detect port closing when reading data from another thread without timeout
-		dbg_stream = serial.Serial(port=opts.dbg_port, baudrate=opts.dbg_baudrate, rtscts=True, dsrdtr=dsrdtr)
+		dbg_stream = serial.Serial(port=opts.dbg_port, baudrate=opts.dbg_baudrate, rtscts=False, dsrdtr=dsrdtr)
 		logging.info('Connected to debug port %s (baudrate %d)', opts.dbg_port, opts.dbg_baudrate)
 	
 	dbg_stream = StreamLoggingWrapper(dbg_stream, opts.debug_proto_log_path)

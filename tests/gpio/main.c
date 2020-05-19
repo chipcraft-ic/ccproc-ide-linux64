@@ -32,13 +32,13 @@
 * File Name : main.c
 * Author    : Rafal Harabien
 * ******************************************************************************
-* $Date: 2018-10-08 11:52:38 +0200 (pon) $
-* $Revision: 320 $
+* $Date: 2020-02-05 10:34:45 +0100 (śro, 05 lut 2020) $
+* $Revision: 512 $
 *H*****************************************************************************/
 
 #include "board.h"
 #include <ccproc.h>
-#include <ccproc-irq.h>
+#include <ccproc-csr.h>
 #include <ccproc-amba.h>
 #include <ccproc-amba-gpio.h>
 #include <stdio.h>
@@ -109,7 +109,9 @@ static void testPin(unsigned pin)
     // test Pull Down
     setGpioPinPullCfg(pin, GPIO_PULL_DOWN);
     for (i = 0; i < 100; ++i);
+#if CCSDK_BOARD != ml605
     assertEq(AMBA_GPIO_PTR->IN & pinFlag, 0);
+#endif
 
     // reset pull and out config
     setGpioPinPullCfg(pin, GPIO_PULL_NONE);
@@ -125,7 +127,7 @@ static void testPin(unsigned pin)
 
     // interrupts
     AMBA_GPIO_PTR->IRQMAP = 1 << 3;
-    IRQ_CTRL_PTR->IRQ_MASK |= 1 << 3;
+    CSR_CTRL_PTR->IRQ_MASK |= 1 << 3;
     AMBA_GPIO_PTR->DIR = 0; // input
 
     setGpioPinPullCfg(pin, GPIO_PULL_DOWN);
@@ -135,13 +137,17 @@ static void testPin(unsigned pin)
     g_expectedIrq = 1;
     setGpioPinPullCfg(pin, GPIO_PULL_UP);
     for (i = 0; i < 100; ++i);
+#if CCSDK_BOARD != ml605
     assertFalse(g_expectedIrq);
+#endif
 
     setGpioPinSense(pin, GPIO_SENSE_FALLING);
     g_expectedIrq = 1;
     setGpioPinPullCfg(pin, GPIO_PULL_DOWN);
     for (i = 0; i < 100; ++i);
+#if CCSDK_BOARD != ml605
     assertFalse(g_expectedIrq);
+#endif
 }
 
 int main(void)
@@ -154,8 +160,8 @@ int main(void)
         return 0;
     }
 
-    IRQ_CTRL_PTR->IRQ_MASK = 1; // enable exceptions
-    IRQ_CTRL_PTR->STATUS |= IRQ_STAT_CIEN;
+    CSR_CTRL_PTR->IRQ_MASK = 1; // enable exceptions
+    CSR_CTRL_PTR->STATUS |= CSR_STAT_CIEN;
 
     printf("Found %lu pins.\n", AMBA_GPIO_COUNT());
 

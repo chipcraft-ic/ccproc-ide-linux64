@@ -13,8 +13,8 @@
     "timer32_cc_num": 0,
     "dcache_way_num": 2,
     "icache_en": true,
-    "mpu_exec_num": 4,
-    "mpu_periph_num": 2,
+    "mpu_exec_num": 2,
+    "mpu_periph_num": 1,
     "gpio_num": 16,
     "apb1_en": false,
     "dcache_lrr_en": false,
@@ -42,7 +42,7 @@
     "i2c_mst_num": 1,
     "perfcnt_en": true,
     "fpga_tech": 1,
-    "mpu_en": true,
+    "mpu_en": false,
     "dcache_way_tag_end": 20,
     "icache_way_tag_end": 21,
     "gnss_en": true,
@@ -51,6 +51,6 @@
     "uart_num": 4,
     "onewire_en": true,
     "spi_num": 3,
-    "mpu_data_num": 4,
+    "mpu_data_num": 2,
     "gnss_num": 8
 }

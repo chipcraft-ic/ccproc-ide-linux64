@@ -2,8 +2,8 @@
 *
 * Copyright (c) 2017 ChipCraft Sp. z o.o. All rights reserved
 *
-* $Date: 2018-09-07 16:07:40 +0200 (pią) $
-* $Revision: 296 $
+* $Date: 2020-02-13 11:00:59 +0100 (czw, 13 lut 2020) $
+* $Revision: 524 $
 *
 *  ----------------------------------------------------------------------
 * Redistribution and use in source and binary forms, with or without
@@ -34,7 +34,9 @@
  * -------------------------------------------------------------------- */
 
 #include <ccproc.h>
-#include <ccproc-irq.h>
+#include <ccproc-csr.h>
+
+#include "max2771.h"
 
 /**
  * @brief Initialize the ML605 board
@@ -42,11 +44,22 @@
 void board_init(void)
 {
     /* check if external DDR3 instruction memory is used, if yes, overwrite to 256MB */
-    if (CPU_INFO_GET_IMSIZE_LOG(IRQ_CTRL_PTR->CPU_INFO_0) == 0){
-        IRQ_CTRL_PTR->CPU_INFO_0 |= 28;
+    if (CPU_INFO_GET_IMSIZE_LOG(CSR_CTRL_PTR->CPU_INFO_0) == 0){
+        CSR_CTRL_PTR->CPU_INFO_0 |= 28;
     }
     /* check if external DDR3 data memory is used, if yes, overwrite to 256MB        */
-    if (CPU_INFO_GET_DMSIZE_LOG(IRQ_CTRL_PTR->CPU_INFO_0) == 0){
-        IRQ_CTRL_PTR->CPU_INFO_0 |= 28 << CPU_DMSIZE_SHIFT;
+    if (CPU_INFO_GET_DMSIZE_LOG(CSR_CTRL_PTR->CPU_INFO_0) == 0){
+        CSR_CTRL_PTR->CPU_INFO_0 |= 28 << CPU_DMSIZE_SHIFT;
     }
 }
+
+/**
+ * @brief Initialize GNSS AFE for ML605 board
+ */
+void gnss_afe_init(void)
+{
+    max2771_conf_band(L1E1);
+	max2771_conf_band(L5E5);
+	max2771_conf_band(L2E6);
+}
+

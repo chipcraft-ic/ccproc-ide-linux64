@@ -2,8 +2,8 @@
 *
 * Copyright (c) 2017 ChipCraft Sp. z o.o. All rights reserved
 *
-* $Date: 2018-09-07 16:07:40 +0200 (pią) $
-* $Revision: 296 $
+* $Date: 2019-10-03 19:22:07 +0200 (czw, 03 paź 2019) $
+* $Revision: 474 $
 *
 *  ----------------------------------------------------------------------
 * Redistribution and use in source and binary forms, with or without
@@ -34,8 +34,8 @@
  * -------------------------------------------------------------------- */
 
 /**
- * @file            ccproc-amba-spi.h
- * @brief           CC Processor AMBA RTC definitions
+ * @file            ccproc-amba-rtc.h
+ * @brief           CCRV32 Processor AMBA RTC definitions
  * @author          Rafal Harabien
  *
  * @addtogroup      CCAMBA
@@ -111,7 +111,7 @@ enum
     RTC_SHDNCTRL_ACCK_MASK  = 0xFF000000,  /*!< RTC SHDN Access Key  */
 };
 
-#define RTC_ACCESS_KEY 0xA5000000
+#define RTC_ACCESS_KEY 0xA5000000 /*!< RTC Access Key */
 
 /** RTC Status Register Flags */
 enum

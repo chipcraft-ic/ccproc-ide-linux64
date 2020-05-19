@@ -2,8 +2,8 @@
 *
 * Copyright (c) 2017 ChipCraft Sp. z o.o. All rights reserved
 *
-* $Date: 2018-09-07 16:07:40 +0200 (pią) $
-* $Revision: 296 $
+* $Date: 2020-02-13 11:00:59 +0100 (czw, 13 lut 2020) $
+* $Revision: 524 $
 *
 *  ----------------------------------------------------------------------
 * Redistribution and use in source and binary forms, with or without
@@ -46,9 +46,18 @@
 
 #define STDIO_UART              0
 #define STDIO_BAUDRATE          115200
+#define STDIO_RTSCTS            0
 
 #define TIME_SOURCE             TIMER32
 #define TIME_SOURCE_TIMER_ID    0
 #define TIME_SOURCE_PRSC        40
+
+#define MAX2771_SPI_NUM         2
+#define MAX2771_L1E1_CS         12
+#define MAX2771_L5E5_CS         11
+#define MAX2771_L2E6_CS         10
+
+/* Initialize GNSS AFE */
+void gnss_afe_init(void);
 
 #endif /* _BOARD_H */

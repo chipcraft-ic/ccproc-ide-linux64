@@ -2,8 +2,8 @@
 *
 * Copyright (c) 2017 ChipCraft Sp. z o.o. All rights reserved
 *
-* $Date: 2018-09-07 16:07:40 +0200 (pią) $
-* $Revision: 296 $
+* $Date: 2019-12-19 12:13:42 +0100 (czw, 19 gru 2019) $
+* $Revision: 491 $
 *
 *  ----------------------------------------------------------------------
 * Redistribution and use in source and binary forms, with or without
@@ -124,6 +124,15 @@ enum
     GPIO_ALTER_0       = 0x01,  /*!< Alternative function 0    */
     GPIO_ALTER_1       = 0x02,  /*!< Alternative function 1    */
     GPIO_ALTER_2       = 0x03,  /*!< Alternative function 2    */
+};
+
+/** GPIO Drive Strength Config */
+enum
+{
+    GPIO_DRIVE_0    = 0x00,  /*!< Base                      */
+    GPIO_DRIVE_1    = 0x01,  /*!< Base x 2                  */
+    GPIO_DRIVE_2    = 0x02,  /*!< Base x 4                  */
+    GPIO_DRIVE_3    = 0x03,  /*!< Base x 6                  */
 };
 
 /** GPIO config macro */

@@ -32,8 +32,8 @@
 * File Name : syscalls.c
 * Author    : Rafal Harabien
 * ******************************************************************************
-* $Date: 2019-01-25 11:13:38 +0100 (pią) $
-* $Revision: 376 $
+* $Date: 2020-05-12 14:08:36 +0200 (wto, 12 maj 2020) $
+* $Revision: 574 $
 *H*****************************************************************************/
 
 #include <errno.h>
@@ -47,7 +47,7 @@
 #include <sys/times.h>
 #include <ccproc.h>
 #include <ccproc-utils.h>
-#include <ccproc-irq.h>
+#include <ccproc-csr.h>
 #include <ccproc-perfcnt.h>
 #include <ccproc-amba.h>
 #include <ccproc-amba-timer.h>
@@ -99,7 +99,7 @@
     #pragma message STR(ALLOWED_TIME_SOURCE)
 #endif /* TIME_SOURCE */
 
-int uart_init_blocking(int uart, uint32_t baudrate);
+int uart_init_blocking(int uart, uint32_t baudrate, int rtscts);
 int uart_write_blocking(int uart, char data);
 int uart_read_blocking(int uart, char *data);
 
@@ -172,7 +172,7 @@ static uint32_t clock_read(void)
 void _ccsdk_init(void)
 {
     /* Setup heap */
-    uint32_t cpu_info = IRQ_CTRL_PTR->CPU_INFO_0;
+    uint32_t cpu_info = CSR_CTRL_PTR->CPU_INFO_0;
     heap_begin = (char*)&_sheap;
     if (CPU_INFO_GET_DMSIZE_LOG(cpu_info) == 0)
         // in case of no on-chip RAM memory
@@ -181,7 +181,7 @@ void _ccsdk_init(void)
         heap_end = (char*)(RAM_BASE + CPU_INFO_GET_DMSIZE(cpu_info));
     heap_top = heap_begin;
 
-    uart_init_blocking(STDIO_UART, STDIO_BAUDRATE);
+    uart_init_blocking(STDIO_UART, STDIO_BAUDRATE, STDIO_RTSCTS);
     clock_init();
 }
 

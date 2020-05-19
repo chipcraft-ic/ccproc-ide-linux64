@@ -2,8 +2,8 @@
 *
 * Copyright (c) 2018 ChipCraft Sp. z o.o. All rights reserved
 *
-* $Date: 2018-09-07 16:07:40 +0200 (pią) $
-* $Revision: 296 $
+* $Date: 2019-10-03 19:22:07 +0200 (czw, 03 paź 2019) $
+* $Revision: 474 $
 *
 *  ----------------------------------------------------------------------
 * Redistribution and use in source and binary forms, with or without
@@ -52,10 +52,10 @@
  * @{
  *//************************/
 
-#define CCPROC_JEDEC_MANUF_ID_DECIMAL 125     /* Decimal value of ChipCraft Sp. z o.o. JEDEC Manufacturer ID number */
-#define CCPROC_JEDEC_MANUF_ID_BANK    10      /* Bank number of ChipCraft Sp. z o.o. JEDEC Manufacturer ID number   */
+#define CCPROC_JEDEC_MANUF_ID_DECIMAL 125     /*!< Decimal value of ChipCraft Sp. z o.o. JEDEC Manufacturer ID number */
+#define CCPROC_JEDEC_MANUF_ID_BANK    10      /*!< Bank number of ChipCraft Sp. z o.o. JEDEC Manufacturer ID number   */
 
-#define CCPROC_JTAG_MANUF_ID_HEX      0x4FD   /* IEEE-1149.1 JTAG number of ChipCraft Sp. z o.o. Manufacturer ID    */
+#define CCPROC_JTAG_MANUF_ID_HEX      0x4FD   /*!< IEEE-1149.1 JTAG number of ChipCraft Sp. z o.o. Manufacturer ID    */
 
 /** JTAG IDCODE bit offsets */
 enum
@@ -77,7 +77,7 @@ enum
  * @name JTAG IDCODE helper macros
  * @{
  */
-#define IDCODE_GET                       (IRQ_CTRL_PTR->CPU_IDCODE)                                                 /*!< JTAG IDCODE get                          */
+#define IDCODE_GET                       (CSR_CTRL_PTR->CPU_IDCODE)                                                 /*!< JTAG IDCODE get                          */
 #define IDCODE_GET_MANUF_ID              ((IDCODE_GET & (JTAG_IDCODE_MANUF_ID_MASK)) >> JTAG_IDCODE_MANUF_ID_SHIFT) /*!< JTAG IDCODE get Manufacturer ID          */
 #define IDCODE_GET_PART_NUM              ((IDCODE_GET & (JTAG_IDCODE_PART_NUM_MASK)) >> JTAG_IDCODE_PART_NUM_SHIFT) /*!< JTAG IDCODE get part number              */
 #define IDCODE_GET_PART_VER              ((IDCODE_GET & (JTAG_IDCODE_PART_VER_MASK)) >> JTAG_IDCODE_PART_VER_SHIFT) /*!< JTAG IDCODE get part version             */

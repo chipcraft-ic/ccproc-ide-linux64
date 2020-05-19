@@ -32,8 +32,8 @@
 # File Name : isa16ds.S
 # Author    : Krzysztof Marcinek, Rafal Harabien
 # ******************************************************************************
-# $Date: 2019-01-30 15:24:26 +0100 (śro) $
-# $Revision: 381 $
+# $Date: 2019-08-21 14:53:23 +0200 (śro, 21 sie 2019) $
+# $Revision: 445 $
 #H******************************************************************************
 
 
@@ -165,14 +165,39 @@ g_totalTests:
 
 intro_str:
   .asciiz "Starting ISA16 delay slot exception tests...\n"
-
 noisa16_str:
   .asciiz "\nNo ISA16 found!\n\n"
+icache_str:
+  .asciiz "No icache test.\n"
+dcache_str:
+  .asciiz "No dcache test.\n"
 
 .text
 
 .global main
 main:
+
+#ifdef NO_ICACHE
+  lui $t0, 0x3007   # cache controller base
+  lw $t1, 0($t0)    # icache status
+  li $t2, 0xfffffffe
+  and $t1, $t1, $t2 # disable icache
+  sw $t1, 0($t0)
+  la $a0, icache_str
+  jal printf
+  nop
+#endif
+#ifdef NO_DCACHE
+  lui $t0, 0x3007   # cache controller base
+  lw $t1, 8192($t0) # dcache status
+  li $t2, 0xfffffffe
+  and $t1, $t1, $t2 # disable icache
+  sw $t1, 8192($t0)
+  la $a0, dcache_str
+  jal printf
+  nop
+#endif
+
   # Enable exceptions
   lui $t0, 0x3003  # IRQ Controller
   lw $t1, 0($t0)   # read STATUS
@@ -228,7 +253,7 @@ ntaken_branch_break_test:
 .insn
   test_begin "Testing break exception with non-taken branch"
   inc_var g_totalTests
-  expect_exception_begin IRQ_EXC_BRK, 3
+  expect_exception_begin CSR_EXC_BRK, 3
   beqz $a2, ntaken_branch_break_test
   break 3
   expect_exception_end
@@ -251,7 +276,7 @@ ntaken_branch_load_test:
   test_begin "Testing load exception with non-taken branch"
   inc_var g_totalTests
   li $a3, 3
-  expect_exception_begin IRQ_EXC_LE
+  expect_exception_begin CSR_EXC_LE
   beqz $a2, ntaken_branch_load_test
   .set noautoextend
   lw $a2, 0($a3)
@@ -281,7 +306,7 @@ ntaken_branch_dbus_test:
   sll $a3, $a3, 16
   li $a2, 0
   or $a3, $a2
-  expect_exception_begin IRQ_EXC_DBUS
+  expect_exception_begin CSR_EXC_DBUS
   beqz $a3, ntaken_branch_dbus_rest
   .set noautoextend
   lw $a2, 0($a3)
@@ -298,7 +323,7 @@ taken_jump_store_test:
   sll $a2, $a2, 16
   li $v1, %lo(taken_jump_store_rest)
   or $a2, $v1
-  expect_exception_begin IRQ_EXC_SE
+  expect_exception_begin CSR_EXC_SE
   .set noautoextend
   jalr $a2
   sw $a2, 0($a3)
@@ -311,7 +336,7 @@ taken_jal_store_test:
   test_begin "Testing store exception with taken jump and link"
   inc_var g_totalTests
   li $a3, 3
-  expect_exception_begin IRQ_EXC_SE
+  expect_exception_begin CSR_EXC_SE
   .set noautoextend
   jal taken_jal_store_rest
   sw $a2, 0($a3)
@@ -329,7 +354,7 @@ taken_jump_ibus_test:
   sll $a2, $a2, 16
   li $v1, 0
   or $a2, $v1
-  expect_exception_begin IRQ_EXC_IBUS
+  expect_exception_begin CSR_EXC_IBUS
   .set noautoextend
   jalr $a2
   nop
@@ -439,7 +464,7 @@ exception_handler:
 
   # check break exception (test non-taken branch)
 .break_check:
-  li $t9, IRQ_EXC_BRK
+  li $t9, CSR_EXC_BRK
   bne $k0, $t9, .no_break_check
   nop
   inc_var g_totalTests
@@ -452,7 +477,7 @@ exception_handler:
 
   # check load exception (test non-taken branch)
 .load_check:
-  li $t9, IRQ_EXC_LE
+  li $t9, CSR_EXC_LE
   bne $k0, $t9, .no_load_check
   nop
   inc_var g_totalTests
@@ -467,7 +492,7 @@ exception_handler:
 
   # check dbus exception (test non-taken branch)
 .dbus_check:
-  li $t9, IRQ_EXC_DBUS
+  li $t9, CSR_EXC_DBUS
   bne $k0, $t9, .no_dbus_check
   nop
   inc_var g_totalTests
@@ -485,7 +510,7 @@ exception_handler:
 
   # check store exception (test taken jump)
 .store_check:
-  li $t9, IRQ_EXC_SE
+  li $t9, CSR_EXC_SE
   bne $k0, $t9, .no_store_check
   nop
   # adjust to incremented t8
@@ -501,7 +526,7 @@ exception_handler:
   # check branch delay slot bit
   inc_var g_totalTests
   mfc0 $k0, C0_STATUS  # read EXC_STATUS
-  lui $a3, IRQ_BD_MASK_HI
+  lui $a3, CSR_BD_MASK_HI
   and $k0, $k0, $a3
   beq $k0, $zero, mi32fail
   nop
@@ -511,7 +536,7 @@ exception_handler:
 
   # check ibus exception (test taken jump)
 .ibus_check:
-  li $t9, IRQ_EXC_IBUS
+  li $t9, CSR_EXC_IBUS
   bne $k0, $t9, .no_ibus_check
   nop
   li $t8, 0x1fff
@@ -540,7 +565,7 @@ exception_handler:
   # check branch delay slot bit
   inc_var g_totalTests
   mfc0 $k0, C0_STATUS  # read EXC_STATUS
-  lui $a3, IRQ_BD_MASK_HI
+  lui $a3, CSR_BD_MASK_HI
   and $k0, $k0, $a3
   bne $k0, $zero, mi32fail
   nop

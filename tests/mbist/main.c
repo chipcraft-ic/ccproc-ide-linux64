@@ -32,16 +32,18 @@
 * File Name : main.c
 * Author    : Krzysztof Marcinek
 * ******************************************************************************
-* $Date: 2019-02-15 14:56:41 +0100 (pią) $
-* $Revision: 383 $
+* $Date: 2020-02-10 17:59:51 +0100 (pon, 10 lut 2020) $
+* $Revision: 520 $
 *H*****************************************************************************/
 
 #include "board.h"
 #include <ccproc.h>
-#include <ccproc-irq.h>
+#include <ccproc-csr.h>
+#include <ccproc-utils.h>
 #include <ccproc-pwd.h>
 #include <ccproc-mcore.h>
 #include <ccproc-mbist.h>
+#include <core_util.h>
 #include <stdio.h>
 #include "test.h"
 
@@ -53,15 +55,20 @@ int main(void)
 
     core_num = MCORE_PTR->CORE_NUM;
 
-    if ((IRQ_CTRL_PTR->CPU_INFO_1 & CPU_MBIST) == 0){
+    if ((CSR_CTRL_PTR->CPU_INFO_1 & CPU_MBIST) == 0){
         printf("No MBIST found!\n");
         printTestSummary();
         return 0;
     }
-    if ((IRQ_CTRL_PTR->CPU_INFO_0 & CPU_PWD) == 0){
+    if ((CSR_CTRL_PTR->CPU_INFO_0 & CPU_PWD) == 0){
         printf("Power management controller required to test MBIST!\n");
         printTestSummary();
         return 0;
+    }
+
+    // Disable lockstep mode if present
+    if (lockstepDisable() == 0){
+        printf("\nDisabling lockstep mode!\n");
     }
 
     if (PWD_PTR->RSTRSN == PWD_RSN_MBIST){
@@ -91,11 +98,11 @@ int main(void)
             assertTrue(mask!=0);
             if (mask == status){
                 assertTrue(1);
-                printf("Internal Core %d MBIST ok.\n",(unsigned int)i);
+                printf("Internal Core %d MBIST ok - mask %d, status %d.\n",(unsigned int)i,(unsigned int)mask,(unsigned int)status);
             }
             else{
                 assertTrue(0);
-                printf("Internal Core %d MBIST failed.\n",(unsigned int)i);
+                printf("Internal Core %d MBIST failed - mask %d, status %d.\n",(unsigned int)i,(unsigned int)mask,(unsigned int)status);
             }
         }
 
@@ -103,14 +110,16 @@ int main(void)
         MBIST_PTR->SCRATCH1 = g_totalTests;
 
         if ((MBIST_PTR->CTRL&MBIST_CTRL_ALG_MASK)>>MBIST_CTRL_ALG_SHIFT == MBIST_ALG_ZERO_ONE){
-            printf("Algorithm: MATS+.\n");
+            printf("\nAlgorithm: MATS+.\n");
             MBIST_PTR->CTRL = MBIST_ALG_MATS_P << MBIST_CTRL_ALG_SHIFT;
+            MEMORY_BARRIER();
             MBIST_PTR->RUN = MBIST_RUN_KEY;
             for(;;);
         }
         else if ((MBIST_PTR->CTRL&MBIST_CTRL_ALG_MASK)>>MBIST_CTRL_ALG_SHIFT == MBIST_ALG_MATS_P){
-            printf("Algorithm: March C-.\n");
+            printf("\nAlgorithm: March C-.\n");
             MBIST_PTR->CTRL = MBIST_ALG_MARCH_CM << MBIST_CTRL_ALG_SHIFT;
+            MEMORY_BARRIER();
             MBIST_PTR->RUN = MBIST_RUN_KEY;
             for(;;);
         }
@@ -121,9 +130,14 @@ int main(void)
 
     }
 
-    printf("\nStarting MBIST test.\n");
-    printf("Algorithm: Zero-one.\n");
+    printf("Starting MBIST test.\n");
+    printf("\nAlgorithm: Zero-one.\n");
+    g_failedTests = 0;
+    g_totalTests = 0;
+    MBIST_PTR->SCRATCH0 = 0;
+    MBIST_PTR->SCRATCH1 = 0;
     MBIST_PTR->CTRL = MBIST_ALG_ZERO_ONE << MBIST_CTRL_ALG_SHIFT;
+    MEMORY_BARRIER();
     MBIST_PTR->RUN = MBIST_RUN_KEY;
     for(;;);
 

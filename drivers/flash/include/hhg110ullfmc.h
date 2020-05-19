@@ -32,8 +32,8 @@
  * File Name : hhg110ullfmc.h
  * Author    : Maciej Plasota
  * ******************************************************************************
- * $Date: 2018-12-04 14:27:17 +0100 (wto) $
- * $Revision: 362 $
+ * $Date: 2019-04-23 10:51:59 +0200 (wto, 23 kwi 2019) $
+ * $Revision: 412 $
  *H*****************************************************************************/
 
 #ifndef _FLASH_H_
@@ -42,7 +42,7 @@
 
 #include <ccproc-amba.h>
 #include <ccproc-amba-flash.h>
-#include <ccproc-irq.h>
+#include <ccproc-csr.h>
 #include <stdbool.h>
 
 /*! \brief flash driver status returned by some of the functions.
@@ -244,7 +244,7 @@ flash_access_status_t flash_read_page_buffer_word(uint8_t page_buffer_word_offse
  */
 static inline void flash_unlock_write_page_data(void)
 {
-    IRQ_CTRL_PTR->ROM_UNLOCK = IRQ_ROM_UNLOCK_KEY | IRQ_ROM_UNLOCK;
+    CSR_CTRL_PTR->ROM_UNLOCK = CSR_ROM_UNLOCK_KEY | CSR_ROM_UNLOCK;
 }
 
 /*! \brief Writes single page content to program memory.

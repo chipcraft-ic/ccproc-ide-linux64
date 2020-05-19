@@ -2,8 +2,8 @@
 *
 * Copyright (c) 2017 ChipCraft Sp. z o.o. All rights reserved
 *
-* $Date: 2018-09-07 16:07:40 +0200 (pią) $
-* $Revision: 296 $
+* $Date: 2019-11-14 09:00:25 +0100 (czw, 14 lis 2019) $
+* $Revision: 484 $
 *
 *  ----------------------------------------------------------------------
 * Redistribution and use in source and binary forms, with or without
@@ -74,43 +74,44 @@
 /** AMBA addresses */
 enum
 {
-    AMBA_UART0_BASE      = AMBA_BASE + 0x00000100,          /*!< UART 0 base address            */
-    AMBA_UART1_BASE      = AMBA_BASE + 0x00000200,          /*!< UART 1 base address            */
-    AMBA_UART2_BASE      = AMBA_BASE + 0x00000300,          /*!< UART 2 base address            */
-    AMBA_UART3_BASE      = AMBA_BASE + 0x00000400,          /*!< UART 3 base address            */
-    AMBA_UART4_BASE      = AMBA_BASE + 0x00000500,          /*!< UART 4 base address            */
-    AMBA_UART5_BASE      = AMBA_BASE + 0x00000600,          /*!< UART 5 base address            */
-    AMBA_UART6_BASE      = AMBA_BASE + 0x00000700,          /*!< UART 6 base address            */
-    AMBA_UART7_BASE      = AMBA_BASE + 0x00000800,          /*!< UART 7 base address            */
-    AMBA_SPI0_BASE       = AMBA_BASE + 0x00000A00,          /*!< SPI 0 base address             */
-    AMBA_SPI1_BASE       = AMBA_BASE + 0x00000B00,          /*!< SPI 1 base address             */
-    AMBA_SPI2_BASE       = AMBA_BASE + 0x00000C00,          /*!< SPI 2 base address             */
-    AMBA_SPI3_BASE       = AMBA_BASE + 0x00000D00,          /*!< SPI 3 base address             */
-    AMBA_GPIO_BASE       = AMBA_BASE + 0x00000E00,          /*!< GPIO base address              */
-    AMBA_TIMER32_0_BASE  = AMBA_BASE + 0x00000F00,          /*!< Timers 32 0 base address       */
-    AMBA_TIMER32_1_BASE  = AMBA_BASE + 0x00001000,          /*!< Timers 32 1 base address       */
-    AMBA_TIMER16_0_BASE  = AMBA_BASE + 0x00001100,          /*!< Timers 16 0 base address       */
-    AMBA_TIMER16_1_BASE  = AMBA_BASE + 0x00001200,          /*!< Timers 16 1 base address       */
-    AMBA_SYSTICK_BASE    = AMBA_BASE + 0x00001300,          /*!< Systick base address           */
-    AMBA_RTC_BASE        = AMBA_BASE + 0x00001400,          /*!< Real-Time Clock base address   */
-    AMBA_WDT_BASE        = AMBA_BASE + 0x00001500,          /*!< Watchdog base address          */
-    AMBA_I2C_MST_0_BASE  = AMBA_BASE + 0x00001600,          /*!< I2C Master 0 base address      */
-    AMBA_I2C_MST_1_BASE  = AMBA_BASE + 0x00001700,          /*!< I2C Master 1 base address      */
-    AMBA_I2C_SLV_BASE    = AMBA_BASE + 0x00001800,          /*!< I2C Slave base address         */
-    AMBA_PROM_BASE       = AMBA_BASE + 0x00001900,          /*!< PROM base addres               */
-    AMBA_1WIRE_BASE      = AMBA_BASE + 0x00001A00,          /*!< 1 WIRE base addres             */
-    AMBA_ADC_BASE        = AMBA_BASE + 0x00006000,          /*!< ADC base address               */
-    AMBA_REG_BASE        = AMBA_BASE + 0x00007000,          /*!< Config Registers base address  */
-    AMBA_DMA_BASE        = AMBA_BASE + 0x00008000,          /*!< DMA base address               */
-    AMBA_CAN0_BASE       = AMBA_BASE + 0x00009000,          /*!< CAN 0 base address             */
-    AMBA_CAN1_BASE       = AMBA_BASE + 0x0000A000,          /*!< CAN 1 base address             */
-    AMBA_BLE0_BASE       = AMBA_BASE + 0x0000B000,          /*!< BLE 0 base address             */
-    AMBA_BLE1_BASE       = AMBA_BASE + 0x0000C000,          /*!< BLE 1 base address             */
-    AMBA_APB1_BASE       = AMBA_BASE + 0x01000000,          /*!< APB 1 Bridge base address      */
-    AMBA_APB2_BASE       = AMBA_BASE + 0x02000000,          /*!< APB 2 Bridge base address      */
-    AMBA_FLASH_BASE      = AMBA_APB1_BASE + 0x00000000,     /*!< Embedded Flash base address    */
-    AMBA_ETH0_BASE       = AMBA_APB2_BASE + 0x00001000,     /*!< ETH0 base address              */
-    AMBA_ETH1_BASE       = AMBA_APB2_BASE + 0x00002000,     /*!< ETH1 base address              */
+    AMBA_UART0_BASE      = AMBA_BASE + 0x00000100,          /*!< UART 0 base address                        */
+    AMBA_UART1_BASE      = AMBA_BASE + 0x00000200,          /*!< UART 1 base address                        */
+    AMBA_UART2_BASE      = AMBA_BASE + 0x00000300,          /*!< UART 2 base address                        */
+    AMBA_UART3_BASE      = AMBA_BASE + 0x00000400,          /*!< UART 3 base address                        */
+    AMBA_UART4_BASE      = AMBA_BASE + 0x00000500,          /*!< UART 4 base address                        */
+    AMBA_UART5_BASE      = AMBA_BASE + 0x00000600,          /*!< UART 5 base address                        */
+    AMBA_UART6_BASE      = AMBA_BASE + 0x00000700,          /*!< UART 6 base address                        */
+    AMBA_UART7_BASE      = AMBA_BASE + 0x00000800,          /*!< UART 7 base address                        */
+    AMBA_SPI0_BASE       = AMBA_BASE + 0x00000A00,          /*!< SPI 0 base address                         */
+    AMBA_SPI1_BASE       = AMBA_BASE + 0x00000B00,          /*!< SPI 1 base address                         */
+    AMBA_SPI2_BASE       = AMBA_BASE + 0x00000C00,          /*!< SPI 2 base address                         */
+    AMBA_SPI3_BASE       = AMBA_BASE + 0x00000D00,          /*!< SPI 3 base address                         */
+    AMBA_GPIO_BASE       = AMBA_BASE + 0x00000E00,          /*!< GPIO base address                          */
+    AMBA_TIMER32_0_BASE  = AMBA_BASE + 0x00000F00,          /*!< Timers 32 0 base address                   */
+    AMBA_TIMER32_1_BASE  = AMBA_BASE + 0x00001000,          /*!< Timers 32 1 base address                   */
+    AMBA_TIMER16_0_BASE  = AMBA_BASE + 0x00001100,          /*!< Timers 16 0 base address                   */
+    AMBA_TIMER16_1_BASE  = AMBA_BASE + 0x00001200,          /*!< Timers 16 1 base address                   */
+    AMBA_SYSTICK_BASE    = AMBA_BASE + 0x00001300,          /*!< Systick base address                       */
+    AMBA_RTC_BASE        = AMBA_BASE + 0x00001400,          /*!< Real-Time Clock base address               */
+    AMBA_WDT_BASE        = AMBA_BASE + 0x00001500,          /*!< Watchdog base address                      */
+    AMBA_I2C_MST_0_BASE  = AMBA_BASE + 0x00001600,          /*!< I2C Master 0 base address                  */
+    AMBA_I2C_MST_1_BASE  = AMBA_BASE + 0x00001700,          /*!< I2C Master 1 base address                  */
+    AMBA_I2C_SLV_BASE    = AMBA_BASE + 0x00001800,          /*!< I2C Slave base address                     */
+    AMBA_PROM_BASE       = AMBA_BASE + 0x00001900,          /*!< PROM base address                          */
+    AMBA_1WIRE_BASE      = AMBA_BASE + 0x00001A00,          /*!< 1 WIRE base address                        */
+    AMBA_ADC_BASE        = AMBA_BASE + 0x00006000,          /*!< ADC base address                           */
+    AMBA_REG_BASE        = AMBA_BASE + 0x00007000,          /*!< Config Registers base address              */
+    AMBA_DMA_BASE        = AMBA_BASE + 0x00008000,          /*!< DMA base address                           */
+    AMBA_CAN0_BASE       = AMBA_BASE + 0x00009000,          /*!< CAN 0 base address                         */
+    AMBA_CAN1_BASE       = AMBA_BASE + 0x0000A000,          /*!< CAN 1 base address                         */
+    AMBA_BLE0_BASE       = AMBA_BASE + 0x0000B000,          /*!< BLE 0 base address                         */
+    AMBA_BLE1_BASE       = AMBA_BASE + 0x0000C000,          /*!< BLE 1 base address                         */
+    AMBA_APB1_BASE       = AMBA_BASE + 0x01000000,          /*!< APB 1 Bridge base address                  */
+    AMBA_APB2_BASE       = AMBA_BASE + 0x02000000,          /*!< APB 2 Bridge base address                  */
+    AMBA_FLASH_BASE      = AMBA_APB1_BASE + 0x00000000,     /*!< Embedded Flash base address                */
+    AMBA_MEMCTRL_BASE    = AMBA_APB1_BASE + 0x00001000,     /*!< External Memory Controller base address    */
+    AMBA_ETH0_BASE       = AMBA_APB2_BASE + 0x00001000,     /*!< ETH0 base address                          */
+    AMBA_ETH1_BASE       = AMBA_APB2_BASE + 0x00002000,     /*!< ETH1 base address                          */
 };
 
 /** APB0 Configuration Registers */

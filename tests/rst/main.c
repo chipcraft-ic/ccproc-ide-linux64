@@ -32,8 +32,8 @@
 * File Name : main.c
 * Author    : Krzysztof Marcinek
 * ******************************************************************************
-* $Date: 2018-10-08 11:52:38 +0200 (pon) $
-* $Revision: 320 $
+* $Date: 2019-10-21 09:43:30 +0200 (pon, 21 paź 2019) $
+* $Revision: 477 $
 *H*****************************************************************************/
 
 #include "board.h"
@@ -42,56 +42,44 @@
 #include <ccproc-amba.h>
 #include <ccproc-amba-rtc.h>
 #include <ccproc-amba-wdt.h>
+#include <rtc_util.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include "test.h"
 
 static volatile uint32_t* reset_count;
 static volatile uint32_t reset_guard;
 
-extern void *malloc(size_t size);
-
-static void RTCwait(void){
-    while((AMBA_RTC_PTR->STATUS & RTC_STAT_BUSY) != 0);
-}
-
 static void RTCrestore(void){
-    RTCwait();
-    g_totalTests = AMBA_RTC_PTR->BACKUP1;
-    RTCwait();
-    g_failedTests = AMBA_RTC_PTR->BACKUP2;
-    RTCwait();
-    reset_guard = AMBA_RTC_PTR->BACKUP3;
-    RTCwait();
+    g_totalTests = RTCread((uint32_t*)&AMBA_RTC_PTR->BACKUP1);
+    g_failedTests = RTCread((uint32_t*)&AMBA_RTC_PTR->BACKUP2);
+    reset_guard = RTCread((uint32_t*)&AMBA_RTC_PTR->BACKUP3);
 }
 
 static void RTCbackup(void){
-    RTCwait();
-    AMBA_RTC_PTR->BACKUP1 = g_totalTests;
-    RTCwait();
-    AMBA_RTC_PTR->BACKUP2 = g_failedTests;
-    RTCwait();
-    AMBA_RTC_PTR->BACKUP3 = reset_guard;
-    RTCwait();
+    RTCwrite((uint32_t*)&AMBA_RTC_PTR->BACKUP1,g_totalTests);
+    RTCwrite((uint32_t*)&AMBA_RTC_PTR->BACKUP2,g_failedTests);
+    RTCwrite((uint32_t*)&AMBA_RTC_PTR->BACKUP3,reset_guard);
 }
 
 static void RTCstart(void){
-    do{
-        AMBA_RTC_PTR->CTRL |= RTC_CTRL_EN;
-    } while (((AMBA_RTC_PTR->IRQF & RTC_TRERRIF) != 0) || ((AMBA_RTC_PTR->CTRL & RTC_CTRL_EN) == 0));
-    RTCwait();
-    AMBA_RTC_PTR->PER = 0xFFFFFFFF;
-    RTCwait();
-    AMBA_RTC_PTR->COMPARE = 0xFFFFFFFF;
+    RTCenable();
+    RTCwrite((uint32_t*)&AMBA_RTC_PTR->PER,0xFFFFFFFF);
+    RTCwrite((uint32_t*)&AMBA_RTC_PTR->COMPARE,0xFFFFFFFF);
 }
 
 static void testWDT(void)
 {
     reset_guard++;
     RTCbackup();
-    AMBA_WDT_PTR->LOCK = 3;
-    AMBA_WDT_PTR->CTRL = 1;
-    AMBA_WDT_PTR->LOCK = 3;
-    AMBA_WDT_PTR->PER = 50;
+    do {
+        AMBA_WDT_PTR->LOCK = 3;
+        AMBA_WDT_PTR->CTRL = 1;
+    } while ((AMBA_WDT_PTR->CTRL & WDT_CTRL_EN) == 0);
+    do {
+        AMBA_WDT_PTR->LOCK = 3;
+        AMBA_WDT_PTR->PER = 50;
+    } while (AMBA_WDT_PTR->PER != 50);
     for (;;);
 }
 

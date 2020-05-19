@@ -32,15 +32,16 @@
 * File Name : main.c
 * Author    : Rafal Harabien
 * ******************************************************************************
-* $Date: 2018-09-29 13:25:59 +0200 (sob) $
-* $Revision: 312 $
+* $Date: 2019-05-16 23:26:56 +0200 (czw, 16 maj 2019) $
+* $Revision: 419 $
 *H*****************************************************************************/
 
 #include "board.h"
 #include <ccproc.h>
-#include <ccproc-irq.h>
+#include <ccproc-csr.h>
 #include <ccproc-mcore.h>
 #include <ccproc-utils.h>
+#include <core_util.h>
 #include <stdio.h>
 #include <errno.h>
 #include "test.h"
@@ -62,7 +63,7 @@ static void coreProc1(void)
 {
     ok_eq(g_coreProcState, 0); // state 0
     ok_eq(MCORE_PTR->STATUS, 1 | (1 << g_currentCoreIndex)); // 2 cores are running
-    ok_eq(IRQ_STATUS_GET_CORE_ID(IRQ_CTRL_PTR->STATUS), g_currentCoreIndex);
+    ok_eq(CSR_STATUS_GET_CORE_ID(CSR_CTRL_PTR->STATUS), g_currentCoreIndex);
 
     g_coreProcState = 1;
     while (!g_stopCore);
@@ -108,26 +109,26 @@ void isr15(void)
     volatile unsigned i = 0;
 
     ok(g_expectedIci, "Unexpected intercore interrupt");
-    ok_eq(IRQ_CTRL_PTR->ICORE_IRQF, 1 << g_expectedIciSrcCore);
-    IRQ_CTRL_PTR->ICORE_IRQF = 1 << g_expectedIciSrcCore;
+    ok_eq(CSR_CTRL_PTR->ICORE_IRQF, 1 << g_expectedIciSrcCore);
+    CSR_CTRL_PTR->ICORE_IRQF = 1 << g_expectedIciSrcCore;
     for (i = 0; i < 3; ++i); // wait a moment - we cannot read IRQF immediately after write
-    ok_eq(IRQ_CTRL_PTR->ICORE_IRQF, 0);
-    ok_eq(IRQ_STATUS_GET_CORE_ID(IRQ_CTRL_PTR->STATUS), g_expectedIciDestCore);
+    ok_eq(CSR_CTRL_PTR->ICORE_IRQF, 0);
+    ok_eq(CSR_STATUS_GET_CORE_ID(CSR_CTRL_PTR->STATUS), g_expectedIciDestCore);
     ++g_coreProcState;
 }
 
 static void coreProc2(void)
 {
     /* Enable interrupts */
-    IRQ_CTRL_PTR->IRQ_MASK |= (1 << INTER_CORE_IRQn) | (1 << 0); // IRQ 15 and exceptions
-    IRQ_CTRL_PTR->STATUS |= IRQ_STAT_CIEN;
+    CSR_CTRL_PTR->IRQ_MASK |= (1 << INTER_CORE_IRQn) | (1 << 0); // IRQ 15 and exceptions
+    CSR_CTRL_PTR->STATUS |= CSR_STAT_CIEN;
 
     /* trigger interrupt on core 0 */
     g_coreProcState = 0;
-    g_expectedIciSrcCore = IRQ_STATUS_GET_CORE_ID(IRQ_CTRL_PTR->STATUS);
+    g_expectedIciSrcCore = CSR_STATUS_GET_CORE_ID(CSR_CTRL_PTR->STATUS);
     g_expectedIciDestCore = 0;
     g_expectedIci = 1;
-    IRQ_CTRL_PTR->ICORE_IRQTRIG = 1 << 0;
+    CSR_CTRL_PTR->ICORE_IRQTRIG = 1 << 0;
 
     /* Wait */
     while (!g_stopCore);
@@ -135,9 +136,9 @@ static void coreProc2(void)
 
 static void testIntercoreInterrupt(unsigned coreIndex)
 {
-    IRQ_CTRL_PTR->ICORE_IRQMAP = 1 << INTER_CORE_IRQn; // FIXME
-    ok_eq(IRQ_CTRL_PTR->ICORE_IRQMAP, 1 << INTER_CORE_IRQn); // 15
-    ok_eq(IRQ_CTRL_PTR->ICORE_IRQF, 0);
+    CSR_CTRL_PTR->ICORE_IRQMAP = 1 << INTER_CORE_IRQn; // FIXME
+    ok_eq(CSR_CTRL_PTR->ICORE_IRQMAP, 1 << INTER_CORE_IRQn); // 15
+    ok_eq(CSR_CTRL_PTR->ICORE_IRQF, 0);
 
     /* Start core */
     g_stopCore = 0;
@@ -151,7 +152,7 @@ static void testIntercoreInterrupt(unsigned coreIndex)
     g_expectedIciSrcCore = 0;
     g_expectedIciDestCore = coreIndex;
     g_expectedIci = 1;
-    IRQ_CTRL_PTR->ICORE_IRQTRIG = 1 << coreIndex; // trigger interrupt on another core
+    CSR_CTRL_PTR->ICORE_IRQTRIG = 1 << coreIndex; // trigger interrupt on another core
 
     /* wait for ICI */
     while (g_coreProcState != 2);
@@ -161,16 +162,18 @@ static void testIntercoreInterrupt(unsigned coreIndex)
     while (MCORE_PTR->STATUS != 1);
 
     /* Try triggering with wrong values - nothing should happen */
-    IRQ_CTRL_PTR->ICORE_IRQTRIG = 0;
-    IRQ_CTRL_PTR->ICORE_IRQTRIG = ~((1 << MCORE_PTR->CORE_NUM) - 1);
+    CSR_CTRL_PTR->ICORE_IRQTRIG = 0;
+    CSR_CTRL_PTR->ICORE_IRQTRIG = ~((1 << MCORE_PTR->CORE_NUM) - 1);
 }
+
+#ifndef _NO_SPRAM_MEMORY
 
 static int SPRAM_BSS g_spramBssVar;
 static int SPRAM_DATA g_spramDataVar = 123;
 
 static void spramTestCoreProc(void)
 {
-    int coreId = IRQ_STATUS_GET_CORE_ID(IRQ_CTRL_PTR->STATUS);
+    int coreId = CSR_STATUS_GET_CORE_ID(CSR_CTRL_PTR->STATUS);
     ok_eq(g_spramBssVar, 0);
     ok_eq(g_spramDataVar, 123);
     g_spramBssVar = 20 + coreId;
@@ -192,9 +195,11 @@ static void testSpram(void)
     ok_eq(g_spramDataVar, 123);
 }
 
+#endif
+
 static void errnoTestCoreProc(void)
 {
-    int coreId = IRQ_STATUS_GET_CORE_ID(IRQ_CTRL_PTR->STATUS);
+    int coreId = CSR_STATUS_GET_CORE_ID(CSR_CTRL_PTR->STATUS);
     errno = 32 + coreId;
     ok_eq(errno, 32 + coreId);
 }
@@ -251,14 +256,16 @@ int main(void)
     printf("\nStarting multicore test (%u cores)\n", numOfCores);
 
     // Disable lockstep mode if present
-    MCORE_PTR->CORE_SHDN = MCORE_SHDN_KEY | 2;
+    if (lockstepDisable() == 0){
+        printf("Disabling lockstep mode!\n");
+    }
 
     // Enable interrupts on core 0
-    IRQ_CTRL_PTR->IRQ_MASK |= (1 << INTER_CORE_IRQn) | (1 << 0); // IRQ 1 and exceptions
-    IRQ_CTRL_PTR->STATUS |= IRQ_STAT_CIEN;
+    CSR_CTRL_PTR->IRQ_MASK |= (1 << INTER_CORE_IRQn) | (1 << 0); // IRQ 1 and exceptions
+    CSR_CTRL_PTR->STATUS |= CSR_STAT_CIEN;
 
     ok_eq(MCORE_PTR->STATUS, 1); // 1 core is running
-    ok_eq(IRQ_STATUS_GET_CORE_ID(IRQ_CTRL_PTR->STATUS), 0);
+    ok_eq(CSR_STATUS_GET_CORE_ID(CSR_CTRL_PTR->STATUS), 0);
 
     for (i = 1; i < numOfCores; ++i)
     {
@@ -268,7 +275,9 @@ int main(void)
 
     if (numOfCores > 1)
     {
+#ifndef _NO_SPRAM_MEMORY
         testSpram();
+#endif
         testErrno();
         testMallocLock();
     }

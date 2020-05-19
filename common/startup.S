@@ -32,8 +32,8 @@
 # File Name : startup.S
 # Author    : Rafal Harabien, Krzysztof Marcinek
 # ******************************************************************************
-# $Date: 2019-02-21 15:16:19 +0100 (czw) $
-# $Revision: 385 $
+# $Date: 2019-08-07 09:00:46 +0200 (śro, 07 sie 2019) $
+# $Revision: 438 $
 #H******************************************************************************
 
 # Useful defines:
@@ -43,6 +43,7 @@
 # _STARTUP_STACK_IN_RAM_NUM_CORES - maximal number of cores for stack allocation in RAM
 #
 # _DONT_BREAK_ON_EXCEPTION - do not break on exception
+# _DONT_BREAK_ON_BREAK     - do not break on break instruction
 #
 # _MI16_ENABLE - MI16 ISE defined
 #
@@ -53,11 +54,25 @@
 
 #include <specialreg.h>
 
+#ifdef _NO_SPRAM_MEMORY
+  #define _STARTUP_STACK_IN_RAM
+  #define _STARTUP_STACK_IN_RAM_NUM_CORES _CPU_NUM_CORES
+  #ifndef _CPU_NUM_CORES
+    #error _CPU_NUM_CORES not defined
+  #endif
+#endif
+
 #ifndef _STARTUP_STACK_SIZE
-#define _STARTUP_STACK_SIZE 2048
+  #define _STARTUP_STACK_SIZE 2048
+  #ifdef _STARTUP_STACK_IN_RAM
+    #warning _STARTUP_STACK_SIZE set to 2048
+  #endif
 #endif
 #ifndef _STARTUP_STACK_IN_RAM_NUM_CORES
-#define _STARTUP_STACK_IN_RAM_NUM_CORES 1
+  #define _STARTUP_STACK_IN_RAM_NUM_CORES 1
+  #ifdef _STARTUP_STACK_IN_RAM
+    #error _STARTUP_STACK_IN_RAM_NUM_CORES not defined
+  #endif
 #endif
 
 
@@ -147,13 +162,17 @@ common_start:
 
 cache_init:
   lui $t0, CACHE_CTRL_BASE              # Cache Controller address
+  or $t1, $zero, CACHE_SC_MASK          # cache scrambling enable mask
+  sw $t1, ICACHE_STAT_OFFSET($t0)       # enable instruction cache scrambling
+  sw $t1, DCACHE_STAT_OFFSET($t0)       # enable data cache scrambling
   sw $zero, ICACHE_FLUSH_OFFSET($t0)    # flush instruction cache
   sw $zero, DCACHE_FLUSH_OFFSET($t0)    # flush data cache
-  or $t1, $zero, 1                      # set $t1 to 1
+  or $t1, $zero, CACHE_EN_MASK          # cache enable mask
+  or $t1, $t1, CACHE_FT_MASK            # cache parity/ecc enable mask
   sw $t1, ICACHE_STAT_OFFSET($t0)       # enable instruction cache
   sw $t1, DCACHE_STAT_OFFSET($t0)       # enable data cache
   la $gp, _gp                           # init global pointer
-  lui $t3, IRQ_CTRL_BASE                # IRQ Controller base address
+  lui $t3, CSR_CTRL_BASE                # System Controller base address
 #ifdef _STARTUP_STACK_IN_RAM
   mfc0 $t1, C0_STATUS                   # read STATUS register
   srl $t1, CORE_ID_SHIFT                # get core ID field
@@ -180,7 +199,7 @@ cache_init:
 
 #ifdef _MI16_ENABLE
 check_mips16:
-  lui $s0, IRQ_CTRL_BASE                # IRQ Controller base address
+  lui $s0, CSR_CTRL_BASE                # System Controller base address
   lw $s1, CPU_INFO1_OFFSET($s0)         # CPU features register
   lui $t0, MIPS16_EN_MASK
   and $t0, $t0, $s1                     # check if MIPS16 exists
@@ -190,7 +209,7 @@ check_mips16:
 
 #ifdef _HARD_FLOAT
 check_hardfloat:
-  lui $s0, IRQ_CTRL_BASE                # IRQ Controller base address
+  lui $s0, CSR_CTRL_BASE                # Sysem Controller base address
   lw $s1, CPU_INFO1_OFFSET($s0)         # CPU features register
   srl $s1, $s1, FPU_SHIFT               # shift to get FPU field
   ori $t0, $zero, FPU_MASK              # load FPU mask
@@ -200,7 +219,7 @@ check_hardfloat:
 #endif
 
 check_spram_size:
-  lui $s0, IRQ_CTRL_BASE                # IRQ Controller base address
+  lui $s0, CSR_CTRL_BASE                # System Controller base address
   lw $s1, CPU_INFO0_OFFSET($s0)         # CPU features register
   srl $t0, $s1, SPRAM_SIZE_SHIFT
   and $t0, SPRAM_SIZE_MASK              # $t0 = log2(SPRAM size)
@@ -241,7 +260,8 @@ common_done:
   nop
 
 program:
-  lui $s0, IRQ_CTRL_BASE                # IRQ Controller base address
+
+  lui $s0, CSR_CTRL_BASE                # System Controller base address
   lw $s1, CPU_INFO0_OFFSET($s0)         # CPU features register
   srl $t0, $s1, RAM_SIZE_SHIFT
   and $t0, RAM_SIZE_MASK                # $t0 = log2(RAM size)
@@ -250,12 +270,31 @@ program:
   lui $s3, RAM_BASE                     # RAM memory base address
   add $s3, $s2                          # $s3 = RAM memory end
 
-check_memory_size:
-  la $t1, _sheap                        # start of unused RAM
-  sub $t1, $s3, $t1                     # compare to end of physical RAM
-  beq $t0, $zero, init_data             # no on-chip memory, proceeed
+  srl $t1, $s1, ROM_SIZE_SHIFT
+  and $t1, ROM_SIZE_MASK                # $t1 = log2(ROM size)
+  li $s2, 1
+  sll $s2, $t1                          # $s2 = ROM size
+  lui $s1, ROM_BASE                     # RAM memory base address
+  add $s2, $s1, $s2                     # $s2 = ROM memory end
+
+check_ram_memory_size:
+  la $t2, _sheap                        # start of unused RAM
+  sub $t2, $s3, $t2                     # compare to end of physical RAM
+  beq $t0, $zero, check_rom_memory_size # no on-chip memory, proceeed
   nop
-  blt $t1, $zero, no_mem                # branch if there is not enough RAM memory
+  blt $t2, $zero, no_mem                # branch if there is not enough RAM memory
+  nop
+
+check_rom_memory_size:
+  la $t2, _sdata                        # data section start address
+  la $t0, _edata                        # data section end address
+  sub $t2, $t0, $t2                     # size of data section
+  la $t0, _data_load                    # address of data in ROM memory
+  add $t2, $t2, $t0                     # end of data section in ROM
+  sub $t2, $s2, $t2                     # compare to end of physical ROM
+  beq $t1, $zero, init_data             # no on-chip memory, proceeed
+  nop
+  blt $t2, $zero, no_mem                # branch if there is not enough ROM memory
   nop
 
 init_data:
@@ -332,6 +371,12 @@ wdt_enable:
   nop
   jal _ccsdk_init
   nop
+#ifdef _NO_SPRAM_MEMORY
+  jal __libc_impure_alloc               # allocate impure data
+  nop
+  jal __libc_impure_init                # initialize impure data
+  nop
+#endif
   jal main
   nop
   j end_loop                            # jump to end_loop
@@ -343,7 +388,7 @@ no_mips16:                              # no MIPS16 loop
   j end_loop
 #else
   break 0, BREAK_CODE
-  j no_mips16
+  j end_loop
 #endif
   nop
 #endif
@@ -376,7 +421,9 @@ no_mem:                                 # no mem loop
 .weak syscall_handler
 syscall_handler:
   mfc0 $k1, C0_EPC                      # get Return Address
+#ifndef _DONT_BREAK_ON_BREAK
   break 0, BREAK_CODE                   # break to debug mode
+#endif
   add $k1, 4                            # go to next instruction
   jr $k1
   rfe

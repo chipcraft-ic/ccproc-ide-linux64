@@ -2,8 +2,8 @@
 *
 * Copyright (c) 2017 ChipCraft Sp. z o.o. All rights reserved
 *
-* $Date: 2018-10-25 10:58:01 +0200 (czw) $
-* $Revision: 324 $
+* $Date: 2020-02-13 11:00:59 +0100 (czw, 13 lut 2020) $
+* $Revision: 524 $
 *
 *  ----------------------------------------------------------------------
 * Redistribution and use in source and binary forms, with or without
@@ -46,7 +46,11 @@
 
 #define STDIO_UART              0
 #define STDIO_BAUDRATE          115200
+#define STDIO_RTSCTS            0
 
 #define TIME_SOURCE             RTC
+
+/* Initialize GNSS AFE */
+void gnss_afe_init(void);
 
 #endif /* _BOARD_H */

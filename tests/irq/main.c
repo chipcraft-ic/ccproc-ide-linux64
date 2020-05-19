@@ -32,13 +32,13 @@
 * File Name : main.c
 * Author    : Rafal Harabien
 * ******************************************************************************
-* $Date: 2019-01-30 15:24:26 +0100 (śro) $
-* $Revision: 381 $
+* $Date: 2019-04-23 10:51:59 +0200 (wto, 23 kwi 2019) $
+* $Revision: 412 $
 *H*****************************************************************************/
 
 #include "board.h"
 #include <ccproc.h>
-#include <ccproc-irq.h>
+#include <ccproc-csr.h>
 #include <ccproc-amba.h>
 #include <ccproc-amba-timer.h>
 #include <stdio.h>
@@ -91,7 +91,7 @@ static void testCpuInfo(void)
 {
     uint32_t info;
 
-    info = IRQ_CTRL_PTR->CPU_INFO_0;
+    info = CSR_CTRL_PTR->CPU_INFO_0;
 
     assertMemSize(ROM_BASE, CPU_INFO_GET_IMSIZE(info), 0);
     assertMemSize(RAM_BASE, CPU_INFO_GET_DMSIZE(info), 1);
@@ -105,8 +105,8 @@ void isr1(void)
     AMBA_TIMER32_PTR(0)->IRQM = 0;
     AMBA_TIMER32_PTR(0)->IRQF = TIMER_OVFIF; // clear flag
 
-    assertTrue(IRQ_CTRL_PTR->STATUS & IRQ_STAT_CIEN); // set in startup.S
-    assertTrue(IRQ_CTRL_PTR->STATUS & IRQ_STAT_PIEN);
+    assertTrue(CSR_CTRL_PTR->STATUS & CSR_STAT_CIEN); // set in startup.S
+    assertTrue(CSR_CTRL_PTR->STATUS & CSR_STAT_PIEN);
 
     if (g_irqTestState == 1)
     {
@@ -150,8 +150,8 @@ void isr3(void)
     AMBA_TIMER16_PTR(0)->IRQM = 0;
     AMBA_TIMER16_PTR(0)->IRQF = TIMER_OVFIF; // clear flag
 
-    assertTrue(IRQ_CTRL_PTR->STATUS & IRQ_STAT_CIEN); // set in startup.S
-    assertTrue(IRQ_CTRL_PTR->STATUS & IRQ_STAT_PIEN);
+    assertTrue(CSR_CTRL_PTR->STATUS & CSR_STAT_CIEN); // set in startup.S
+    assertTrue(CSR_CTRL_PTR->STATUS & CSR_STAT_PIEN);
 
     if (g_irqTestState == 3)
     {
@@ -194,8 +194,8 @@ static void testInterrupts(void)
     g_irqTestState = 0;
 
     // Enable interrupts on core 0
-    IRQ_CTRL_PTR->IRQ_MASK |= BIT(1) | BIT(2) | BIT(3) | BIT(4); // IRQ 1 - 4
-    IRQ_CTRL_PTR->STATUS |= IRQ_STAT_CIEN;
+    CSR_CTRL_PTR->IRQ_MASK |= BIT(1) | BIT(2) | BIT(3) | BIT(4); // IRQ 1 - 4
+    CSR_CTRL_PTR->STATUS |= CSR_STAT_CIEN;
 
     // Configure 4 timers
     configTimerForIrqTest(AMBA_TIMER32_PTR(0), 1);
@@ -208,13 +208,13 @@ static void testInterrupts(void)
     AMBA_TIMER32_PTR(0)->IRQM = TIMER_OVFIE;
     for (i = 0; expectIrq1 && i < 10000000; ++i);
     assertFalse(expectIrq1);
-    assertTrue(IRQ_CTRL_PTR->STATUS & IRQ_STAT_CIEN); // interrupts should still be enabled
+    assertTrue(CSR_CTRL_PTR->STATUS & CSR_STAT_CIEN); // interrupts should still be enabled
 
     // Test preemption - first set priorities
-    IRQ_CTRL_PTR->IRQ_PRIOR[1] = 4;
-    IRQ_CTRL_PTR->IRQ_PRIOR[2] = 3;
-    IRQ_CTRL_PTR->IRQ_PRIOR[3] = 2;
-    IRQ_CTRL_PTR->IRQ_PRIOR[4] = 1;
+    CSR_CTRL_PTR->IRQ_PRIOR[1] = 4;
+    CSR_CTRL_PTR->IRQ_PRIOR[2] = 3;
+    CSR_CTRL_PTR->IRQ_PRIOR[3] = 2;
+    CSR_CTRL_PTR->IRQ_PRIOR[4] = 1;
 
     // Start testing IRQ preemption: IRQ1 -> IRQ2 -> IRQ3 -> IRQ4
     g_irqTestState = 1;
@@ -227,10 +227,10 @@ static void testInterrupts(void)
     assertFalse(expectIrq2);
     assertFalse(expectIrq3);
     assertFalse(expectIrq4);
-    assertTrue(IRQ_CTRL_PTR->STATUS & IRQ_STAT_CIEN); // interrupts should still be enabled
+    assertTrue(CSR_CTRL_PTR->STATUS & CSR_STAT_CIEN); // interrupts should still be enabled
 
     // disable IRQ 1 - 4
-    IRQ_CTRL_PTR->IRQ_MASK = BIT(0);
+    CSR_CTRL_PTR->IRQ_MASK = BIT(0);
 }
 
 void testStackProtection(void);
@@ -240,19 +240,25 @@ int main(void)
     uint32_t status;
 
     printf("\nStarting IRQ Controller test.\n");
-    IRQ_CTRL_PTR->IRQ_MASK = BIT(0); // enable exceptions
-    IRQ_CTRL_PTR->STATUS |= IRQ_STAT_CIEN;
+    CSR_CTRL_PTR->IRQ_MASK = BIT(0); // enable exceptions
+    CSR_CTRL_PTR->STATUS |= CSR_STAT_CIEN;
 
-    status = IRQ_CTRL_PTR->STATUS;
-    assertTrue(status & IRQ_STAT_EXC);
+    if ((AMBA_TIMER32_COUNT() < 2) || (AMBA_TIMER16_COUNT() < 2)){
+        printf("Not enough timers to perform irq tests!\n");
+        printTestSummary();
+        return 0;
+    }
+
+    status = CSR_CTRL_PTR->STATUS;
+    assertTrue(status & CSR_STAT_EXC);
     // NOTE: this bit is always zero in lockstep mode
-    assertFalse(status & IRQ_STAT_IP);
-    assertFalse(status & IRQ_STAT_BD);
+    assertFalse(status & CSR_STAT_IP);
+    assertFalse(status & CSR_STAT_BD);
 
     testCpuInfo();
     testInterrupts();
 
-    if (IRQ_CTRL_PTR->CPU_INFO_0 & CPU_SPROT)
+    if (CSR_CTRL_PTR->CPU_INFO_0 & CPU_SPROT)
     {
         printf("Detected stack protection.\n");
         testStackProtection();

@@ -2,8 +2,8 @@
 *
 * Copyright (c) 2018 ChipCraft Sp. z o.o. All rights reserved
 *
-* $Date: 2018-09-07 16:07:40 +0200 (pią) $
-* $Revision: 296 $
+* $Date: 2019-10-21 09:43:30 +0200 (pon, 21 paź 2019) $
+* $Revision: 477 $
 *
 *  ----------------------------------------------------------------------
 * Redistribution and use in source and binary forms, with or without
@@ -73,20 +73,33 @@ enum
 /** Performance Counter Status Register bit offsets */
 enum
 {
-    PERFCNT_STAT_BITS_SHIFT  = 16,      /*!< Performance Counter Bits Shift  */
+    PERFCNT_STAT_SRC_SHIFT   = 4,       /*!< Performance Counter Source Shift    */
+    PERFCNT_STAT_BITS_SHIFT  = 16,      /*!< Performance Counter Bits Shift      */
 };
 
 /** Performance Counter Status Register masks */
 enum
 {
-    PERFCNT_STAT_BITS_MASK  = 0x7F << PERFCNT_STAT_BITS_SHIFT,  /*!< Performance Counter Bits Mask       */
+    PERFCNT_STAT_SRC_MASK   = 0xF << PERFCNT_STAT_SRC_SHIFT,     /*!< Performance Counter Source Mask     */
+    PERFCNT_STAT_BITS_MASK  = 0x7F << PERFCNT_STAT_BITS_SHIFT,   /*!< Performance Counter Bits Mask       */
+};
+
+/** Performance Counter Sources */
+enum
+{
+    PERFCNT_STAT_SRC_CORE   = 0x0,  /*!< Processor Clock Source       */
+    PERFCNT_STAT_SRC_L1E1   = 0x1,  /*!< GNSS L1/E1 Source            */
+    PERFCNT_STAT_SRC_L5E5   = 0x2,  /*!< GNSS L5/E5 Source            */
+    PERFCNT_STAT_SRC_L2E6   = 0x3,  /*!< GNSS L2/E6 Source            */
+    PERFCNT_STAT_SRC_VIRT   = 0x4,  /*!< GNSS Virtual Frontend Source */
 };
 
 /**
  * @name Performance Counter Status Register macros
  * @{
  */
-#define PERFCNT_STATUS_GET_BITS(status) ((status & PERFCNTT_STAT_BITS_MASK) >> PERFCNT_STAT_BITS_SHIFT)  /*!< Gets Performance Counter Bits   */
+#define PERFCNT_STATUS_GET_BITS(status)   ((status & PERFCNTT_STAT_BITS_MASK) >> PERFCNT_STAT_BITS_SHIFT)  /*!< Gets Performance Counter Bits     */
+#define PERFCNT_STATUS_GET_SOURCE(status) ((status & PERFCNTT_STAT_SRC_MASK) >> PERFCNT_STAT_SRC_SHIFT)    /*!< Gets Performance Counter Source   */
 /** @} */
 
 /** @} */

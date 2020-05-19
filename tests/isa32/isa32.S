@@ -32,8 +32,8 @@
 # File Name : isa32.S
 # Author    : Krzysztof Marcinek, Rafal Harabien
 # ******************************************************************************
-# $Date: 2018-12-04 14:27:17 +0100 (wto) $
-# $Revision: 362 $
+# $Date: 2019-10-03 19:22:07 +0200 (czw, 03 paź 2019) $
+# $Revision: 474 $
 #H******************************************************************************
 
 #include <specialreg.h>
@@ -119,11 +119,37 @@ g_totalTests:
 
 intro_str:
   .asciiz "Starting ISA32 architecture tests...\n"
+icache_str:
+  .asciiz "No icache test.\n"
+dcache_str:
+  .asciiz "No dcache test.\n"
 
 .text
 
 .global main
 main:
+
+#ifdef NO_ICACHE
+  lui $t0, 0x3007   # cache controller base
+  lw $t1, 0($t0)    # icache status
+  li $t2, 0xfffffffe
+  and $t1, $t1, $t2 # disable icache
+  sw $t1, 0($t0)
+  la $a0, icache_str
+  jal printf
+  nop
+#endif
+#ifdef NO_DCACHE
+  lui $t0, 0x3007   # cache controller base
+  lw $t1, 8192($t0) # dcache status
+  li $t2, 0xfffffffe
+  and $t1, $t1, $t2 # disable icache
+  sw $t1, 8192($t0)
+  la $a0, dcache_str
+  jal printf
+  nop
+#endif
+
   # Enable exceptions
   lui $t0, 0x3003   # IRQ Controller
   lw $t1, 0($t0)    # read STATUS
@@ -210,7 +236,7 @@ instr_tests:
 
 unk_test:
   test_begin "Testing unknown instruction"
-  expect_exception_begin IRQ_EXC_UNK
+  expect_exception_begin CSR_EXC_UNK
   .word 1
   expect_exception_end
 
@@ -234,7 +260,7 @@ add_test:
 
   lui $v1, 0x7fff
   ori $v1, $v1, 0xffff
-  expect_exception_begin IRQ_EXC_OV
+  expect_exception_begin CSR_EXC_OV
   add $v1, $v1, $v0
   expect_exception_end
 
@@ -253,7 +279,7 @@ addi_test:
   inc_var g_totalTests
 
   li $t0, 0x80000000
-  expect_exception_begin IRQ_EXC_OV
+  expect_exception_begin CSR_EXC_OV
   addi $t0, $t0, -10
   expect_exception_end
 
@@ -651,7 +677,7 @@ x071:
 
 break_test:
   test_begin "Testing BREAK"
-  expect_exception_begin IRQ_EXC_BRK, 3
+  expect_exception_begin CSR_EXC_BRK, 3
   break 3
   expect_exception_end
 
@@ -682,7 +708,7 @@ break_test:
   lui $v0, 0x8000
   li $a0, -1
 .set at
-  expect_exception_begin IRQ_EXC_TRAP # GAS adds overflow checking code...
+  expect_exception_begin CSR_EXC_TRAP # GAS adds overflow checking code...
   div $a1, $v0, $a0 # Overflows, but should not cause overflow
   expect_exception_end
 .set noat
@@ -699,7 +725,7 @@ break_test:
   nop
   inc_var g_totalTests
   # Expect exception caused by divide by 0
-  expect_exception_begin IRQ_EXC_TRAP
+  expect_exception_begin CSR_EXC_TRAP
   div $a1, $v0, $zero
   expect_exception_end
 
@@ -759,7 +785,7 @@ break_test:
   nop
   inc_var g_totalTests
   # Expect exception caused by divide by 0
-  expect_exception_begin IRQ_EXC_TRAP
+  expect_exception_begin CSR_EXC_TRAP
   divu $a1, $v0, $zero
   expect_exception_end
 
@@ -823,7 +849,7 @@ x22a:
   la $v0, x24
   add $v0, $v0, 2
 x24:
-  expect_exception_begin IRQ_EXC_ADD
+  expect_exception_begin CSR_EXC_ADD
   jalr $v1, $v0
   nop
   expect_exception_end
@@ -839,7 +865,7 @@ x25:
   la $v0, x27
   add $v0, $v0, 2
 x27:
-  expect_exception_begin IRQ_EXC_ADD
+  expect_exception_begin CSR_EXC_ADD
   jr $v0
   nop
   expect_exception_end
@@ -1022,7 +1048,7 @@ x27:
   #lh $v1, 1000($t5)
   lui $t5, 0x0000
   ori $t5, $t5, 0x0000
-  expect_exception_begin IRQ_EXC_LE
+  expect_exception_begin CSR_EXC_LE
   lh $v1, 1($t5)
   expect_exception_end
 
@@ -1053,7 +1079,7 @@ x27:
   #lhu $v1, 1000($t5)
   lui $t5, 0x0000
   ori $t5, $t5, 0x0000
-  expect_exception_begin IRQ_EXC_LE
+  expect_exception_begin CSR_EXC_LE
   lhu $v1, 1($t5)
   expect_exception_end
 
@@ -1127,7 +1153,7 @@ x27:
   inc_var g_totalTests
 
   ll $t0, ($t1)
-  expect_exception_begin IRQ_EXC_BRK, 3
+  expect_exception_begin CSR_EXC_BRK, 3
   break 3
   expect_exception_end
   la $t1, ll_temp
@@ -1142,11 +1168,11 @@ x27:
   inc_var g_totalTests
 
   or $t5, $t1, $zero
-  expect_exception_begin IRQ_EXC_LE
+  expect_exception_begin CSR_EXC_LE
   ll $t0, 1($t5) # LL from unaligned address
   expect_exception_end
 
-  expect_exception_begin IRQ_EXC_SE
+  expect_exception_begin CSR_EXC_SE
   sc $t0, 1($t5) # SC from unaligned address
   expect_exception_end
 
@@ -1247,21 +1273,21 @@ single_core:
   #ori $t0, $t0, 0xfff0
   #lw $v1, 1000($t0)
   or $t5, $zero, $zero
-  expect_exception_begin IRQ_EXC_LE
+  expect_exception_begin CSR_EXC_LE
   lw $a0, 1($t5)
   expect_exception_end
 
   # commented to have the same voliating address - 1($t5)
-  #expect_exception_begin IRQ_EXC_LE
+  #expect_exception_begin CSR_EXC_LE
   #lw $a1, 2($zero)
   #expect_exception_end
-  #expect_exception_begin IRQ_EXC_LE
+  #expect_exception_begin CSR_EXC_LE
   #lw $a2, 3($zero)
   #expect_exception_end
 
-  lui $t5, 0x1FFF
+  lui $t5, 0x0FFF
   ori $t5, $t5, 0xEFFF
-  expect_exception_begin IRQ_EXC_DBUS
+  expect_exception_begin CSR_EXC_DBUS
   lw $a0, 1($t5)
   expect_exception_end
 
@@ -1622,7 +1648,7 @@ shd_:   .byte 0, 0, 0, 0
   #ori $t5, $t5, 0xffff
   #sh $v1, 1000($t5)
   or $t5, $zero, $zero
-  expect_exception_begin IRQ_EXC_SE
+  expect_exception_begin CSR_EXC_SE
   sh $v1, 1($t5)
   expect_exception_end
 
@@ -1941,7 +1967,7 @@ shd_:   .byte 0, 0, 0, 0
   inc_var g_totalTests
   lui $v0, 0x8000
   ori $v1, $zero, 1
-  expect_exception_begin IRQ_EXC_OV
+  expect_exception_begin CSR_EXC_OV
   sub $a0, $v1, $v0
   expect_exception_end
 
@@ -1994,21 +2020,21 @@ swd_:   .byte 0, 0, 0, 0
   #ori $t4, $t4, 0xffff
   #sw $v1, 1000($t4)
   lui $t5, 0x4000
-  expect_exception_begin IRQ_EXC_SE
+  expect_exception_begin CSR_EXC_SE
   sw $v1, 1($t5)
   expect_exception_end
 
   # commented to have the same violating address - 1($t5)
-  #expect_exception_begin IRQ_EXC_SE
+  #expect_exception_begin CSR_EXC_SE
   #sw $v1, 2($t5)
   #expect_exception_end
-  #expect_exception_begin IRQ_EXC_SE
+  #expect_exception_begin CSR_EXC_SE
   #sw $v1, 3($t5)
   #expect_exception_end
 
 syscall_test:
   test_begin "Testing SYSCALL"
-  expect_exception_begin IRQ_EXC_SYS
+  expect_exception_begin CSR_EXC_SYS
   syscall
   expect_exception_end
 
@@ -2051,8 +2077,8 @@ syscall_test:
   inc_var g_totalTests
 
   test_begin "Testing IBUS exception"
-  lui $t0, 0x1FFF
-  expect_exception_begin IRQ_EXC_IBUS
+  lui $t0, 0x0FFF
+  expect_exception_begin CSR_EXC_IBUS
   jr $t0
   nop
   expect_exception_end
@@ -2067,7 +2093,7 @@ test_begin "Testing TEQ"
   li $t1, 333333
   teq $t0, $t1
   li $t1, 222222
-  expect_exception_begin IRQ_EXC_TRAP
+  expect_exception_begin CSR_EXC_TRAP
   teq $t0, $t1
   expect_exception_end
 
@@ -2075,7 +2101,7 @@ test_begin "Testing TEQI"
   li $t0, 2222
   teqi $t0, 1111
   teqi $t0, 3333
-  expect_exception_begin IRQ_EXC_TRAP
+  expect_exception_begin CSR_EXC_TRAP
   teqi $t0, 2222
   expect_exception_end
 
@@ -2084,21 +2110,21 @@ test_begin "Testing TGE"
   li $t1, 333333
   tge $t0, $t1
   li $t1, 111111
-  expect_exception_begin IRQ_EXC_TRAP
+  expect_exception_begin CSR_EXC_TRAP
   tge $t0, $t1
   expect_exception_end
   li $t1, 222222
-  expect_exception_begin IRQ_EXC_TRAP
+  expect_exception_begin CSR_EXC_TRAP
   tge $t0, $t1
   expect_exception_end
 
 test_begin "Testing TGEI"
   li $t0, 2222
   tgei $t0, 3333
-  expect_exception_begin IRQ_EXC_TRAP
+  expect_exception_begin CSR_EXC_TRAP
   tgei $t0, 1111
   expect_exception_end
-  expect_exception_begin IRQ_EXC_TRAP
+  expect_exception_begin CSR_EXC_TRAP
   tgei $t0, 2222
   expect_exception_end
 
@@ -2109,7 +2135,7 @@ test_begin "Testing TLT"
   li $t1, 111111
   tlt $t0, $t1
   li $t1, 333333
-  expect_exception_begin IRQ_EXC_TRAP
+  expect_exception_begin CSR_EXC_TRAP
   tlt $t0, $t1
   expect_exception_end
 
@@ -2117,7 +2143,7 @@ test_begin "Testing TLTI"
   li $t0, 2222
   tlti $t0, 2222
   tlti $t0, 1111
-  expect_exception_begin IRQ_EXC_TRAP
+  expect_exception_begin CSR_EXC_TRAP
   tlti $t0, 3333
   expect_exception_end
 
@@ -2225,7 +2251,7 @@ exception_handler:
   # check bad address with ibus exception
   # and return safely
 .ibus_check:
-  li $t9, IRQ_EXC_IBUS
+  li $t9, CSR_EXC_IBUS
   bne $k0, $t9, .dbus_check
   nop
   bne $k1, $t8, fail
@@ -2235,21 +2261,21 @@ exception_handler:
 
   # check bad address with dbus exception
 .dbus_check:
-  li $t9, IRQ_EXC_DBUS
+  li $t9, CSR_EXC_DBUS
   or $t7, $t5, $zero
   beq $k0, $t9, .badd_check
   addi $t7, $t7, 1
 
   # check bad address with load
 .load_check:
-  li $t9, IRQ_EXC_LE
+  li $t9, CSR_EXC_LE
   or $t7, $t5, $zero
   beq $k0, $t9, .badd_check
   addi $t7, $t7, 1
 
   # check bad address with store
 .store_check:
-  li $t9, IRQ_EXC_SE
+  li $t9, CSR_EXC_SE
   or $t7, $t5, $zero
   beq $k0, $t9, .badd_check
   addi $t7, $t7, 1
@@ -2257,7 +2283,7 @@ exception_handler:
 
   # address exception
 .addr_check:
-  li $t9, IRQ_EXC_ADD
+  li $t9, CSR_EXC_ADD
   bne $k0, $t9, .badd_check
   nop
   # load jump register instead of expect_ret_addr
@@ -2272,7 +2298,7 @@ exception_handler:
   # Handle trap code
   # Skip address checking and return
   # GAS breaks expected return address with DIV
-  li $t9, IRQ_EXC_TRAP
+  li $t9, CSR_EXC_TRAP
   bne $k0, $t9, .break_check
   nop
 .trap_exc:
@@ -2284,7 +2310,7 @@ exception_handler:
 
 .break_check:
   # Handle break code
-  li $t9, IRQ_EXC_BRK
+  li $t9, CSR_EXC_BRK
   bne $k0, $t9, .exit_exc
   nop
 .break_exc:
@@ -2313,7 +2339,7 @@ exception_handler:
   # check branch delay slot bit
   inc_var g_totalTests
   mfc0 $k0, C0_STATUS  # read EXC_STATUS
-  lui $a3, IRQ_BD_MASK_HI
+  lui $a3, CSR_BD_MASK_HI
   and $k0, $k0, $a3
   bne $k0, $zero, fail
   nop

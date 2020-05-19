@@ -32,13 +32,13 @@
 * File Name : main.c
 * Author    : Rafal Harabien
 * ******************************************************************************
-* $Date: 2018-09-07 16:07:40 +0200 (pią) $
-* $Revision: 296 $
+* $Date: 2019-04-23 10:51:59 +0200 (wto, 23 kwi 2019) $
+* $Revision: 412 $
 *H*****************************************************************************/
 
 #include "board.h"
 #include <ccproc.h>
-#include <ccproc-irq.h>
+#include <ccproc-csr.h>
 #include <ccproc-amba.h>
 #include <ccproc-amba-uart.h>
 #include <stdio.h>
@@ -312,8 +312,8 @@ int main(void)
     printf("\nStarting UART test (found %u UARTs)\n", uart_num);
 
     // Enable interrupts
-    IRQ_CTRL_PTR->IRQ_MASK |= (1 << 1) | (1 << 0); // IRQ 1 and exceptions
-    IRQ_CTRL_PTR->STATUS |= IRQ_STAT_CIEN;
+    CSR_CTRL_PTR->IRQ_MASK |= (1 << 1) | (1 << 0); // IRQ 1 and exceptions
+    CSR_CTRL_PTR->STATUS |= CSR_STAT_CIEN;
 
     // Test all UARTs
     for (i = 0; i < uart_num; ++i)
