@@ -41,6 +41,7 @@ Essential environment variables:
 * `CCSDK_TOOLCHAIN_PATH` - path to MIPS toolchain binaries, e.g. /usr/local/mips-cc-elf/x86_64-chipcraft-linux-gnu/bin
 * `CCSDK_LINUX_IDE_PATH` - path to Eclipse-based IDE for Linux platform, used to generate distribution package
 * `CCSDK_WINDOWS_IDE_PATH` - path to Eclipse-based IDE for Windows platform, used to generate distribution package
+* `PATH` - search paths for executable binaries, ${CCSDK_HOME}/tools/srecord (for release) and ${CCSDK_HOME}/tools/resources/{linux,windows}/srecord (for development) have to be added to PATH for ccprog to work correctly
 
 CCSDK contains script for quick definition of those variables.
 Please run `ccenv.cmd` on Windows or `ccenv.sh` on Linux.

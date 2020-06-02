@@ -33,7 +33,7 @@ export CCSDK_DBG_PORT="${input:-$CCSDK_DBG_PORT}"
 read -e -p "UART Port (e.g. /dev/ttyUSBn) [$CCSDK_UART_PORT]: " input
 export CCSDK_UART_PORT="${input:-$CCSDK_UART_PORT}"
 
-export PATH="$PATH:${CCSDK_TOOLCHAIN_PATH}:${CCSDK_HOME}/tools/linux/srecord"
+export PATH="$PATH:${CCSDK_TOOLCHAIN_PATH}:${CCSDK_HOME}/tools/srecord:${CCSDK_HOME}/tools/resources/linux/srecord"
 
 export CCSDK_USE_JTAG
 if [[ "$CCSDK_USE_JTAG" == "Yes" ]]; then
