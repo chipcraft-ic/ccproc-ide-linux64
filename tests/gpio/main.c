@@ -32,8 +32,8 @@
 * File Name : main.c
 * Author    : Rafal Harabien
 * ******************************************************************************
-* $Date: 2020-02-05 10:34:45 +0100 (śro, 05 lut 2020) $
-* $Revision: 512 $
+* $Date: 2020-06-18 08:20:40 +0200 (czw, 18 cze 2020) $
+* $Revision: 602 $
 *H*****************************************************************************/
 
 #include "board.h"
@@ -44,7 +44,11 @@
 #include <stdio.h>
 #include "test.h"
 
+#ifdef BOARD_CCNV1_C1
+#define TEST_PIN 10
+#else
 #define TEST_PIN 6
+#endif
 
 static volatile uint32_t g_expectedIrq = 0;
 

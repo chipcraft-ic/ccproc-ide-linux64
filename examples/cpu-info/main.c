@@ -32,8 +32,8 @@
 * File Name : main.c
 * Author    : Krzysztof Marcinek
 * ******************************************************************************
-* $Date: 2020-02-27 14:51:39 +0100 (czw, 27 lut 2020) $
-* $Revision: 531 $
+* $Date: 2020-06-05 17:38:11 +0200 (pią, 05 cze 2020) $
+* $Revision: 590 $
 *H*****************************************************************************/
 
 #include "board.h"
@@ -98,7 +98,9 @@ int main(void)
         case 2:
             printf("opcode\n"); break;
         case 3:
-            printf("dynamic\n"); break;
+            printf("PHT\n"); break;
+        case 4:
+            printf("gshare\n"); break;
     }
     printf("INFO: Area optimization:        ");
     if (cpu_info_1 & CPU_AROPT) {

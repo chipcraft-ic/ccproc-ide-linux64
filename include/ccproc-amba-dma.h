@@ -2,8 +2,8 @@
 *
 * Copyright (c) 2017 ChipCraft Sp. z o.o. All rights reserved
 *
-* $Date: 2019-12-27 16:05:17 +0100 (pią, 27 gru 2019) $
-* $Revision: 494 $
+* $Date: 2020-06-18 08:20:40 +0200 (czw, 18 cze 2020) $
+* $Revision: 602 $
 *
 *  ----------------------------------------------------------------------
 * Redistribution and use in source and binary forms, with or without
@@ -95,18 +95,19 @@ typedef struct
 
 #ifdef CCPROC_SDK
 
- #define AMBA_DMA_CH_BASE(index) (AMBA_DMA_BASE+(index+1)*0x20)                          /*!< DMA Channel Base Address            */
- #define AMBA_DMA_CH_PTR(index) ((volatile amba_dma_channel_t*)AMBA_DMA_CH_BASE(index))  /*!< DMA Channel Pointer                 */
+ #define AMBA_DMA_CH_BASE(index) (AMBA_DMA_BASE+(index+1)*0x20)                                              /*!< DMA Channel Base Address            */
+ #define AMBA_DMA_CH_PTR(index) ((volatile amba_dma_channel_t*)AMBA_DMA_CH_BASE(index))                      /*!< DMA Channel Pointer                 */
 
- #define AMBA_DMA_DWN_CH_BASE(index) AMBA_DMA_CH_BASE(index)                             /*!< DMA Downstream Channel Base Address */
- #define AMBA_DMA_DWN_CH_PTR(index) AMBA_DMA_CH_PTR(index)                               /*!< DMA Downstream Channel Pointer      */
+ #define AMBA_DMA_DWN_CH_BASE(index) AMBA_DMA_CH_BASE(index)                                                 /*!< DMA Downstream Channel Base Address */
+ #define AMBA_DMA_DWN_CH_PTR(index) AMBA_DMA_CH_PTR(index)                                                   /*!< DMA Downstream Channel Pointer      */
 
- #define AMBA_DMA_UP_CH_BASE(index) AMBA_DMA_CH_BASE(AMBA_DMA_DWN_COUNT() + (index))     /*!< DMA Upstream Channel Base Address   */
- #define AMBA_DMA_UP_CH_PTR(index)  AMBA_DMA_CH_PTR(AMBA_DMA_DWN_COUNT() + (index))      /*!< DMA Upstream Channel Pointer        */
+ #define AMBA_DMA_UP_CH_BASE(index) AMBA_DMA_CH_BASE(AMBA_DMA_DWN_COUNT() + (index))                         /*!< DMA Upstream Channel Base Address   */
+ #define AMBA_DMA_UP_CH_PTR(index)  AMBA_DMA_CH_PTR(AMBA_DMA_DWN_COUNT() + (index))                          /*!< DMA Upstream Channel Pointer        */
 
- #define AMBA_DMA_UART_PSELECT(index) (index)                                            /*!< DMA UART PSELECT                    */
- #define AMBA_DMA_SPI_PSELECT(index) (AMBA_UART_COUNT()+index)                           /*!< DMA SPI PSELECT                     */
- #define AMBA_DMA_I2C_PSELECT(index) (AMBA_UART_COUNT()+AMBA_SPI_COUNT()+index)          /*!< DMA I2C PSELECT                     */
+ #define AMBA_DMA_UART_PSELECT(index) (index)                                                                /*!< DMA UART PSELECT                    */
+ #define AMBA_DMA_SPI_PSELECT(index) (AMBA_UART_COUNT()+index)                                               /*!< DMA SPI PSELECT                     */
+ #define AMBA_DMA_I2C_MST_PSELECT(index) (AMBA_UART_COUNT()+AMBA_SPI_COUNT()+index)                          /*!< DMA I2C Master PSELECT              */
+ #define AMBA_DMA_I2C_SLV_PSELECT(index) (AMBA_UART_COUNT()+AMBA_SPI_COUNT()+AMBA_I2C_MST_COUNT()+index)     /*!< DMA I2C Slave PSELECT               */
 
 #endif
 

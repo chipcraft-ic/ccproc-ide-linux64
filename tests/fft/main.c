@@ -32,8 +32,8 @@
 * File Name : main.c
 * Author    : Krzysztof Marcinek
 * ******************************************************************************
-* $Date: 2019-05-16 23:26:56 +0200 (czw, 16 maj 2019) $
-* $Revision: 419 $
+* $Date: 2020-08-06 13:45:31 +0200 (czw, 06 sie 2020) $
+* $Revision: 627 $
 *H*****************************************************************************/
 
 #include "board.h"
@@ -449,6 +449,10 @@ void testScaling(void){
     int loc_re[512];
     int loc_im[512];
 
+    int scale = 8;
+    if (fft_size == 512)
+        scale = 9;
+
     // test scaled download to internal memory
 
     FFT_PTR->REDLA = (int)&re;
@@ -460,11 +464,11 @@ void testScaling(void){
     ptr = (uint32_t*)FFT_MEMORY_BASE;
 
     for (i=0; i<fft_size; i++){
-        assertEq(re[i]>>8, *ptr);
+        assertEq(re[i]>>scale, *ptr);
         ptr++;
     }
     for (i=0; i<fft_size; i++){
-        assertEq(im_ref_res[i]>>8, *ptr);
+        assertEq(im_ref_res[i]>>scale, *ptr);
         ptr++;
     }
 
@@ -478,11 +482,11 @@ void testScaling(void){
     fftWait();
 
     for (i=0; i<fft_size; i++){
-        assertEq(re[i]>>8, loc_re[i]);
+        assertEq(re[i]>>scale, loc_re[i]);
         ptr++;
     }
     for (i=0; i<fft_size; i++){
-        assertEq(im_ref_res[i]>>8, loc_im[i]);
+        assertEq(im_ref_res[i]>>scale, loc_im[i]);
         ptr++;
     }
 
@@ -500,13 +504,13 @@ static void coreMain()
         if (fft_size == 256 || fft_size == 512){
             printf("Test Internal Memory\n");
             testInternalMemory();
-            printf("Test Scaling\n");
-            testScaling();
-            printf("Test Conjugate\n");
-            testConjugate();
-            printf("Test SqrAbs\n");
-            testSqrAbs();
             if (fft_size == 256){
+                printf("Test Scaling\n");
+                testScaling();
+                printf("Test Conjugate\n");
+                testConjugate();
+                printf("Test SqrAbs\n");
+                testSqrAbs();
                 if (CSR_CTRL_PTR->CPU_INFO_0 & CPU_SPRAM) {
                     printf("Test FFT %d\n",fft_size);
                     testFFT();

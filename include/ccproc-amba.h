@@ -2,8 +2,8 @@
 *
 * Copyright (c) 2017 ChipCraft Sp. z o.o. All rights reserved
 *
-* $Date: 2019-11-14 09:00:25 +0100 (czw, 14 lis 2019) $
-* $Revision: 484 $
+* $Date: 2020-06-30 02:27:52 +0200 (wto, 30 cze 2020) $
+* $Revision: 605 $
 *
 *  ----------------------------------------------------------------------
 * Redistribution and use in source and binary forms, with or without
@@ -49,7 +49,7 @@
 #include <stdint.h>
 #include "ccproc.h"
 
-/** 
+/**
  * @cond
  * enable/disable static assertions
  */
@@ -61,7 +61,7 @@
 
 /** @endcond */
 
-/** 
+/**
  * @cond
  * enable/disable ccproc sdk integration
  */

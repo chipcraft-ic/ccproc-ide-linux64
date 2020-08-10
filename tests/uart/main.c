@@ -32,8 +32,8 @@
 * File Name : main.c
 * Author    : Rafal Harabien
 * ******************************************************************************
-* $Date: 2019-04-23 10:51:59 +0200 (wto, 23 kwi 2019) $
-* $Revision: 412 $
+* $Date: 2020-06-10 16:05:57 +0200 (śro, 10 cze 2020) $
+* $Revision: 593 $
 *H*****************************************************************************/
 
 #include "board.h"
@@ -294,14 +294,14 @@ void test_uart(int index)
     uart->TDR = ' ';
     while ((uart->STATUS & (UART_STAT_TXC)) != (UART_STAT_TXC));
     dt = (unsigned)(getusec() - startUsec);
-    ok(dt > 1000 && dt < 1250, "Expected baudrate 9600 (dt %u)", dt);
+    ok(dt > 1000 && dt < 1250, "Expected baudrate 9600 (dt %u)\n", dt);
 
     uart->PRES = AMBA_UART_PRES((PERIPH0_FREQ / 19200) / 16, (PERIPH0_FREQ / 19200) % 16);
     startUsec = getusec();
     uart->TDR = ' ';
     while ((uart->STATUS & (UART_STAT_TXC)) != (UART_STAT_TXC));
     dt = (unsigned)(getusec() - startUsec);
-    ok(dt > 500 && dt < 625, "Expected baudrate 19200 (dt %u)", dt);
+    ok(dt > 500 && dt < 625, "Expected baudrate 19200 (dt %u)\n", dt);
 }
 
 int main(void)

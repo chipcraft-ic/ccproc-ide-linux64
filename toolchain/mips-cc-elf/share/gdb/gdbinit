@@ -1,6 +1,6 @@
 python
 import sys
-sys.path.insert(0, '/home/mjemieli/TESTING/chipcraft-toolchain/outputroot/x86_64-chipcraft-linux-gnu/share/gcc-7.5.0/python')
+sys.path.insert(0, '/home/mjemieli/WORKSPACE/chipcraft-toolchain/outputroot/x86_64-chipcraft-linux-gnu/share/gcc-7.5.0/python')
 from libstdcxx.v6.printers import register_libstdcxx_printers
 register_libstdcxx_printers (None)
 end

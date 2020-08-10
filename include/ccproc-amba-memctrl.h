@@ -2,8 +2,8 @@
 *
 * Copyright (c) 2019 ChipCraft Sp. z o.o. All rights reserved
 *
-* $Date: 2019-11-14 09:00:25 +0100 (czw, 14 lis 2019) $
-* $Revision: 484 $
+* $Date: 2020-07-22 21:42:29 +0200 (śro, 22 lip 2020) $
+* $Revision: 614 $
 *
 *  ----------------------------------------------------------------------
 * Redistribution and use in source and binary forms, with or without
@@ -64,7 +64,11 @@ typedef struct
     uint32_t STATUS;                    /*!< Status Register                      */
     uint32_t CONF;                      /*!< Config Register                      */
     uint32_t COMMAND;                   /*!< Command Register                     */
-    uint32_t _reserved1[125];
+    uint32_t IRQ;                       /*!< Interrupt Register                   */
+    uint32_t _reserved0[12];
+    uint32_t COMMAND_DATA[2];           /*!< Command Data Register                */
+    uint32_t DEVICE_DATA;               /*!< Device Data Register                 */
+    uint32_t _reserved1[109];
     uint32_t DEVICE_CONF[8];            /*!< Device Configuration Register        */
     uint32_t _reserved2[8];
     uint32_t DEVICE_ADDR_HI[8];         /*!< Device High Address Register         */
@@ -107,16 +111,19 @@ enum
 /** External Memory Controller Configuration Register bit offsets */
 enum
 {
-    MEMCTRL_CONF_PRES_SHIFT  = 16,  /*!< Clock Prescaler Shift */
+    MEMCTRL_CONF_BURST_SHIFT    = 12, /*!< Transfer Burst Shift         */
+    MEMCTRL_CONF_PRES_SHIFT     = 16, /*!< Clock Prescaler Shift        */
 };
 
 /** External Memory Controller Configuration Register masks */
 enum
 {
     MEMCTRL_CONF_PRES_MASK   = 0xFF << MEMCTRL_CONF_PRES_SHIFT,  /*!< Clock Prescaler Mask */
+    MEMCTRL_CONF_BURST_MASK  = 0x3  << MEMCTRL_CONF_BURST_SHIFT, /*!< Transfer Burst Mask  */
 };
 
 #define MEMCTRL_BUILD_PRESCALER(pres) ((pres << MEMCTRL_CONF_PRES_SHIFT) & MEMCTRL_CONF_PRES_MASK)  /*!< Clock Prescaler Build Macro */
+#define MEMCTRL_BUILD_BURST(burst) ((burst << MEMCTRL_CONF_BURST_SHIFT) & MEMCTRL_CONF_BURST_MASK)  /*!< Burst Build Macro           */
 
 /** @} */
 

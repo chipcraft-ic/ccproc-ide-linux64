@@ -2,8 +2,8 @@
 *
 * Copyright (c) 2017 ChipCraft Sp. z o.o. All rights reserved
 *
-* $Date: 2019-10-03 19:22:07 +0200 (czw, 03 paź 2019) $
-* $Revision: 474 $
+* $Date: 2020-06-18 08:20:40 +0200 (czw, 18 cze 2020) $
+* $Revision: 602 $
 *
 *  ----------------------------------------------------------------------
 * Redistribution and use in source and binary forms, with or without
@@ -159,6 +159,24 @@ typedef enum
 
 /** Helper macro for calculating prescaller value in SPI Control Register */
 #define SPI_CTRL_PRESC(fsck, fpclk) ((fpclk) / ((fsck) * 2) - 1)
+
+/** SPI Info Register Flags */
+enum
+{
+    SPI_INFO_SLV_EN  = 1 << 4,   /*!< SPI Slave Support */
+};
+
+/** SPI Info Register bit offsets */
+enum
+{
+    SPI_INFO_MSS_NUM_SHIFT  = 0,   /*!< SPI Master Select Number Shift */
+};
+
+/** SPI Info Register bit masks */
+enum
+{
+    SPI_INFO_MSS_NUM_MASK   = 0x0F << SPI_INFO_MSS_NUM_SHIFT,  /*!< SPI Master Select Number Mask */
+};
 
 /** @} */
 

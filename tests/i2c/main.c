@@ -32,13 +32,14 @@
 * File Name : main.c
 * Author    : Krzysztof Marcinek
 * ******************************************************************************
-* $Date: 2018-10-08 11:52:38 +0200 (pon, 08 paź 2018) $
-* $Revision: 320 $
+* $Date: 2020-06-18 08:20:40 +0200 (czw, 18 cze 2020) $
+* $Revision: 602 $
 *H*****************************************************************************/
 
 #include "board.h"
 #include <ccproc.h>
 #include <ccproc-amba.h>
+#include <ccproc-amba-gpio.h>
 #include <ccproc-amba-i2c_mst.h>
 #include <stdio.h>
 #include "test.h"
@@ -46,6 +47,17 @@
 #define I2C_FREQ 100000
 
 #define TEST_I2C0_ONLY
+
+#ifdef BOARD_CCNV1_C1
+void setup_ccnv1_c1(void){
+    AMBA_GPIO_PTR->ALTER_LO &= ~GPIO_CONFIG_MASK(4,GPIO_ALTER_0);
+    AMBA_GPIO_PTR->ALTER_LO &= ~GPIO_CONFIG_MASK(5,GPIO_ALTER_0);
+    AMBA_GPIO_PTR->ALTER_LO |= GPIO_CONFIG_MASK(4,GPIO_ALTER_1);
+    AMBA_GPIO_PTR->ALTER_LO |= GPIO_CONFIG_MASK(5,GPIO_ALTER_1);
+    AMBA_GPIO_PTR->PULL_LO |= GPIO_CONFIG_MASK(4,GPIO_PULL_UP);
+    AMBA_GPIO_PTR->PULL_LO |= GPIO_CONFIG_MASK(5,GPIO_PULL_UP);
+}
+#endif
 
 void testI2C(int index){
 
@@ -134,6 +146,10 @@ int main(void)
 
 #ifndef TEST_I2C0_ONLY
     int i = 0;
+#endif
+
+#ifdef BOARD_CCNV1_C1
+    setup_ccnv1_c1();
 #endif
 
     printf("\nStarting I2C tests\n");

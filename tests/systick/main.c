@@ -32,8 +32,8 @@
 * File Name : main.c
 * Author    : Rafal Harabien
 * ******************************************************************************
-* $Date: 2019-04-23 10:51:59 +0200 (wto, 23 kwi 2019) $
-* $Revision: 412 $
+* $Date: 2020-07-22 21:42:29 +0200 (śro, 22 lip 2020) $
+* $Revision: 614 $
 *H*****************************************************************************/
 
 #include "board.h"
@@ -54,7 +54,7 @@ void isr3(void)
 
     //assertEq(AMBA_SYSTICK_PTR->COUNT, 1000); // check COUNT first
     i = (AMBA_SYSTICK_PTR->COUNT)%1000;
-    assertEq(i, 0); // check COUNT first
+    assertTrue(i<10); // check COUNT first
     assertTrue(g_expectedIrq3);
     g_expectedIrq3 = 0;
     assertEq(AMBA_SYSTICK_PTR->IRQF, SYSTICK_IF);
@@ -67,7 +67,7 @@ void isr4(void)
 
     //assertEq(AMBA_SYSTICK_PTR->COUNT, 1000); // check COUNT first
     i = (AMBA_SYSTICK_PTR->COUNT)%1000;
-    assertEq(i, 0); // check COUNT first
+    assertTrue(i<10); // check COUNT first
     assertTrue(g_expectedIrq4);
     g_expectedIrq4 = 0;
     AMBA_SYSTICK_PTR->IRQF = SYSTICK_IF;

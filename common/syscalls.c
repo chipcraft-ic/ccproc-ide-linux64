@@ -32,8 +32,8 @@
 * File Name : syscalls.c
 * Author    : Rafal Harabien
 * ******************************************************************************
-* $Date: 2020-05-12 14:08:36 +0200 (wto, 12 maj 2020) $
-* $Revision: 574 $
+* $Date: 2020-06-05 17:38:11 +0200 (pią, 05 cze 2020) $
+* $Revision: 590 $
 *H*****************************************************************************/
 
 #include <errno.h>
@@ -55,7 +55,7 @@
 #include <ccproc-amba-rtc.h>
 #include <board.h>
 
-#define RTC_FREQ                    32768
+#define RTC_FREQ                    (32768/(TIME_SOURCE_PRSC+1))
 
 #define TIME_SOURCE_TIMER_FREQ      (PERIPH0_FREQ/(TIME_SOURCE_PRSC+1))
 #define TIME_SOURCE_PERFCNT_FREQ    (CORE_FREQ/TIME_SOURCE_PRSC)
@@ -116,7 +116,7 @@ static void clock_init(void)
         AMBA_RTC_PTR->CTRL |= RTC_CTRL_EN;
     } while (((AMBA_RTC_PTR->IRQF & RTC_TRERRIF) != 0) || ((AMBA_RTC_PTR->CTRL & RTC_CTRL_EN) == 0));
     while (AMBA_RTC_PTR->STATUS & RTC_STAT_BUSY);
-    AMBA_RTC_PTR->PRES = 0;
+    AMBA_RTC_PTR->PRES = TIME_SOURCE_PRSC;
     while (AMBA_RTC_PTR->STATUS & RTC_STAT_BUSY);
     AMBA_RTC_PTR->PER = 0xFFFFFFFF;
     while (AMBA_RTC_PTR->STATUS & RTC_STAT_BUSY);

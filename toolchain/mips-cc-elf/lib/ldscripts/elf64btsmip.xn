@@ -7,7 +7,7 @@ OUTPUT_FORMAT("elf64-tradbigmips", "elf64-tradbigmips",
 	      "elf64-tradlittlemips")
 OUTPUT_ARCH(mips)
 ENTRY(__start)
-SEARCH_DIR("=/home/mjemieli/TESTING/chipcraft-toolchain/outputroot/x86_64-chipcraft-linux-gnu/mips-cc-elf/lib64"); SEARCH_DIR("=/home/mjemieli/TESTING/chipcraft-toolchain/outputroot/x86_64-chipcraft-linux-gnu/mips-cc-elf/lib");
+SEARCH_DIR("=/home/mjemieli/WORKSPACE/chipcraft-toolchain/outputroot/x86_64-chipcraft-linux-gnu/mips-cc-elf/lib64"); SEARCH_DIR("=/home/mjemieli/WORKSPACE/chipcraft-toolchain/outputroot/x86_64-chipcraft-linux-gnu/mips-cc-elf/lib");
 SECTIONS
 {
   /* Read-only sections, merged into text segment: */

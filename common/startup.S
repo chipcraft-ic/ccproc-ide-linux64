@@ -32,8 +32,8 @@
 # File Name : startup.S
 # Author    : Rafal Harabien, Krzysztof Marcinek
 # ******************************************************************************
-# $Date: 2019-08-07 09:00:46 +0200 (śro, 07 sie 2019) $
-# $Revision: 438 $
+# $Date: 2020-07-24 11:25:59 +0200 (pią, 24 lip 2020) $
+# $Revision: 617 $
 #H******************************************************************************
 
 # Useful defines:
@@ -169,6 +169,7 @@ cache_init:
   sw $zero, DCACHE_FLUSH_OFFSET($t0)    # flush data cache
   or $t1, $zero, CACHE_EN_MASK          # cache enable mask
   or $t1, $t1, CACHE_FT_MASK            # cache parity/ecc enable mask
+  or $t1, $t1, CACHE_HE_MASK            # cache hard error enable mask
   sw $t1, ICACHE_STAT_OFFSET($t0)       # enable instruction cache
   sw $t1, DCACHE_STAT_OFFSET($t0)       # enable data cache
   la $gp, _gp                           # init global pointer

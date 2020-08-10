@@ -13,8 +13,8 @@
   <licenseText>
     Copyright (c) 2018 ChipCraft Sp. z o.o. All rights reserved\n
 \n
-    $Date: 2020-04-17 23:13:49 +0200 (pią, 17 kwi 2020) $\n
-    $Revision: 555 $\n
+    $Date: 2020-06-05 17:38:11 +0200 (pią, 05 cze 2020) $\n
+    $Revision: 590 $\n
 \n
      ----------------------------------------------------------------------\n
     Redistribution and use in source and binary forms, with or without\n
@@ -1453,6 +1453,30 @@
           <description>PPS Output Timestamp HI</description>
           <addressOffset>0x74</addressOffset>
           <access>read-only</access>
+        </register>
+        <register>
+          <name>CARR_CFG</name>
+          <description>Carrier Removal Configuration Register</description>
+          <addressOffset>0x78</addressOffset>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>CARR_EN</name>
+              <description>Carrier Removal Enable</description>
+              <bitRange>[0:0]</bitRange>
+            </field>
+            <field>
+              <name>CARR_MODE</name>
+              <description>Carrier Removal Mode</description>
+              <bitRange>[3:2]</bitRange>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>CARR_NCO</name>
+          <description>Carrier Removal NCO Register</description>
+          <addressOffset>0x7C</addressOffset>
+          <access>read-write</access>
         </register>
       </registers>
     </peripheral>

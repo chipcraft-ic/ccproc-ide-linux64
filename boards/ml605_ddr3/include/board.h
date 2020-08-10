@@ -2,8 +2,8 @@
 *
 * Copyright (c) 2017 ChipCraft Sp. z o.o. All rights reserved
 *
-* $Date: 2019-12-27 16:05:17 +0100 (pią, 27 gru 2019) $
-* $Revision: 494 $
+* $Date: 2020-06-10 23:04:26 +0200 (śro, 10 cze 2020) $
+* $Revision: 595 $
 *
 *  ----------------------------------------------------------------------
 * Redistribution and use in source and binary forms, with or without
@@ -50,6 +50,6 @@
 
 #define TIME_SOURCE             TIMER32
 #define TIME_SOURCE_TIMER_ID    0
-#define TIME_SOURCE_PRSC        40
+#define TIME_SOURCE_PRSC        ((PERIPH0_FREQ/1000000)-1)
 
 #endif /* _BOARD_H */

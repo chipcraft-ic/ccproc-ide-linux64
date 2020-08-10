@@ -32,8 +32,8 @@
 * File Name : main.c
 * Author    : Krzysztof Marcinek
 * ******************************************************************************
-* $Date: 2019-08-01 12:24:46 +0200 (czw, 01 sie 2019) $
-* $Revision: 434 $
+* $Date: 2020-07-27 09:43:47 +0200 (pon, 27 lip 2020) $
+* $Revision: 621 $
 *H*****************************************************************************/
 
 #include "board.h"
@@ -96,6 +96,14 @@ int main(void){
             return 0;
         }
 
+        if (AMBA_RTC_PTR->CTRL & RTC_CTRL_EN){
+            printf("RTC already running with COUNT = %d\n",(int)AMBA_RTC_PTR->COUNT);
+            if (AMBA_RTC_PTR->PRES == 32768){
+                printTestSummary();
+                return 0;
+            }
+        }
+
         RTCenable();
 
         RTCwrite((uint32_t*)&AMBA_RTC_PTR->PRES, 0);
@@ -143,6 +151,9 @@ int main(void){
     testRTCpwd();
 
     printTestSummary();
+
+    RTCwrite((uint32_t*)&AMBA_RTC_PTR->PRES, 32768);
+    RTCwrite((uint32_t*)&AMBA_RTC_PTR->COUNT, 0);
 
     return 0;
 

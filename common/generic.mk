@@ -32,8 +32,8 @@
 # File Name : generic.mk
 # Author    : Rafal Harabien
 # ******************************************************************************
-# $Date: 2020-05-12 20:30:52 +0200 (wto, 12 maj 2020) $
-# $Revision: 575 $
+# $Date: 2020-06-05 17:38:11 +0200 (pią, 05 cze 2020) $
+# $Revision: 590 $
 #H******************************************************************************
 
 ifeq ($(OS),Windows_NT)
@@ -211,6 +211,8 @@ endif
 
 GDB_UNIX_SOCK ?= 0
 SIM_DEBUG ?= 1
+
+SIMFLAGS += --uart-input stdin --uart-output stdout --uart-input uart1in.txt --uart-output uart1out.txt --uart-input uart2in.txt --uart-output uart2out.txt
 
 # use virtual ports for simulators
 ifeq ($(SIM_DEBUG),1)

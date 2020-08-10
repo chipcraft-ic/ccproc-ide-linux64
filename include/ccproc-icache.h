@@ -2,8 +2,8 @@
 *
 * Copyright (c) 2017 ChipCraft Sp. z o.o. All rights reserved
 *
-* $Date: 2019-05-16 23:26:56 +0200 (czw, 16 maj 2019) $
-* $Revision: 419 $
+* $Date: 2020-07-13 19:33:44 +0200 (pon, 13 lip 2020) $
+* $Revision: 610 $
 *
 *  ----------------------------------------------------------------------
 * Redistribution and use in source and binary forms, with or without
@@ -77,6 +77,19 @@ enum
     ICACHE_STAT_SCRAMBLE_EN     = 1 << 5,  /*!< Scramble Enable (FT-only)                */
     ICACHE_STAT_MEM_ERR_INJECT  = 1 << 6,  /*!< Memory Error Injection Enable (FT-only)  */
     ICACHE_STAT_TAG_ERR_INJECT  = 1 << 7,  /*!< Tag Error Injection Enable (FT-only)     */
+    ICACHE_STAT_HARD_ERR_EN     = 1 << 8,  /*!< Hard error enable (FT-only)              */
+};
+
+/** ICC Status Register bit offsets */
+enum
+{
+    ICACHE_STAT_RETRY_SHIFT   = 12,  /*!< Fetch Retry Count Offset (FT-only)    */
+};
+
+/** ICC Status Register masks */
+enum
+{
+    ICACHE_STAT_RETRY_MASK  = 0x0F << ICACHE_STAT_RETRY_SHIFT,   /*!< Fetch Retry Count Mask (FT-only)  */
 };
 
 /** ICC Info Register bit offsets */

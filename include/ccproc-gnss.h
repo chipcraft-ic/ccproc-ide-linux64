@@ -2,8 +2,8 @@
 *
 * Copyright (c) 2017 ChipCraft Sp. z o.o. All rights reserved
 *
-* $Date: 2020-04-17 23:13:49 +0200 (pią, 17 kwi 2020) $
-* $Revision: 555 $
+* $Date: 2020-07-13 19:33:44 +0200 (pon, 13 lip 2020) $
+* $Revision: 610 $
 *
 *  ----------------------------------------------------------------------
 * Redistribution and use in source and binary forms, with or without
@@ -94,6 +94,8 @@ typedef struct
     uint32_t TMSTMP_PPS_IN_HI;  /*!< PPS Input Timestamp HI Register                      */
     uint32_t TMSTMP_PPS_OUT_LO; /*!< PPS Output Timestamp LO Register                     */
     uint32_t TMSTMP_PPS_OUT_HI; /*!< PPS Output Timestamp HI Register                     */
+    uint32_t CARR_CFG;          /*!< Carrier Removal Configuration Register               */
+    uint32_t CARR_NCO;          /*!< Carrier Removal NCO Register                         */
 #endif
 #endif
 } gnss_regs_t;
@@ -131,15 +133,17 @@ enum
 /** GNSS Controller Status Register bit offsets */
 enum
 {
-    GNSS_STAT_RFAFE_SHIFT  = 8,   /*!< GNSS RF AFE Shift                */
-    GNSS_STAT_ACQDEC_SHIFT = 24,  /*!< GNSS Acquisition Decimator Shift */
+    GNSS_STAT_RFAFE_SHIFT  = 8,   /*!< GNSS RF AFE Shift                        */
+    GNSS_STAT_ACQDEC_SHIFT = 24,  /*!< GNSS Acquisition Decimator Shift         */
+    GNSS_STAT_ACQSCL_SHIFT = 28,  /*!< GNSS Acquisition Decimator Scale Shift   */
 };
 
 /** GNSS Controller Status Register masks */
 enum
 {
-    GNSS_STAT_RFAFE_MASK   = 0x03 << GNSS_STAT_RFAFE_SHIFT,  /*!< GNSS RF AFE Mask                   */
-    GNSS_STAT_ACQDEC_MASK  = 0x0F << GNSS_STAT_ACQDEC_SHIFT, /*!< GNSS Acquisition Decimator Mask    */
+    GNSS_STAT_RFAFE_MASK   = 0x03 << GNSS_STAT_RFAFE_SHIFT,  /*!< GNSS RF AFE Mask                       */
+    GNSS_STAT_ACQDEC_MASK  = 0x0F << GNSS_STAT_ACQDEC_SHIFT, /*!< GNSS Acquisition Decimator Mask        */
+    GNSS_STAT_ACQSCL_MASK  = 0x0F << GNSS_STAT_ACQSCL_SHIFT, /*!< GNSS Acquisition Decimator Scale Mask  */
 };
 
 /** GNSS Controller Status RF AFE */
@@ -162,36 +166,65 @@ enum
 /** GNSS Controller PPS Register high bit offsets */
 enum
 {
-    GNSS_PPS_HIGH_TIME_SHIFT  = 16,   /*!< GNSS PPS Period High */
+    GNSS_PPS_HIGH_TIME_SHIFT = 16, /*!< GNSS PPS Period High */
 };
 #endif
 
 /** GNSS Controller PPS Input Configuration Register Flags */
 enum
 {
-    GNSS_PPS_IN_EN  = 1 << 5,   /*!< PPS Input Enable */
+    GNSS_PPS_IN_EN = 1 << 5, /*!< PPS Input Enable */
 };
 
 /** GNSS Controller PPS Input Configuration Register bit offsets */
 enum
 {
-    GNSS_PPS_IN_PIN_SHIFT  = 0,   /*!< PPS Input Pin Selection Shift */
+    GNSS_PPS_IN_PIN_SHIFT = 0, /*!< PPS Input Pin Selection Shift */
 };
 
 /** GNSS Controller PPS Input Configuration Register bit masks */
 enum
 {
-    GNSS_PPS_IN_PIN_MASK   = 0x1F << GNSS_PPS_IN_PIN_SHIFT,  /*!< PPS Input Pin Selection Mask */
+    GNSS_PPS_IN_PIN_MASK = 0x1F << GNSS_PPS_IN_PIN_SHIFT, /*!< PPS Input Pin Selection Mask */
+};
+
+/** GNSS Controller Carrier Removal Configuration Register Flags */
+enum
+{
+    GNSS_CARR_EN = 1 << 0, /*!< Carrier Removal Enable */
+};
+
+/** GNSS Controller Carrier Removal Configuration Register bit offsets */
+enum
+{
+    GNSS_CARR_MODE_SHIFT = 2, /*!< Carrier Removal Mode Shift */
+};
+
+/** GNSS Controller Carrier Removal Configuration Register bit masks */
+enum
+{
+    GNSS_CARR_MODE_MASK = 0x3 << GNSS_CARR_MODE_SHIFT, /*!< Carrier Removal Mode Mask */
+};
+
+/** GNSS Carrier Removal Modes */
+enum
+{
+    GNSS_CARR_PIMQ_PQPI = 0,
+    GNSS_CARR_PIPQ_PQMI = 1,
+    GNSS_CARR_PIPQ_MQPI = 2,
+    GNSS_CARR_PIMQ_MQMI = 3,
 };
 
 /**
  * @name GNSS Controller Status Register macros
  * @{
  */
-#define GNSS_STATUS_GET_RFAFE(status)      ((status & GNSS_STAT_RFAFE_MASK) >> GNSS_STAT_RFAFE_SHIFT)      /*!< Gets GNSS RF AFE             */
-#define GNSS_STATUS_BUILD_RFAFE(rfafe)     ((rfafe << GNSS_STAT_RFAFE_SHIFT) & GNSS_STAT_RFAFE_MASK)       /*!< Builds GNSS RF AFE           */
-#define GNSS_STATUS_GET_ACQDEC(status)     ((status & GNSS_STAT_ACQDEC_MASK) >> GNSS_STAT_ACQDEC_SHIFT)    /*!< Gets Acquisition Decimator   */
-#define GNSS_STATUS_BUILD_ACQDEC(acqdec)   ((acqdec << GNSS_STAT_ACQDEC_SHIFT) & GNSS_STAT_ACQDEC_MASK)    /*!< Builds Acquisition Decimator */
+#define GNSS_STATUS_GET_RFAFE(status)      ((status & GNSS_STAT_RFAFE_MASK) >> GNSS_STAT_RFAFE_SHIFT)      /*!< Gets GNSS RF AFE                     */
+#define GNSS_STATUS_BUILD_RFAFE(rfafe)     ((rfafe << GNSS_STAT_RFAFE_SHIFT) & GNSS_STAT_RFAFE_MASK)       /*!< Builds GNSS RF AFE                   */
+#define GNSS_STATUS_GET_ACQDEC(status)     ((status & GNSS_STAT_ACQDEC_MASK) >> GNSS_STAT_ACQDEC_SHIFT)    /*!< Gets Acquisition Decimator           */
+#define GNSS_STATUS_BUILD_ACQDEC(acqdec)   ((acqdec << GNSS_STAT_ACQDEC_SHIFT) & GNSS_STAT_ACQDEC_MASK)    /*!< Builds Acquisition Decimator         */
+#define GNSS_STATUS_GET_ACQSCL(status)     ((status & GNSS_STAT_ACQSCL_MASK) >> GNSS_STAT_ACQSCL_SHIFT)    /*!< Gets Acquisition Decimator Scale     */
+#define GNSS_STATUS_BUILD_ACQSCL(acqscl)   ((acqscl << GNSS_STAT_ACQSCL_SHIFT) & GNSS_STAT_ACQSCL_MASK)    /*!< Builds Acquisition Decimator Scale   */
 /** @} */
 
 /** @} */

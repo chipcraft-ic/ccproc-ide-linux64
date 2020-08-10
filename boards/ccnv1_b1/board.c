@@ -2,8 +2,8 @@
 *
 * Copyright (c) 2017 ChipCraft Sp. z o.o. All rights reserved
 *
-* $Date: 2020-02-13 11:00:59 +0100 (czw, 13 lut 2020) $
-* $Revision: 524 $
+* $Date: 2020-08-06 13:45:31 +0200 (czw, 06 sie 2020) $
+* $Revision: 627 $
 *
 *  ----------------------------------------------------------------------
 * Redistribution and use in source and binary forms, with or without
@@ -39,14 +39,39 @@
 #include <ccproc-amba-gpio.h>
 #include <ccproc-amba-cfgregs.h>
 #include <ccproc-amba-flash.h>
+#include <ccproc-amba-memctrl.h>
 #include <flash.h>
 #include <board.h>
+
+/**
+ * @brief Trim flash macros
+ */
+void flash_trim(void)
+{
+    for (int i=0; i<4; i++)
+    {
+        for (int j=0; j<16; j++)
+        {
+            AMBA_FLASH_PTR->ADDRESS = i*0x10000 + 4*j;
+            AMBA_FLASH_PTR->DATA = 0xFFFFFFFF;
+            AMBA_FLASH_PTR->LOCK = FLASH_LOCK_ACCESS_PASSWORD;
+            AMBA_FLASH_PTR->COMMAND = 0x22;
+            while (AMBA_FLASH_PTR->COMMAND & FLASH_STATUS_BUSY);
+        }
+    }
+}
 
 /**
  * @brief Initialize the CCNV1 board
  */
 void board_init(void)
 {
+
+    /* Enable APB1 Bridge */
+    AMBA_APB0_CFG_PTR->APB1_CFG = AMBA_APB1_EN;
+
+    /* trim flash macros */
+    flash_trim();
 
     /* Enable GPIO controller */
     AMBA_GPIO_PTR->CTRL |= GPIO_CTRL_EN;
@@ -57,19 +82,22 @@ void board_init(void)
     AMBA_GPIO_PTR->ALTER_LO |= GPIO_CONFIG_MASK(2,GPIO_ALTER_0);
     AMBA_GPIO_PTR->ALTER_LO |= GPIO_CONFIG_MASK(3,GPIO_ALTER_0);
 
-    /* Set I2C0 to GPIO 4, 5 */
-    AMBA_GPIO_PTR->ALTER_LO |= GPIO_CONFIG_MASK(4,GPIO_ALTER_1);
-    AMBA_GPIO_PTR->ALTER_LO |= GPIO_CONFIG_MASK(5,GPIO_ALTER_1);
+    /* Set UART1 to GPIO 4, 5, 6, 7 */
+    AMBA_GPIO_PTR->ALTER_LO |= GPIO_CONFIG_MASK(4,GPIO_ALTER_0);
+    AMBA_GPIO_PTR->ALTER_LO |= GPIO_CONFIG_MASK(5,GPIO_ALTER_0);
+    AMBA_GPIO_PTR->ALTER_LO |= GPIO_CONFIG_MASK(6,GPIO_ALTER_0);
+    AMBA_GPIO_PTR->ALTER_LO |= GPIO_CONFIG_MASK(7,GPIO_ALTER_0);
 
-    /* Set pull-up to GPIO 4, 5 */
-    AMBA_GPIO_PTR->PULL_LO |= GPIO_CONFIG_MASK(4,GPIO_PULL_UP);
-    AMBA_GPIO_PTR->PULL_LO |= GPIO_CONFIG_MASK(5,GPIO_PULL_UP);
+    /* Set I2C slave to GPIO 8, 9 */
+    AMBA_GPIO_PTR->ALTER_LO |= GPIO_CONFIG_MASK(8,GPIO_ALTER_1);
+    AMBA_GPIO_PTR->ALTER_LO |= GPIO_CONFIG_MASK(9,GPIO_ALTER_1);
+
+    /* Set pull-up to GPIO 8, 9 */
+    AMBA_GPIO_PTR->PULL_LO |= GPIO_CONFIG_MASK(8,GPIO_PULL_UP);
+    AMBA_GPIO_PTR->PULL_LO |= GPIO_CONFIG_MASK(9,GPIO_PULL_UP);
 
     /* Disable GPIO controller */
     AMBA_GPIO_PTR->CTRL &= ~GPIO_CTRL_EN;
-
-    /* Enable APB1 Bridge */
-    AMBA_APB0_CFG_PTR->APB1_CFG = AMBA_APB1_EN;
 
     /* Configure Flash Controller */
     flash_configure(CORE_FREQ,(uint8_t)FLASH_READ_WAIT_STATES_CALC(CORE_FREQ),1,0);
@@ -82,6 +110,9 @@ void board_init(void)
     /* Switch to PLL */
     CFG_REGS_PTR->CFGREG_UNLOCK = CFGREG_UNLOCK_DEF;
     CFG_REGS_PTR->CFGREG_COREFREQ_CLK = 2 << CFGREG_COREFREQ_CLK_CLK_CORE_SEL_SHIFT;
+
+    /* switch debugger to new baud rate */
+    CSR_CTRL_PTR->DBG_BAUD = DBG_UART_PRES((CORE_FREQ / DBG_BAUDRATE) / 16, (CORE_FREQ / DBG_BAUDRATE) % 16);
 
     /* Disable APB1 Bridge */
     AMBA_APB0_CFG_PTR->APB1_CFG &= ~AMBA_APB1_EN;
@@ -133,3 +164,66 @@ void gnss_afe_init(void)
 
 }
 
+void hyperbus_configure(void)
+{
+
+    uint32_t data;
+
+    /* Enable GPIO controller */
+    AMBA_GPIO_PTR->CTRL |= GPIO_CTRL_EN;
+
+    /* Enable APB1 Bridge */
+    AMBA_APB0_CFG_PTR->APB1_CFG = AMBA_APB1_EN;
+
+    /* Set Hyperbus pins */
+    for (int i=16; i<29; i++){
+        AMBA_GPIO_PTR->ALTER_HI  |= GPIO_CONFIG_MASK(i,GPIO_ALTER_0);
+        AMBA_GPIO_PTR->DRIVER_HI |= GPIO_CONFIG_MASK(i,GPIO_DRIVE_1);
+        AMBA_GPIO_PTR->SLEW_RATE |= 1<<i;
+    }
+
+    AMBA_MEMCTRL_PTR->DEVICE_ADDR_LO[0] = ROM_EXT_BASE;
+    AMBA_MEMCTRL_PTR->DEVICE_ADDR_HI[0] = ROM_EXT_BASE + 0x4000000 - 1;
+    AMBA_MEMCTRL_PTR->DEVICE_ADDR_LO[1] = RAM_EXT_BASE;
+    AMBA_MEMCTRL_PTR->DEVICE_ADDR_HI[1] = RAM_EXT_BASE + 0x0800000 - 1;
+
+    AMBA_MEMCTRL_PTR->DEVICE_CONF[1] = MEMCTRL_DEVICE_CONF_EN | MEMCTRL_BUILD_LATENCY(6);
+
+    AMBA_MEMCTRL_PTR->CONF = MEMCTRL_CONF_CKPAD_EN | MEMCTRL_CONF_CSPAD_EN | MEMCTRL_CONF_CKMST_EN | MEMCTRL_BUILD_PRESCALER(1);
+
+                                      // read             register space   linear burst     conf0
+    AMBA_MEMCTRL_PTR->COMMAND_DATA[1] = (1 << (47-16)) | (1 << (46-16)) | (1 << (45-16)) | (1 << (24-16));
+    AMBA_MEMCTRL_PTR->COMMAND_DATA[0] = 0;
+
+    // set CS
+    AMBA_MEMCTRL_PTR->CONF |= 2 | (1<<8);
+    // issue read command
+    AMBA_MEMCTRL_PTR->COMMAND = 1;
+    // wait for busy
+    while (AMBA_MEMCTRL_PTR->STATUS & 1);
+    // clear CS
+    AMBA_MEMCTRL_PTR->CONF &= ~(2 | (1<<8));
+
+    data = AMBA_MEMCTRL_PTR->STATUS >> 16;
+    //printf("Config reg 0 = 0x%x\n",(unsigned int)data);
+
+                                      // register space   linear burst     conf0
+    AMBA_MEMCTRL_PTR->COMMAND_DATA[1] = (1 << (46-16)) | (1 << (45-16)) | (1 << (24-16));
+    // defaults + 3 cycle latency
+    data &= ~(0xF << 4);
+    data |= 0xE << 4;
+    AMBA_MEMCTRL_PTR->COMMAND_DATA[0] = data;
+
+    // set CS
+    AMBA_MEMCTRL_PTR->CONF |= 2 | (1<<8);
+    // issue zero delay write
+    AMBA_MEMCTRL_PTR->COMMAND = 4;
+    // wait for busy
+    while (AMBA_MEMCTRL_PTR->STATUS & 1);
+    // clear CS
+    AMBA_MEMCTRL_PTR->CONF &= ~(2 | (1<<8));
+
+    // set new latency
+    AMBA_MEMCTRL_PTR->DEVICE_CONF[1] = MEMCTRL_DEVICE_CONF_EN | MEMCTRL_BUILD_LATENCY(3);
+
+}

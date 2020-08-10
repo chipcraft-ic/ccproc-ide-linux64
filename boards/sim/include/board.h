@@ -2,8 +2,8 @@
 *
 * Copyright (c) 2018 ChipCraft Sp. z o.o. All rights reserved
 *
-* $Date: 2020-02-13 11:00:59 +0100 (czw, 13 lut 2020) $
-* $Revision: 524 $
+* $Date: 2020-06-10 23:04:26 +0200 (śro, 10 cze 2020) $
+* $Revision: 595 $
 *
 *  ----------------------------------------------------------------------
 * Redistribution and use in source and binary forms, with or without
@@ -49,7 +49,7 @@
 
 #define TIME_SOURCE             TIMER32
 #define TIME_SOURCE_TIMER_ID    0
-#define TIME_SOURCE_PRSC        40
+#define TIME_SOURCE_PRSC        ((PERIPH0_FREQ/1000000)-1)
 
 /* Initialize GNSS AFE */
 void gnss_afe_init(void);

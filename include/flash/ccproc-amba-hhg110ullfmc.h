@@ -2,8 +2,8 @@
 *
 * Copyright (c) 2018 ChipCraft Sp. z o.o. All rights reserved
 *
-* $Date: 2019-11-03 23:10:21 +0100 (nie, 03 lis 2019) $
-* $Revision: 481 $
+* $Date: 2020-07-27 09:43:47 +0200 (pon, 27 lip 2020) $
+* $Revision: 621 $
 *
 *  ----------------------------------------------------------------------
 * Redistribution and use in source and binary forms, with or without
@@ -71,8 +71,8 @@ typedef struct
     volatile uint32_t IRQMAP;                    /*!< Interrupt Mapping Register           */
     volatile uint32_t MASTER_LOCKS;              /*!< Master Lock Bits Register            */
     volatile uint32_t INFO;                      /*!< Info Register                        */
-    volatile uint32_t REGION_LOCKS[2];           /*!< Region Lock Bits Register            */
-    volatile uint32_t _reserved1[116];
+    volatile uint32_t REGION_LOCKS[4];           /*!< Region Lock Bits Register            */
+    volatile uint32_t _reserved1[114];
     volatile uint32_t USER_ROW[128];             /*!< User Row Direct Access Space         */
     volatile uint32_t MANUFACTURER_ROW[128];     /*!< Manufacturer Row Direct Access Space */
     volatile uint32_t FACTORY_ROW[128];          /*!< Factory Row Direct Access Space      */

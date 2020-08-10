@@ -32,8 +32,8 @@
 * File Name : main.c
 * Author    : Krzysztof Marcinek
 * ******************************************************************************
-* $Date: 2019-10-21 09:43:30 +0200 (pon, 21 paź 2019) $
-* $Revision: 477 $
+* $Date: 2020-07-24 11:25:59 +0200 (pią, 24 lip 2020) $
+* $Revision: 617 $
 *H*****************************************************************************/
 
 #include "board.h"
@@ -78,7 +78,7 @@ static void testWDT(void)
     } while ((AMBA_WDT_PTR->CTRL & WDT_CTRL_EN) == 0);
     do {
         AMBA_WDT_PTR->LOCK = 3;
-        AMBA_WDT_PTR->PER = 50;
+        AMBA_WDT_PTR->PER = 500;
     } while (AMBA_WDT_PTR->PER != 50);
     for (;;);
 }
@@ -110,7 +110,7 @@ int main(void)
         }
     }
 
-    PWD_PTR->CTRL |= (1<<PWD_CTRL_COREINT_SHIFT) | (3<<PWD_CTRL_PER2INT_SHIFT) | (2<<PWD_CTRL_PER0INT_SHIFT) | PWD_CTRL_KEY;
+    //PWD_PTR->CTRL |= (1<<PWD_CTRL_COREINT_SHIFT) | (3<<PWD_CTRL_PER2INT_SHIFT) | (2<<PWD_CTRL_PER0INT_SHIFT) | PWD_CTRL_KEY;
 
     RTCstart();
     RTCrestore();
@@ -143,6 +143,11 @@ int main(void)
     assertTrue(g_totalTests>4);
 
     printTestSummary();
+
+    RTCwrite((uint32_t*)&AMBA_RTC_PTR->BACKUP0, 0);
+    RTCwrite((uint32_t*)&AMBA_RTC_PTR->BACKUP1, 0);
+    RTCwrite((uint32_t*)&AMBA_RTC_PTR->BACKUP2, 0);
+    RTCwrite((uint32_t*)&AMBA_RTC_PTR->BACKUP3, 0);
 
     return 0;
 }

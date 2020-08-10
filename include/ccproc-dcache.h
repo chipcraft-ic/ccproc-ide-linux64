@@ -2,8 +2,8 @@
 *
 * Copyright (c) 2017 ChipCraft Sp. z o.o. All rights reserved
 *
-* $Date: 2019-10-03 19:22:07 +0200 (czw, 03 paź 2019) $
-* $Revision: 474 $
+* $Date: 2020-07-13 19:33:44 +0200 (pon, 13 lip 2020) $
+* $Revision: 610 $
 *
 *  ----------------------------------------------------------------------
 * Redistribution and use in source and binary forms, with or without
@@ -79,6 +79,7 @@ enum
     DCACHE_STAT_SCRAMBLE_EN       = 1 << 5,  /*!< Scramble Enable (FT-only)                                     */
     DCACHE_STAT_MEM_ERR_INJECT    = 1 << 6,  /*!< Memory Error Injection Enable (FT-only)                       */
     DCACHE_STAT_TAG_ERR_INJECT    = 1 << 7,  /*!< Tag Error Injection Enable (FT-only)                          */
+    DCACHE_STAT_HARD_ERR_EN       = 1 << 8,  /*!< Hard error enable (FT-only)                                   */
 };
 
 /** DCC Info Register bit offsets */

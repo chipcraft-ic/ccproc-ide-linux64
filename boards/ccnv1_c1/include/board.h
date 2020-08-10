@@ -38,7 +38,7 @@
 
 /* DO NOT MODIFY */
 #define IDCODE_PART_NUM         1
-#define IDCODE_PART_VER         1
+#define IDCODE_PART_VER         2
 #define FLASH_DELAY             36UL
 
 #define PERIPH0_FREQ            40000000UL
@@ -48,7 +48,9 @@
 #define STDIO_BAUDRATE          115200
 #define STDIO_RTSCTS            0
 
-#define TIME_SOURCE             RTC
+#define TIME_SOURCE             TIMER32
+#define TIME_SOURCE_TIMER_ID    0
+#define TIME_SOURCE_PRSC        ((PERIPH0_FREQ/1000000)-1)
 
 /* Initialize GNSS AFE */
 void gnss_afe_init(void);

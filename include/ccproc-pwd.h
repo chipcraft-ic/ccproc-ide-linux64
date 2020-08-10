@@ -2,8 +2,8 @@
 *
 * Copyright (c) 2017 ChipCraft Sp. z o.o. All rights reserved
 *
-* $Date: 2019-05-21 11:29:33 +0200 (wto, 21 maj 2019) $
-* $Revision: 420 $
+* $Date: 2020-07-22 21:42:29 +0200 (śro, 22 lip 2020) $
+* $Revision: 614 $
 *
 *  ----------------------------------------------------------------------
 * Redistribution and use in source and binary forms, with or without
@@ -105,13 +105,15 @@ enum
 /** Power Management RSTRSN Register flags */
 enum
 {
-    PWD_RSN_PWRON          = 0x01,  /*!< Power On Reset                 */
-    PWD_RSN_DBG            = 0x02,  /*!< Debug Reset                    */
-    PWD_RSN_SOFT           = 0x04,  /*!< Software Reset                 */
-    PWD_RSN_WDT            = 0x08,  /*!< Watchdog Reset                 */
-    PWD_RSN_MBIST          = 0x10,  /*!< MBIST Reset                    */
-    PWD_RSN_LS_HARD_ERR    = 0x20,  /*!< Lockstep Hard Error Reset      */
-    PWD_RSN_DC_HARD_ERR    = 0x40,  /*!< Data-cache Hard Error Reset    */
+    PWD_RSN_PWRON          = 0x01,  /*!< Power On Reset                     */
+    PWD_RSN_DBG            = 0x02,  /*!< Debug Reset                        */
+    PWD_RSN_SOFT           = 0x04,  /*!< Software Reset                     */
+    PWD_RSN_WDT            = 0x08,  /*!< Watchdog Reset                     */
+    PWD_RSN_MBIST          = 0x10,  /*!< MBIST Reset                        */
+    PWD_RSN_LS_HARD_ERR    = 0x20,  /*!< Lockstep Hard Error Reset          */
+    PWD_RSN_DC_HARD_ERR    = 0x40,  /*!< Data-cache Hard Error Reset        */
+    PWD_RSN_IC_HARD_ERR    = 0x80,  /*!< Instruction-cache Hard Error Reset */
+    PWD_RSN_DL_HARD_ERR    = 0x100, /*!< Core Deadlock Hard Error Reset     */
 };
 
 /** Power Management Info Register flags */
