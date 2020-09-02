@@ -13,8 +13,8 @@
   <licenseText>
     Copyright (c) 2018 ChipCraft Sp. z o.o. All rights reserved\n
 \n
-    $Date: 2020-06-05 17:38:11 +0200 (pią, 05 cze 2020) $\n
-    $Revision: 590 $\n
+    $Date: 2020-08-30 22:54:21 +0200 (nie, 30 sie 2020) $\n
+    $Revision: 632 $\n
 \n
      ----------------------------------------------------------------------\n
     Redistribution and use in source and binary forms, with or without\n
@@ -201,6 +201,12 @@
           <addressOffset>0x1e0</addressOffset>
           <access>read-write</access>
         </register>
+        <register>
+          <name>DEADLOCK_MAX</name>
+          <description>Core Deadlock Counter Max (FT-only)</description>
+          <addressOffset>0x1e4</addressOffset>
+          <access>read-write</access>
+        </register>
       </registers>
     </peripheral>
     <!--  Power Management Controller  -->
@@ -376,13 +382,23 @@
             </field>
             <field>
               <name>DCLS_ERR</name>
-              <description>Lockstep Hard Error</description>
+              <description>Lockstep Hard Error (FT-only)</description>
               <bitRange>[5:5]</bitRange>
             </field>
             <field>
               <name>DCACHE_ERR</name>
-              <description>Data Cache Hard Error</description>
+              <description>Data Cache Hard Error (FT-only)</description>
               <bitRange>[6:6]</bitRange>
+            </field>
+            <field>
+              <name>ICACHE_ERR</name>
+              <description>Instruction Cache Hard Error (FT-only)</description>
+              <bitRange>[7:7]</bitRange>
+            </field>
+            <field>
+              <name>DEADLOCK_ERR</name>
+              <description>Lockstep Deadlock Hard Error (FT-only)</description>
+              <bitRange>[8:8]</bitRange>
             </field>
           </fields>
         </register>
@@ -1078,6 +1094,11 @@
               <description>Acquisition Decimator</description>
               <bitRange>[27:24]</bitRange>
             </field>
+            <field>
+              <name>ACQSCL</name>
+              <description>Acquisition Decimator Scale</description>
+              <bitRange>[31:28]</bitRange>
+            </field>
           </fields>
         </register>
         <register>
@@ -1231,12 +1252,6 @@
           <access>read-only</access>
         </register>
         <register>
-          <name>BANKSEL</name>
-          <description>GNSS-ISE Bank Selection</description>
-          <addressOffset>0x54</addressOffset>
-          <access>read-write</access>
-        </register>
-        <register>
           <name>PPS_IN_CFG</name>
           <description>PPS Input Configuration Register</description>
           <addressOffset>0x58</addressOffset>
@@ -1369,6 +1384,16 @@
               <description>Inject Tag Error (FT-only)</description>
               <bitRange>[7:7]</bitRange>
             </field>
+            <field>
+              <name>HARD_ERR_EN</name>
+              <description>Hard Error Enable (FT-only)</description>
+              <bitRange>[8:8]</bitRange>
+            </field>
+            <field>
+              <name>RETRY_COUNT</name>
+              <description>Retry Count (FT-only)</description>
+              <bitRange>[15:12]</bitRange>
+            </field>
           </fields>
         </register>
         <register>
@@ -1434,25 +1459,25 @@
         </register>
         <register>
           <name>ERR_CNT_0</name>
-          <description>Core 0 Error Count</description>
+          <description>Core 0 Error Count (FT-only)</description>
           <addressOffset>0xC</addressOffset>
           <access>read-write</access>
         </register>
         <register>
           <name>ERR_CNT_1</name>
-          <description>Core 1 Error Count</description>
+          <description>Core 1 Error Count (FT-only)</description>
           <addressOffset>0x10</addressOffset>
           <access>read-write</access>
         </register>
         <register>
           <name>INJECT_MASK_LO</name>
-          <description>Error Injection Mask Low</description>
+          <description>Error Injection Mask Low (FT-only)</description>
           <addressOffset>0x14</addressOffset>
           <access>read-write</access>
         </register>
         <register>
           <name>INJECT_MASK_HI</name>
-          <description>Error Injection Mask High</description>
+          <description>Error Injection Mask High (FT-only)</description>
           <addressOffset>0x18</addressOffset>
           <access>read-write</access>
         </register>
@@ -1514,6 +1539,11 @@
               <name>TAG_ERR_INJECT</name>
               <description>Inject Tag Error (FT-only)</description>
               <bitRange>[7:7]</bitRange>
+            </field>
+            <field>
+              <name>HARD_ERR_EN</name>
+              <description>Hard error enable (FT-only)</description>
+              <bitRange>[8:8]</bitRange>
             </field>
           </fields>
         </register>

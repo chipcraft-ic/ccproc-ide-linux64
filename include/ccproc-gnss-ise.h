@@ -2,8 +2,8 @@
 *
 * Copyright (c) 2017 ChipCraft Sp. z o.o. All rights reserved
 *
-* $Date: 2019-11-14 09:00:25 +0100 (czw, 14 lis 2019) $
-* $Revision: 484 $
+* $Date: 2020-08-30 19:33:45 +0200 (nie, 30 sie 2020) $
+* $Revision: 630 $
 *
 *  ----------------------------------------------------------------------
 * Redistribution and use in source and binary forms, with or without
@@ -196,6 +196,19 @@ INLINE uint32_t GNSS_CHANN_GET(void)
         : "=r" (res) /* output */
     );
     return res;
+}
+
+/// set bank index
+INLINE void GNSS_BANK_SET(uint32_t bankNr)
+{
+    // only single-bank implementation supported
+}
+
+/// get bank index
+INLINE uint32_t GNSS_BANK_GET(void)
+{
+    // only single-bank implementation supported
+    return 0;
 }
 
 /**

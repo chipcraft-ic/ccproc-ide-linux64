@@ -562,11 +562,6 @@
       <access>read-write</access>
       <fields>
         <field>
-          <name>NC</name>
-          <bitRange>[31:2]</bitRange>
-          <access>read-only</access>
-        </field>
-        <field>
           <name>L5</name>
           <description>LNA15 L5 frequency tuning word</description>
           <bitRange>[31:16]</bitRange>
@@ -898,6 +893,11 @@
           <description>PLL1 DCO coarse frequency control</description>
           <bitRange>[19:16]</bitRange>
           <access>read-write</access>
+        </field>
+        <field>
+          <name>NC</name>
+          <bitRange>[15:15]</bitRange>
+          <access>read-only</access>
         </field>
         <field>
           <name>CTRL_FINE</name>
@@ -1267,6 +1267,11 @@
           <description>PLL5 DCO coarse frequency control</description>
           <bitRange>[19:16]</bitRange>
           <access>read-write</access>
+        </field>
+        <field>
+          <name>NC</name>
+          <bitRange>[15:15]</bitRange>
+          <access>read-only</access>
         </field>
         <field>
           <name>CTRL_FINE</name>

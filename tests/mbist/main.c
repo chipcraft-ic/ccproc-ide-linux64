@@ -32,8 +32,8 @@
 * File Name : main.c
 * Author    : Krzysztof Marcinek
 * ******************************************************************************
-* $Date: 2020-02-10 17:59:51 +0100 (pon, 10 lut 2020) $
-* $Revision: 520 $
+* $Date: 2020-08-30 19:33:45 +0200 (nie, 30 sie 2020) $
+* $Revision: 630 $
 *H*****************************************************************************/
 
 #include "board.h"
@@ -103,6 +103,27 @@ int main(void)
             else{
                 assertTrue(0);
                 printf("Internal Core %d MBIST failed - mask %d, status %d.\n",(unsigned int)i,(unsigned int)mask,(unsigned int)status);
+            }
+        }
+
+        ptr = (uint32_t*)&(MBIST_PTR->MSC_LOGS);
+        for (i=0;i<core_num;i++){
+            reg = ptr + i;
+            status = *(reg);
+            reg = ptr + i + core_num;
+            mask = *(reg);
+            if (mask != 0){
+                if (mask == status){
+                    assertTrue(1);
+                    printf("Misc. Core %d MBIST ok - mask %d, status %d.\n",(unsigned int)i,(unsigned int)mask,(unsigned int)status);
+                }
+                else{
+                    assertTrue(0);
+                    printf("Misc. Core %d MBIST failed - mask %d, status %d.\n",(unsigned int)i,(unsigned int)mask,(unsigned int)status);
+                }
+            }
+            else{
+                printf("No misc. Core %d MBIST regions detected.\n",(unsigned int)i);
             }
         }
 

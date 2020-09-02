@@ -2,8 +2,8 @@
 *
 * Copyright (c) 2019 ChipCraft Sp. z o.o. All rights reserved
 *
-* $Date: 2019-02-15 14:56:41 +0100 (pią, 15 lut 2019) $
-* $Revision: 383 $
+* $Date: 2020-08-30 19:33:45 +0200 (nie, 30 sie 2020) $
+* $Revision: 630 $
 *
 *  ----------------------------------------------------------------------
 * Redistribution and use in source and binary forms, with or without
@@ -57,13 +57,15 @@
 /** Power Management Controller Registers */
  typedef struct
 {
-    uint32_t RUN;         /*!< Run Register           */
-    uint32_t CTRL;        /*!< Control Register       */
-    uint32_t _reserved[11];
-    uint32_t SCRATCH0;    /*!< Scratch register 0     */
-    uint32_t SCRATCH1;    /*!< Scratch register 1     */
-    uint32_t EXT_LOGS;    /*!< External Logs Region   */
-    uint32_t INT_LOGS;    /*!< Internal Logs Region   */
+    uint32_t RUN;         /*!< Run Register               */
+    uint32_t CTRL;        /*!< Control Register           */
+    uint32_t _reserved0[11];
+    uint32_t SCRATCH0;    /*!< Scratch register 0         */
+    uint32_t SCRATCH1;    /*!< Scratch register 1         */
+    uint32_t EXT_LOGS;    /*!< External Logs Region       */
+    uint32_t INT_LOGS;    /*!< Internal Logs Region       */
+    uint32_t _reserved1[63];
+    uint32_t MSC_LOGS;    /*!< Miscellaneous Logs Region  */
 } mbist_regs_t;
 
 static volatile mbist_regs_t * const MBIST_PTR = (mbist_regs_t*)MBIST_BASE;

@@ -53,7 +53,7 @@ if [ x$1 != x ] ; then
   prefix=$1
   shift
 else
-  prefix=/home/mjemieli/WORKSPACE/chipcraft-toolchain/outputroot/x86_64-chipcraft-linux-gnu
+  prefix=/home/mjemieli/TESTING/chipcraft-toolchain/outputroot/x86_64-chipcraft-linux-gnu
 fi
 
 # Allow for alternate isysroot in which to find headers

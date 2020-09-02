@@ -1,9 +1,9 @@
 /* ----------------------------------------------------------------------
 *
-* Copyright (c) 2017 ChipCraft Sp. z o.o. All rights reserved
+* Copyright (c) 2020 ChipCraft Sp. z o.o. All rights reserved
 *
-* $Date: 2020-08-06 13:45:31 +0200 (czw, 06 sie 2020) $
-* $Revision: 627 $
+* $Date: 2020-08-30 19:33:45 +0200 (nie, 30 sie 2020) $
+* $Revision: 630 $
 *
 *  ----------------------------------------------------------------------
 * Redistribution and use in source and binary forms, with or without
@@ -48,6 +48,14 @@
  */
 void flash_trim(void)
 {
+
+    AMBA_FLASH_PTR->ADDRESS = 4*0x390;
+    AMBA_FLASH_PTR->DATA = 0xFFFFFFFF;
+    AMBA_FLASH_PTR->COMMAND = 0x1D;
+    while (AMBA_FLASH_PTR->COMMAND & FLASH_STATUS_BUSY);
+    if (AMBA_FLASH_PTR->DATA == 0x5A5A5A5A)
+        return;
+
     for (int i=0; i<4; i++)
     {
         for (int j=0; j<16; j++)
@@ -100,7 +108,7 @@ void board_init(void)
     AMBA_GPIO_PTR->CTRL &= ~GPIO_CTRL_EN;
 
     /* Configure Flash Controller */
-    flash_configure(CORE_FREQ,(uint8_t)FLASH_READ_WAIT_STATES_CALC(CORE_FREQ),1,0);
+    flash_configure(CORE_FREQ,(uint8_t)FLASH_READ_WAIT_STATES_CALC(CORE_FREQ),1,1);
 
     /* Configure PLL */
     CFG_REGS_PTR->CFGREG_UNLOCK = CFGREG_UNLOCK_DEF;

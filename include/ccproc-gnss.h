@@ -2,8 +2,8 @@
 *
 * Copyright (c) 2017 ChipCraft Sp. z o.o. All rights reserved
 *
-* $Date: 2020-07-13 19:33:44 +0200 (pon, 13 lip 2020) $
-* $Revision: 610 $
+* $Date: 2020-08-30 19:33:45 +0200 (nie, 30 sie 2020) $
+* $Revision: 630 $
 *
 *  ----------------------------------------------------------------------
 * Redistribution and use in source and binary forms, with or without
@@ -79,11 +79,11 @@ typedef struct
 #ifdef BOARD_CCNV1_B1
     uint32_t PPS_PERIOD;        /*!< PPS Generation Period Register                       */
 #else
-    uint32_t _reserved[1];
+    uint32_t _reserved0[1];
 #endif
     uint32_t TMSTMP_RNG_LO;     /*!< Range Generation Timestamp LO Register               */
     uint32_t TMSTMP_RNG_HI;     /*!< Range Generation Timestamp HI Register               */
-    uint32_t BANKSEL;           /*!< GNSS-ISE Bank Selection Register                     */
+    uint32_t _reserved1[1];
 #ifndef BOARD_CCNV1_A1
 #ifndef BOARD_CCNV1_B1
     uint32_t PPS_IN_CFG;        /*!< PPS Input Configuration Register                     */
