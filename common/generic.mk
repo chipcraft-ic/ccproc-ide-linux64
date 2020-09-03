@@ -53,6 +53,10 @@ endif
 
 -include $(CCSDK_HOME)/common/customization.mk
 
+ifeq ($(CCSDK_TOOLS_PATH),)
+  # set development tools path
+  CCSDK_TOOLS_PATH := $(CCSDK_HOME)/build/tools/$(PLATFORM)/stripped
+endif
 CCSDK_TRIPLET       ?= mips-cc-elf
 ifeq ($(CCSDK_TOOLCHAIN_PATH),)
   $(error ChipCraft toolchain path not set, ensure chipcraft-toolchain is installed and CCSDK_TOOLCHAIN_PATH variable is set.)
@@ -77,12 +81,12 @@ OBJCOPY           := "$(PREFIX)objcopy$(EXEEXT)"
 OBJDUMP           := "$(PREFIX)objdump$(EXEEXT)"
 SIZE              := "$(PREFIX)size$(EXEEXT)"
 DEBUGGER          := "$(PREFIX)gdb$(EXEEXT)"
-CCPROG            := "$(CCSDK_HOME)/build/tools/$(PLATFORM)/stripped/ccprog$(EXEEXT)"
-CCTERM            := "$(CCSDK_HOME)/build/tools/$(PLATFORM)/stripped/ccterm$(EXEEXT)"
-DBGSERVER_RS      := $(PYTHON) "$(CCSDK_HOME)/build/tools/$(PLATFORM)/stripped/dbgserver.py"
-DBGSERVER_JTAG    := $(CCSDK_HOME)/build/tools/$(PLATFORM)/stripped/debugserverjtag$(EXEEXT)
+CCPROG            := "$(CCSDK_TOOLS_PATH)/ccprog$(EXEEXT)"
+CCTERM            := "$(CCSDK_TOOLS_PATH)/ccterm$(EXEEXT)"
+DBGSERVER_RS      := $(PYTHON) "$(CCSDK_TOOLS_PATH)/dbgserver.py"
+DBGSERVER_JTAG    := $(CCSDK_TOOLS_PATH)/debugserverjtag$(EXEEXT)
 DBGSERVER_SIM     := $(DBGSERVER_RS)
-CCSIM             := "$(CCSDK_HOME)/build/tools/$(PLATFORM)/stripped/ccsim"
+CCSIM             := "$(CCSDK_TOOLS_PATH)/ccsim$(EXEEXT)"
 
 MINITERM          := miniterm.py
 ECHO              := @echo

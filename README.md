@@ -49,6 +49,7 @@ Please run `ccenv.cmd` on Windows or `ccenv.sh` on Linux.
 
 Optional environment variables:
 
+* `CCSDK_TOOLS_PATH` - path to binaries of Chipcraft tools, default for distribution is ${CCSDK_HOME}/tools
 * `VERILATOR_ROOT` - Verilator installation root directory, e.g. `/usr/local/share/verilator`
 * `CCSDK_VTESTBENCH_ROOT` - VTestbench project files directory`
 
