@@ -2,8 +2,8 @@
 *
 * Copyright (c) 2017 ChipCraft Sp. z o.o. All rights reserved
 *
-* $Date: 2020-07-23 13:25:25 +0200 (czw, 23 lip 2020) $
-* $Revision: 615 $
+* $Date: 2020-10-30 11:47:46 +0100 (pią, 30 paź 2020) $
+* $Revision: 641 $
 *
 *  ----------------------------------------------------------------------
 * Redistribution and use in source and binary forms, with or without
@@ -36,13 +36,17 @@
 #ifndef _BOARD_H
 #define _BOARD_H
 
+#include <stdint.h>
+
 /* DO NOT MODIFY */
 #define IDCODE_PART_NUM         1
 #define IDCODE_PART_VER         1
 #define FLASH_DELAY             36UL
+#define FLASH_SIZE              (1024*1024)
+#define FLASH_PAGE_SIZE         512
 
-#define PERIPH0_FREQ            40000000UL
-#define CORE_FREQ               80000000UL
+#define PERIPH0_FREQ            40920000UL
+#define CORE_FREQ               81840000UL
 
 #define DBG_BAUDRATE            460800
 
@@ -56,5 +60,11 @@
 
 /* Initialize GNSS AFE */
 void gnss_afe_init(void);
+/*  Calibrate PLL1 */
+void gnss_pll1_calibrate(uint8_t *dco_pvt, uint8_t *dco_fine);
+/* PLL1 control loop */
+void gnss_pll1_loop(uint8_t dco_pvt, uint8_t dco_fine);
+/*  PLL1 control loop */
+void gnss_pll1_maintanance(void);
 
 #endif /* _BOARD_H */

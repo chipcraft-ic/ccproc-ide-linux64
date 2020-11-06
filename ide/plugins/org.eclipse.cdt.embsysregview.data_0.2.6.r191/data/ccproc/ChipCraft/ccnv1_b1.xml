@@ -13,8 +13,8 @@
   <licenseText>
     Copyright (c) 2018 ChipCraft Sp. z o.o. All rights reserved\n
 \n
-    $Date: 2020-08-30 22:54:21 +0200 (nie, 30 sie 2020) $\n
-    $Revision: 632 $\n
+    $Date: 2020-11-05 16:56:20 +0100 (czw, 05 lis 2020) $\n
+    $Revision: 642 $\n
 \n
      ----------------------------------------------------------------------\n
     Redistribution and use in source and binary forms, with or without\n
@@ -12272,6 +12272,41 @@
                   <description>Read Page Buffer Word</description>
                   <value>28</value>
                 </enumeratedValue>
+                <enumeratedValue>
+                  <name>RD_NVR_WORD</name>
+                  <description>Read NVR Word</description>
+                  <value>29</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>WR_NVR_WORD</name>
+                  <description>Write NVR Word</description>
+                  <value>30</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>ERASE_NVR</name>
+                  <description>Erase NVR</description>
+                  <value>31</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>LOCK_NVR</name>
+                  <description>Lock NVR Access</description>
+                  <value>32</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>RD_CFG_WORD</name>
+                  <description>Read Configuration Word</description>
+                  <value>33</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>WR_CFG_WORD</name>
+                  <description>Write Configuration Word</description>
+                  <value>34</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>LOCK_CFG</name>
+                  <description>Lock Configuration Access</description>
+                  <value>35</value>
+                </enumeratedValue>
               </enumeratedValues>
             </field>
           </fields>
@@ -12602,6 +12637,36 @@
                   <description>Read Page Buffer Word</description>
                   <value>28</value>
                 </enumeratedValue>
+                <enumeratedValue>
+                  <name>WR_NVR_WORD</name>
+                  <description>Write NVR Word</description>
+                  <value>30</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>ERASE_NVR</name>
+                  <description>Erase NVR</description>
+                  <value>31</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>LOCK_NVR</name>
+                  <description>Lock NVR Access</description>
+                  <value>32</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>RD_CFG_WORD</name>
+                  <description>Read Configuration Word</description>
+                  <value>33</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>WR_CFG_WORD</name>
+                  <description>Write Configuration Word</description>
+                  <value>34</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>LOCK_CFG</name>
+                  <description>Lock Configuration Access</description>
+                  <value>35</value>
+                </enumeratedValue>
               </enumeratedValues>
             </field>
           </fields>
@@ -12683,6 +12748,16 @@
               <name>USER_LOCK</name>
               <description>User Lock Bit</description>
               <bitRange>[4:4]</bitRange>
+            </field>
+            <field>
+              <name>CFG_LOCK</name>
+              <description>Configuration Latches Lock Bit</description>
+              <bitRange>[29:29]</bitRange>
+            </field>
+            <field>
+              <name>NVR_LOCK</name>
+              <description>NVR Access Lock Bit</description>
+              <bitRange>[30:30]</bitRange>
             </field>
             <field>
               <name>CE_LOCK</name>

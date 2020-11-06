@@ -39,7 +39,9 @@
 /* DO NOT MODIFY */
 #define IDCODE_PART_NUM         1
 #define IDCODE_PART_VER         2
-#define FLASH_DELAY             36UL
+#define FLASH_DELAY             37UL
+#define FLASH_SIZE              (1024*1024)
+#define FLASH_PAGE_SIZE         512
 
 #define PERIPH0_FREQ            40000000UL
 #define CORE_FREQ               80000000UL

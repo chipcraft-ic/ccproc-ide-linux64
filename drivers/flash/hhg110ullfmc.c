@@ -32,8 +32,8 @@
  * File Name : hhg110ullfmc.c
  * Author    : Maciej Plasota
  * ******************************************************************************
- * $Date: 2018-12-04 14:27:17 +0100 (wto, 04 gru 2018) $
- * $Revision: 362 $
+ * $Date: 2020-10-30 11:47:46 +0100 (pią, 30 paź 2020) $
+ * $Revision: 641 $
  *H*****************************************************************************/
 
 #include "flash.h"
@@ -999,4 +999,18 @@ flash_access_status_t flash_lock_chip_erase()
     flash_unlock_command();
     flash_issue_command (FLASH_COMMAND_LOCK_CHIP_ERASE);
     return flash_check_status();
+}
+
+/*! \brief Reads data from main array.
+ *
+ * \param address Address to start read from.
+ * \param data Pointer to output data.
+ * \param words Number of words to read.
+ */
+void flash_read(uint32_t* address, uint32_t* data, uint32_t words)
+{
+    for (uint32_t i=0; i<words; i++)
+    {
+        data[i] = *(address+i);
+    }
 }

@@ -2,8 +2,8 @@
 *
 * Copyright (c) 2018 ChipCraft Sp. z o.o. All rights reserved
 *
-* $Date: 2020-07-27 09:43:47 +0200 (pon, 27 lip 2020) $
-* $Revision: 621 $
+* $Date: 2020-11-05 16:56:20 +0100 (czw, 05 lis 2020) $
+* $Revision: 642 $
 *
 *  ----------------------------------------------------------------------
 * Redistribution and use in source and binary forms, with or without
@@ -87,19 +87,19 @@ typedef struct
 /** Flash Status Register Flags */
 enum
 {
-    FLASH_STATUS_BUSY               = 0x01, /*!< Busy Status bit mask               */
-    FLASH_STATUS_PROGRAMMING_ERROR  = 0x02, /*!< Programming Error Status bit mask  */
-    FLASH_STATUS_LOCK_ERROR         = 0x04, /*!< Lock Error Status bit mask         */
-    FLASH_STATUS_CURRENT_COMMAND    = 0xF8, /*!< Current Command bit mask           */
+    FLASH_STATUS_BUSY               = 0x001, /*!< Busy Status bit mask               */
+    FLASH_STATUS_PROGRAMMING_ERROR  = 0x002, /*!< Programming Error Status bit mask  */
+    FLASH_STATUS_LOCK_ERROR         = 0x004, /*!< Lock Error Status bit mask         */
+    FLASH_STATUS_CURRENT_COMMAND    = 0x1F8, /*!< Current Command bit mask           */
 };
 
 /** Flash Control Register Flags */
 enum
 {
-    FLASH_CTRL_HCLK_FREQ                = 0x0000001F,   /*!< HCLK current frequency mask    */
-    FLASH_CTRL_SEQUENTIAL_PREFETCH      = 0x00000020,   /*!< Sequential Prefetch enable     */
-    FLASH_CTRL_ASSUME_READS_SEQUENTIAL  = 0x00000040,   /*!< Start all new reads as sequential enable */
-    FLASH_CTRL_READ_WAIT_STATES         = 0x00000F80,   /*!< Read Memory wait states number */
+    FLASH_CTRL_HCLK_FREQ                = 0x0000001F,   /*!< HCLK current frequency mask                */
+    FLASH_CTRL_SEQUENTIAL_PREFETCH      = 0x00000020,   /*!< Sequential Prefetch enable                 */
+    FLASH_CTRL_ASSUME_READS_SEQUENTIAL  = 0x00000040,   /*!< Start all new reads as sequential enable   */
+    FLASH_CTRL_READ_WAIT_STATES         = 0x00000F80,   /*!< Read Memory wait states number             */
 };
 
 /** HCLK current frequency values  */
@@ -210,13 +210,13 @@ enum
 /** Flash Info Register Masks */
 enum
 {
-    FLASH_INFO_PAGE_SIZE_OFFSET      = 0,           /*!< Flash Info Page Size offset in bytes       */
+    FLASH_INFO_PAGE_SIZE_OFFSET      = 0,           /*!< Flash Info Page Size offset                */
     FLASH_INFO_PAGE_SIZE_MASK        = 0x0000000F,  /*!< Flash Info Page Size bit mask              */
-    FLASH_INFO_MODULE_SIZE_OFFSET    = 4,           /*!< Flash Info Module Size offset in bytes     */
+    FLASH_INFO_MODULE_SIZE_OFFSET    = 4,           /*!< Flash Info Module Size offset              */
     FLASH_INFO_MODULE_SIZE_MASK      = 0x000000F0,  /*!< Flash Info Module Size bit mask            */
-    FLASH_INFO_REGION_SIZE_OFFSET    = 8,           /*!< Flash Info Region Size offset in bytes     */
+    FLASH_INFO_REGION_SIZE_OFFSET    = 8,           /*!< Flash Info Region Size in pages offset     */
     FLASH_INFO_REGION_SIZE_MASK      = 0x0000FF00,  /*!< Flash Info Region Size bit mask            */
-    FLASH_INFO_MODULES_NUMBER_OFFSET = 16,          /*!< Flash Info Modules Number offset in bytes  */
+    FLASH_INFO_MODULES_NUMBER_OFFSET = 16,          /*!< Flash Info Modules Number offset           */
     FLASH_INFO_MODULES_NUMBER_MASK   = 0x000F0000,  /*!< Flash Info Modules Number bit mask         */
 };
 

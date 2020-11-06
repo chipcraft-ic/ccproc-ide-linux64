@@ -2,8 +2,8 @@
 *
 * Copyright (c) 2018 ChipCraft Sp. z o.o. All rights reserved
 *
-* $Date: 2020-06-10 23:04:26 +0200 (śro, 10 cze 2020) $
-* $Revision: 595 $
+* $Date: 2020-10-30 11:47:46 +0100 (pią, 30 paź 2020) $
+* $Revision: 641 $
 *
 *  ----------------------------------------------------------------------
 * Redistribution and use in source and binary forms, with or without
@@ -39,6 +39,10 @@
 /* DO NOT MODIFY */
 #define IDCODE_PART_NUM         0
 #define IDCODE_PART_VER         0
+
+/* SIM DOES NOT HAVE FLASH */
+#define FLASH_SIZE              (-1)
+#define FLASH_PAGE_SIZE         512
 
 #define PERIPH0_FREQ            100000000UL
 #define CORE_FREQ               100000000UL

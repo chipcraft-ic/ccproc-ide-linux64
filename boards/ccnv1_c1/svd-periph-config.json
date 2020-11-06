@@ -6,7 +6,7 @@
     "i2c_slv_en": true,
     "wdt_en": true,
     "timer16_num": 2,
-    "icache_way_num": 2,
+    "icache_way_num": 4,
     "can_num": 2,
     "icache_way_tag_words": 64,
     "mbist_msc_mask_offset": 332,

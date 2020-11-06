@@ -32,8 +32,8 @@
  * File Name : hhg110ullfmc.h
  * Author    : Maciej Plasota
  * ******************************************************************************
- * $Date: 2019-04-23 10:51:59 +0200 (wto, 23 kwi 2019) $
- * $Revision: 412 $
+ * $Date: 2020-10-30 11:47:46 +0100 (pią, 30 paź 2020) $
+ * $Revision: 641 $
  *H*****************************************************************************/
 
 #ifndef _FLASH_H_
@@ -842,11 +842,19 @@ static inline void flash_set_mapping_of_interrupts(uint32_t irq_mapping)
 
 /*! \brief Returns mapping of the FLASH peripheral interrupt.
  *
- * \return \c 	mapping mapping mask of the FLASH peripheral interrupt.
+ * \return \c mapping mapping mask of the FLASH peripheral interrupt.
  */
 static inline uint32_t flash_get_mapping_of_interrupts()
 {
     return AMBA_FLASH_PTR->IRQMAP;
 }
+
+/*! \brief Reads data from main array.
+ *
+ * \param address Address to start readng from.
+ * \param data Pointer to output data.
+ * \param words Number of words to read.
+ */
+void flash_read(uint32_t* address, uint32_t* data, uint32_t words);
 
 #endif  // _FLASH_H_
