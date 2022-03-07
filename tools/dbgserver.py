@@ -1,4 +1,5 @@
 #!/usr/bin/env python2
+# -*- coding: utf-8 -*-
 
 #
 # Copyright (c) 2017 ChipCraft Sp. z o.o.
@@ -7,8 +8,8 @@
 #
 # Author: Rafal Harabien
 #
-# $Date: 2020-04-14 16:02:50 +0200 (wto, 14 kwi 2020) $
-# $Revision: 547 $
+# $Date: 2021-06-24 15:44:21 +0200 (czw, 24 cze 2021) $
+# $Revision: 711 $
 #
 
 import time, sys, os, stat, select, threading, logging, re, struct, binascii, socket, serial, getopt, signal
@@ -1197,12 +1198,18 @@ class PipePair():
 	def __init__(self, read_pipe_name, write_pipe_name):
 		# Note: server connects read pipe first so use reversed order here
 		self._write_pipe = open(write_pipe_name, 'wb', buffering=0)
-		if os.name == 'nt':
-			# On Windows client cannot open pipe until server calls ConnectNamedPipe.
-			# Simulator uses two pipes and it calls ConnectNamedPipe synchronously so we have to wait util second pipe is available.
-			# In C app WaitNamedPipe should be used. Standard Python does not have API for that so wait 100ms instead.
-			time.sleep(0.1)
-		self._read_pipe = open(read_pipe_name, 'rb', buffering=0)
+		while True:
+			try:
+				if os.name == 'nt':
+					# On Windows client cannot open pipe until server calls ConnectNamedPipe.
+					# Simulator uses two pipes and it calls ConnectNamedPipe synchronously so we have to wait util second pipe is available.
+					# In C app WaitNamedPipe should be used. Standard Python does not have API for that so wait 100ms instead.
+					time.sleep(0.1)
+				self._read_pipe = open(read_pipe_name, 'rb', buffering=0)
+			except:
+				continue
+			else:
+				break
 
 	def write(self, *args, **kwargs):
 		res = self._write_pipe.write(*args, **kwargs)
