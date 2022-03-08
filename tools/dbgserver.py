@@ -2,13 +2,13 @@
 # -*- coding: utf-8 -*-
 
 #
-# Copyright (c) 2017 ChipCraft Sp. z o.o.
+# Copyright (c) 2022 ChipCraft Sp. z o.o.
 #
 # GDB compatible Debug Server for CC Processor
 #
 # Author: Rafal Harabien
 #
-# $Date: 2021-06-24 15:44:21 +0200 (czw, 24 cze 2021) $
+# $Date: 2022-03-08 15:00:21 +0200 (czw, 24 cze 2021) $
 # $Revision: 711 $
 #
 
