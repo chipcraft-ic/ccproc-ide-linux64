@@ -452,10 +452,12 @@ class CpuDebug:
 		start_aligned = addr - start_misalignment
 		end_misalignment = (addr + length) % 4
 		end_aligned = (addr + length) + (4 - end_misalignment) % 4
-		data = self._read_mem_aligned(start_aligned, end_aligned - start_aligned)
-		if data:
-			data = data[start_misalignment:]
-			data = data[:length]
+		while True:
+			data = self._read_mem_aligned(start_aligned, end_aligned - start_aligned)
+			if data:
+				data = data[start_misalignment:]
+				data = data[:length]
+				break
 		return data
 
 	def _write_mem_aligned(self, addr, data):
