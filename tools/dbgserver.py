@@ -8,8 +8,8 @@
 #
 # Author: Rafal Harabien
 #
-# $Date: 2022-03-08 15:00:21 +0200 (czw, 24 cze 2021) $
-# $Revision: 711 $
+# $Date: 2022-03-09 17:52:51 +0200 (czw, 24 cze 2021) $
+# $Revision: 71 $
 #
 
 import time, sys, os, stat, select, threading, logging, re, struct, binascii, socket, serial, getopt, signal
@@ -39,6 +39,36 @@ SIGTRAP = 5
 BREAK_OPCODE = b'\x00\x00\x03\xCD'
 MEM_REGION_ALIGNMENT = 0x10000
 
+# WORKAROUND:
+# Currently debugging with Eclipse-based IDE follows these steps:
+# 1. flash firmware
+# 2. reset board
+# 3. set breakpoint to main()
+# 4. continue debugging
+# This flow is broken normally, because when IDE sets breakpoint to main(), the
+# board already stepped far into main(). The breakpoint won't trigger.
+# Possible solution is to set breakpoint before main(), at a known instruction.
+# The problem with that is changing firmware - the only known location we can be
+# absolutely sure won't change is 0x00000000. And we can't set breakpoint there
+# because of second problem: we change baud rates for debug UART. There is a
+# short window of code, between __start and main(), where debugging will fail,
+# because IDE can't communicate with the board via debug UART. And we would have
+# to set our breakpoint inside that window.
+# Another solution would be to implement automatic baud rate negotiation. This
+# would work, but requires time and resources currently unavaiable.
+# We can't search the binary for address with toolchain components, because we
+# don't know where neither the binary nor the toolchain are.
+# Good solution would be to modify the IDE to set breakpoint before reset. It's
+# undergoing implementation, but a solution is needed today.
+# So, what we'll do:
+# 1. treat the first "continue" like reset
+# We *know* that IDE will send the first continue when we are after the main()
+# breakpoint and we *know* it requests main(). We are not conerned with usage
+# outside of IDE at the moment, so we can hack something that works with current
+# IDE.
+# The variable below will be changed to True in handler for "monitor reset halt"
+# and changed back to False in reset_cpu().
+workaround___first_continue_is_reset = False
 
 class DebuggerDisconnectedException(Exception):
     """Raised when GDB debugger disconnects from debug server."""
@@ -206,7 +236,7 @@ class GdbConn:
 		else:
 			sys.stdout.write(data)
 			sys.stdout.flush()
-	
+
 	def start_no_ack_mode(self):
 		self._no_ack_mode = True
 
@@ -270,7 +300,7 @@ class CpuInputThread(threading.Thread):
 				else:
 					logging.debug('Ending CPU input thread - read returned 0')
 					break
-			
+
 			self._target_disconnected_flag = True
 			self._queue.put('')
 
@@ -555,6 +585,8 @@ class CpuDebug:
 		self._write(b'b')
 
 	def reset_cpu(self):
+		global workaround___first_continue_is_reset
+		workaround___first_continue_is_reset = False
 		#self.write_mem(0x30030028, '\0\0\0\1') # remap
 		self._write(b'r')
 		return self.expect_ack()
@@ -926,9 +958,13 @@ class DbgBridge:
 	def cmd_continue(self, arg):
 		if len(arg) != 0:
 			logging.warning('Ignoring continue address!')
-
-		logging.info('Continue...')
-		self._cpu_dbg.free_run()
+		global workaround___first_continue_is_reset
+		if workaround___first_continue_is_reset == True:
+			logging.info('First continue is reset...')
+			self._cpu_dbg.reset_cpu()
+		else:
+			logging.info('Continue...')
+			self._cpu_dbg.free_run()
 
 	def cmd_step(self, arg):
 		if len(arg) != 0:
@@ -947,12 +983,31 @@ class DbgBridge:
 		logging.info('Remote command: %s', cmd)
 		if cmd == b'reset halt':
 			old_bp = self._cpu_dbg.get_breakpoint(0)
-			# Stop as early as possible (address 0)
-			self._cpu_dbg.set_breakpoint(0, 0)
+			logging.info('Previous breakpoint: %x', old_bp)
+			# Note:
+			# Breakpoint equal to 0xFFFFFFFF means
+			# that no breakpoint was set earlier
+			# (we may be coming from break_cpu()).
+			# In that case we must break *somewhere*
+			# to be able to get context. To break,
+			# we'll use break_cpu()//
+			# Breapoint being None means the same thing.
+			# We don't want to break before UART baud rate
+			# is set properly, so we'll insert artificial sleep.
+			# This way baud rate will be more likely to be good.
+			# Breakpoint other than 0xFFFFFFFF means
+			# that some breakpoint was set
+			# (assume valid beakpoint for now)
+			# so we can just reset and wait to hit it.
+			# Also read note about workaround at the top.
+			global workaround___first_continue_is_reset
 			self._cpu_dbg.reset_cpu()
-			self._cpu_dbg.break_cpu()
+			workaround___first_continue_is_reset = True
+			if old_bp == 0xFFFFFFFF or old_bp == None:
+				logging.info('Break cpu')
+				time.sleep(0.5) # in seconds
+				self._cpu_dbg.break_cpu()
 			self._cpu_dbg.wait_for_context()
-			self._cpu_dbg.set_breakpoint(0, old_bp if old_bp else 0xFFFFFFFF)
 			self.select_best_core()
 			return b'OK'
 		elif cmd == b'reset run':
