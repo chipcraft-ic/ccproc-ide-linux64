@@ -2,8 +2,8 @@
 *
 * Copyright (c) 2018 ChipCraft Sp. z o.o. All rights reserved
 *
-* $Date: 2020-10-30 11:47:46 +0100 (pią, 30 paź 2020) $
-* $Revision: 641 $
+* $Date: 2021-11-03 11:41:26 +0100 (śro, 03 lis 2021) $
+* $Revision: 782 $
 *
 *  ----------------------------------------------------------------------
 * Redistribution and use in source and binary forms, with or without
@@ -48,7 +48,7 @@
 #define CORE_FREQ               100000000UL
 
 #define STDIO_UART              0
-#define STDIO_BAUDRATE          115200
+#define STDIO_BAUDRATE          1843200
 #define STDIO_RTSCTS            0
 
 #define TIME_SOURCE             TIMER32
@@ -56,6 +56,6 @@
 #define TIME_SOURCE_PRSC        ((PERIPH0_FREQ/1000000)-1)
 
 /* Initialize GNSS AFE */
-void gnss_afe_init(void);
+int gnss_afe_init(void);
 
 #endif /* _BOARD_H */

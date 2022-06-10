@@ -2,8 +2,8 @@
 *
 * Copyright (c) 2020 ChipCraft Sp. z o.o. All rights reserved
 *
-* $Date: 2020-09-15 14:33:30 +0200 (wto, 15 wrz 2020) $
-* $Revision: 640 $
+* $Date: 2021-04-13 10:13:26 +0200 (wto, 13 kwi 2021) $
+* $Revision: 693 $
 *
 *  ----------------------------------------------------------------------
 * Redistribution and use in source and binary forms, with or without
@@ -96,6 +96,12 @@ void board_init(void)
     AMBA_GPIO_PTR->ALTER_LO |= GPIO_CONFIG_MASK(6,GPIO_ALTER_0);
     AMBA_GPIO_PTR->ALTER_LO |= GPIO_CONFIG_MASK(7,GPIO_ALTER_0);
 
+    /* Set UART3 to GPIO 12, 13, 14, 15 */
+    AMBA_GPIO_PTR->ALTER_LO |= GPIO_CONFIG_MASK(12,GPIO_ALTER_0);
+    AMBA_GPIO_PTR->ALTER_LO |= GPIO_CONFIG_MASK(13,GPIO_ALTER_0);
+    AMBA_GPIO_PTR->ALTER_LO |= GPIO_CONFIG_MASK(14,GPIO_ALTER_0);
+    AMBA_GPIO_PTR->ALTER_LO |= GPIO_CONFIG_MASK(15,GPIO_ALTER_0);
+
     /* Set I2C slave to GPIO 8, 9 */
     AMBA_GPIO_PTR->ALTER_LO |= GPIO_CONFIG_MASK(8,GPIO_ALTER_1);
     AMBA_GPIO_PTR->ALTER_LO |= GPIO_CONFIG_MASK(9,GPIO_ALTER_1);
@@ -112,7 +118,7 @@ void board_init(void)
 
     /* Configure PLL */
     CFG_REGS_PTR->CFGREG_UNLOCK = CFGREG_UNLOCK_DEF;
-    CFG_REGS_PTR->CFGREG_COREFREQ_PLL = CFGREG_COREFREQ_PLL_PLL_EN_MASK | (5 << CFGREG_COREFREQ_PLL_PLL_N_SHIFT) | CFGREG_COREFREQ_PLL_REF_SEL_MASK;
+    CFG_REGS_PTR->CFGREG_COREFREQ_PLL = CFGREG_COREFREQ_PLL_PLL_EN_MASK | (8 << CFGREG_COREFREQ_PLL_PLL_N_SHIFT) | CFGREG_COREFREQ_PLL_REF_SEL_MASK;
     while ((CFG_REGS_PTR->CFGREG_COREFREQ_STAT & CFGREG_COREFREQ_STAT_PLL_LOCK_MASK) == 0);
 
     /* Switch to PLL */
@@ -153,7 +159,7 @@ void gnss_afe_init(void)
     CFG_REGS_PTR->CFGREG_PLL1_CONF  = (CFGREG_PLL1_CONF_DEF & (~CFGREG_PLL1_CONF_FCW_MASK)) | (0x600000 << CFGREG_PLL1_CONF_FCW_SHIFT) | CFGREG_PLL1_CONF_EN_MASK;
     /* Configure IF1 */
     CFG_REGS_PTR->CFGREG_UNLOCK = CFGREG_UNLOCK_DEF;
-    CFG_REGS_PTR->CFGREG_IF1_CONF  = CFGREG_IF1_CONF_DEF | CFGREG_IF1_CONF_EN_MASK | CFGREG_IF1_CONF_LPF_EN_MASK | (1 << CFGREG_IF1_CONF_LPF_BAND_SHIFT)  | CFGREG_IF1_CONF_PGA2_EN_MASK | CFGREG_IF1_CONF_PGA1_EN_MASK | CFGREG_IF1_CONF_PREAMP_EN_MASK | (0 << CFGREG_IF1_CONF_AGC_THR_SHIFT);
+    CFG_REGS_PTR->CFGREG_IF1_CONF  = CFGREG_IF1_CONF_EN_MASK | CFGREG_IF1_CONF_LPF_EN_MASK | (2 << CFGREG_IF1_CONF_LPF_BAND_SHIFT) | (4 << CFGREG_IF1_CONF_LPF_CAL_SHIFT) | CFGREG_IF1_CONF_PGA2_EN_MASK | CFGREG_IF1_CONF_PGA1_EN_MASK | CFGREG_IF1_CONF_PREAMP_EN_MASK | (0 << CFGREG_IF1_CONF_AGC_THR_SHIFT) | CFGREG_IF1_CONF_AGC_IQ_SEP_MASK*0 | CFGREG_IF1_CONF_LOAD_EN_MASK | (0 << CFGREG_IF1_CONF_LPF_GAIN_SHIFT) | (0 << CFGREG_IF1_CONF_PGA2_GAIN_SHIFT) | (3 << CFGREG_IF1_CONF_PGA1_GAIN_SHIFT) | (0 << CFGREG_IF1_CONF_PGA1_1DB_GAIN_I_SHIFT) | (0 << CFGREG_IF1_CONF_PGA1_1DB_GAIN_Q_SHIFT);
     /* Configure ADC1 */
     CFG_REGS_PTR->CFGREG_UNLOCK = CFGREG_UNLOCK_DEF;
     CFG_REGS_PTR->CFGREG_ADC1_CONF  = (0 << CFGREG_ADC1_CONF_CLK_SEL_SHIFT) | CFGREG_ADC1_CONF_DEF | CFGREG_ADC1_CONF_SAH_EN_MASK | CFGREG_ADC1_CONF_ADC_EN_MASK;
@@ -169,7 +175,8 @@ void gnss_afe_init(void)
     CFG_REGS_PTR->CFGREG_PLL5_CONF  = (CFGREG_PLL5_CONF_DEF & (~CFGREG_PLL5_CONF_FCW_MASK)) | (0x480000 << CFGREG_PLL5_CONF_FCW_SHIFT) | CFGREG_PLL5_CONF_EN_MASK;
     /* Configure IF5 */
     CFG_REGS_PTR->CFGREG_UNLOCK = CFGREG_UNLOCK_DEF;
-    CFG_REGS_PTR->CFGREG_IF5_CONF  = CFGREG_IF5_CONF_DEF | CFGREG_IF5_CONF_EN_MASK | CFGREG_IF5_CONF_LPF_EN_MASK | (2 << CFGREG_IF5_CONF_LPF_BAND_SHIFT) | CFGREG_IF5_CONF_PGA2_EN_MASK | CFGREG_IF5_CONF_PGA1_EN_MASK | CFGREG_IF5_CONF_PREAMP_EN_MASK | (0 << CFGREG_IF5_CONF_AGC_THR_SHIFT);
+    CFG_REGS_PTR->CFGREG_IF5_CONF  = CFGREG_IF5_CONF_EN_MASK | CFGREG_IF5_CONF_LPF_EN_MASK | (1 << CFGREG_IF5_CONF_LPF_BAND_SHIFT) | (4 << CFGREG_IF5_CONF_LPF_CAL_SHIFT)  | CFGREG_IF5_CONF_PGA2_EN_MASK | CFGREG_IF5_CONF_PGA1_EN_MASK | CFGREG_IF5_CONF_PREAMP_EN_MASK | (0 << CFGREG_IF5_CONF_AGC_THR_SHIFT) | 1*CFGREG_IF5_CONF_LOAD_EN_MASK | 0*CFGREG_IF5_CONF_AGC_IQ_SEP_MASK | (0 << CFGREG_IF5_CONF_LPF_GAIN_SHIFT) | (0 << CFGREG_IF5_CONF_PGA2_GAIN_SHIFT) | (1 << CFGREG_IF5_CONF_PGA1_GAIN_SHIFT) | (3 << CFGREG_IF5_CONF_PGA1_1DB_GAIN_I_SHIFT) | (3 << CFGREG_IF5_CONF_PGA1_1DB_GAIN_Q_SHIFT);
+
     /* Configure ADC5 */
     CFG_REGS_PTR->CFGREG_UNLOCK = CFGREG_UNLOCK_DEF;
     CFG_REGS_PTR->CFGREG_ADC5_CONF  = (0  << CFGREG_ADC5_CONF_CLK_SEL_SHIFT) | CFGREG_ADC5_CONF_DEF | CFGREG_ADC5_CONF_SAH_EN_MASK | CFGREG_ADC5_CONF_ADC_EN_MASK;
@@ -181,6 +188,180 @@ void gnss_afe_init(void)
 }
 
 /**
+ * @brief Increment ADC L1/E1 band
+ */
+void gnss_agc1_inc(void)
+{
+    uint32_t if1_conf = 0;
+    uint32_t agc1_status = CFG_REGS_PTR->CFGREG_IF1_STAT & 0x1FF;
+    uint8_t pga1_1db_gain = agc1_status & 0x7;
+    uint8_t pga1_gain = (agc1_status >> 3) & 0x3;
+    uint8_t pga2_gain = (agc1_status >> 5) & 0x3;
+    uint8_t lpf_gain = (agc1_status >> 7) & 0x3;
+
+    if(pga1_1db_gain < 5)
+        pga1_1db_gain += 1;
+    else
+    {
+        pga1_1db_gain = 0;
+        if(pga1_gain < 3)
+            pga1_gain += 1;
+        else if(pga2_gain < 3)
+            pga2_gain += 1;
+        else if(lpf_gain < 2)
+            lpf_gain += 1;
+        else
+            pga1_1db_gain = 5;
+    }
+
+    if1_conf = CFG_REGS_PTR->CFGREG_IF1_CONF;
+    if1_conf &= (~(CFGREG_IF1_CONF_LPF_GAIN_MASK | CFGREG_IF1_CONF_PGA2_GAIN_MASK | CFGREG_IF1_CONF_PGA1_GAIN_MASK | CFGREG_IF1_CONF_PGA1_1DB_GAIN_I_MASK | CFGREG_IF1_CONF_PGA1_1DB_GAIN_Q_MASK));
+    if1_conf |= (lpf_gain << CFGREG_IF1_CONF_LPF_GAIN_SHIFT) | (pga2_gain << CFGREG_IF1_CONF_PGA2_GAIN_SHIFT) | (pga1_gain << CFGREG_IF1_CONF_PGA1_GAIN_SHIFT) | (pga1_1db_gain << CFGREG_IF1_CONF_PGA1_1DB_GAIN_I_SHIFT) | (pga1_1db_gain << CFGREG_IF1_CONF_PGA1_1DB_GAIN_Q_SHIFT) | CFGREG_IF1_CONF_LOAD_EN_MASK  | CFGREG_IF1_CONF_EN_MASK;
+    do
+    {
+        CFG_REGS_PTR->CFGREG_UNLOCK = CFGREG_UNLOCK_DEF;
+        CFG_REGS_PTR->CFGREG_IF1_CONF = if1_conf;
+    } while( CFG_REGS_PTR->CFGREG_IF1_CONF != if1_conf);
+}
+
+/**
+ * @brief Decrement ADC L1/E1 band
+ */
+void gnss_agc1_dec(void)
+{
+    uint32_t if1_conf = 0;
+    uint32_t agc1_status = CFG_REGS_PTR->CFGREG_IF1_STAT & 0x1FF;
+    uint8_t pga1_1db_gain = agc1_status & 0x7;
+    uint8_t pga1_gain = (agc1_status >> 3) & 0x3;
+    uint8_t pga2_gain = (agc1_status >> 5) & 0x3;
+    uint8_t lpf_gain = (agc1_status >> 7) & 0x3;
+
+    if(pga1_1db_gain > 0)
+        pga1_1db_gain -= 1;
+    else
+    {
+        pga1_1db_gain = 5;
+        if(lpf_gain > 0)
+            lpf_gain -= 1;
+        else if(pga2_gain > 0)
+            pga2_gain -= 1;
+        else if(pga1_gain > 0)
+            pga1_gain -= 1;
+        else
+            pga1_1db_gain = 0;
+    }
+
+    if1_conf = CFG_REGS_PTR->CFGREG_IF1_CONF;
+    if1_conf &= (~(CFGREG_IF1_CONF_LPF_GAIN_MASK | CFGREG_IF1_CONF_PGA2_GAIN_MASK | CFGREG_IF1_CONF_PGA1_GAIN_MASK | CFGREG_IF1_CONF_PGA1_1DB_GAIN_I_MASK | CFGREG_IF1_CONF_PGA1_1DB_GAIN_Q_MASK));
+    if1_conf |= (lpf_gain << CFGREG_IF1_CONF_LPF_GAIN_SHIFT) | (pga2_gain << CFGREG_IF1_CONF_PGA2_GAIN_SHIFT) | (pga1_gain << CFGREG_IF1_CONF_PGA1_GAIN_SHIFT) | (pga1_1db_gain << CFGREG_IF1_CONF_PGA1_1DB_GAIN_I_SHIFT) | (pga1_1db_gain << CFGREG_IF1_CONF_PGA1_1DB_GAIN_Q_SHIFT) | CFGREG_IF1_CONF_LOAD_EN_MASK  | CFGREG_IF1_CONF_EN_MASK;
+    do
+    {
+        CFG_REGS_PTR->CFGREG_UNLOCK = CFGREG_UNLOCK_DEF;
+        CFG_REGS_PTR->CFGREG_IF1_CONF = if1_conf;
+    } while( CFG_REGS_PTR->CFGREG_IF1_CONF != if1_conf);
+}
+
+/**
+ * @brief Increment ADC L5/E5 band
+ */
+void gnss_agc5_inc(void)
+{
+    uint32_t if5_conf = 0;
+    uint32_t agc5_status = CFG_REGS_PTR->CFGREG_IF5_STAT & 0x1FF;
+    uint8_t pga1_1db_gain = agc5_status & 0x7;
+    uint8_t pga1_gain = (agc5_status >> 3) & 0x3;
+    uint8_t pga2_gain = (agc5_status >> 5) & 0x3;
+    uint8_t lpf_gain = (agc5_status >> 7) & 0x3;
+
+    if(pga1_1db_gain < 5)
+        pga1_1db_gain += 1;
+    else
+    {
+        pga1_1db_gain = 0;
+        if(pga1_gain < 3)
+            pga1_gain += 1;
+        else if(pga2_gain < 3)
+            pga2_gain += 1;
+        else if(lpf_gain < 2)
+            lpf_gain += 1;
+        else
+            pga1_1db_gain = 5;
+    }
+
+    if5_conf = CFG_REGS_PTR->CFGREG_IF5_CONF;
+    if5_conf &= (~(CFGREG_IF5_CONF_LPF_GAIN_MASK | CFGREG_IF5_CONF_PGA2_GAIN_MASK | CFGREG_IF5_CONF_PGA1_GAIN_MASK | CFGREG_IF5_CONF_PGA1_1DB_GAIN_I_MASK | CFGREG_IF5_CONF_PGA1_1DB_GAIN_Q_MASK));
+    if5_conf |= (lpf_gain << CFGREG_IF5_CONF_LPF_GAIN_SHIFT) | (pga2_gain << CFGREG_IF5_CONF_PGA2_GAIN_SHIFT) | (pga1_gain << CFGREG_IF5_CONF_PGA1_GAIN_SHIFT) | (pga1_1db_gain << CFGREG_IF5_CONF_PGA1_1DB_GAIN_I_SHIFT) | (pga1_1db_gain << CFGREG_IF5_CONF_PGA1_1DB_GAIN_Q_SHIFT) | CFGREG_IF5_CONF_LOAD_EN_MASK  | CFGREG_IF5_CONF_EN_MASK;
+    do
+    {
+        CFG_REGS_PTR->CFGREG_UNLOCK = CFGREG_UNLOCK_DEF;
+        CFG_REGS_PTR->CFGREG_IF5_CONF = if5_conf;
+    } while( CFG_REGS_PTR->CFGREG_IF5_CONF != if5_conf);
+}
+
+/**
+ * @brief Decrement ADC L5/E5 band
+ */
+void gnss_agc5_dec(void)
+{
+    uint32_t if5_conf = 0;
+    uint32_t agc5_status = CFG_REGS_PTR->CFGREG_IF5_STAT & 0x1FF;
+    uint8_t pga1_1db_gain = agc5_status & 0x7;
+    uint8_t pga1_gain = (agc5_status >> 3) & 0x3;
+    uint8_t pga2_gain = (agc5_status >> 5) & 0x3;
+    uint8_t lpf_gain = (agc5_status >> 7) & 0x3;
+
+    if(pga1_1db_gain > 0)
+        pga1_1db_gain -= 1;
+    else
+    {
+        pga1_1db_gain = 5;
+        if(lpf_gain > 0)
+            lpf_gain -= 1;
+        else if(pga2_gain > 0)
+            pga2_gain -= 1;
+        else if(pga1_gain > 0)
+            pga1_gain -= 1;
+        else
+            pga1_1db_gain = 0;
+    }
+
+    if5_conf = CFG_REGS_PTR->CFGREG_IF5_CONF;
+    if5_conf &= (~(CFGREG_IF5_CONF_LPF_GAIN_MASK | CFGREG_IF5_CONF_PGA2_GAIN_MASK | CFGREG_IF5_CONF_PGA1_GAIN_MASK | CFGREG_IF5_CONF_PGA1_1DB_GAIN_I_MASK | CFGREG_IF5_CONF_PGA1_1DB_GAIN_Q_MASK));
+    if5_conf |= (lpf_gain << CFGREG_IF5_CONF_LPF_GAIN_SHIFT) | (pga2_gain << CFGREG_IF5_CONF_PGA2_GAIN_SHIFT) | (pga1_gain << CFGREG_IF5_CONF_PGA1_GAIN_SHIFT) | (pga1_1db_gain << CFGREG_IF5_CONF_PGA1_1DB_GAIN_I_SHIFT) | (pga1_1db_gain << CFGREG_IF5_CONF_PGA1_1DB_GAIN_Q_SHIFT) | CFGREG_IF5_CONF_LOAD_EN_MASK  | CFGREG_IF5_CONF_EN_MASK;
+    do
+    {
+        CFG_REGS_PTR->CFGREG_UNLOCK = CFGREG_UNLOCK_DEF;
+        CFG_REGS_PTR->CFGREG_IF5_CONF = if5_conf;
+    } while( CFG_REGS_PTR->CFGREG_IF5_CONF != if5_conf);
+}
+
+/**
+ * @brief Maintain AGC
+ */
+void gnss_agc_maintanance(uint32_t noise, uint8_t dwells_mult_1ms)
+{
+    uint32_t noise_thr_low = 700;
+    uint32_t noise_thr_high = 1000;
+
+    double k_mult = 1.0;
+ 
+    while(k_mult*noise*noise < noise_thr_low*noise_thr_low*dwells_mult_1ms )
+    {
+        k_mult = k_mult*1.25;
+        gnss_agc1_inc();
+        gnss_agc5_inc();
+    }
+    k_mult = 1.0;
+    while(k_mult*noise*noise > noise_thr_high*noise_thr_high*dwells_mult_1ms )
+    {
+        k_mult = k_mult/1.25;
+        gnss_agc1_dec();
+        gnss_agc5_dec();
+    }
+
+}
+
+/**
  * @brief Calibrate PLL1
  */
 void gnss_pll1_calibrate(uint8_t *dco_pvt, uint8_t *dco_fine)
@@ -188,6 +369,7 @@ void gnss_pll1_calibrate(uint8_t *dco_pvt, uint8_t *dco_fine)
     int8_t ph_err = 1;
     uint32_t temp;
     int8_t dco_ctrl_pvt;
+    int8_t dco_ctrl_fine = 32;
 
     // start PVT calibration
     for(uint16_t i = 0;i<32768;i=i+1) 
@@ -201,6 +383,8 @@ void gnss_pll1_calibrate(uint8_t *dco_pvt, uint8_t *dco_fine)
         temp = CFG_REGS_PTR->CFGREG_PLL1DCO_CONF;
         temp &= ~CFGREG_PLL1DCO_CONF_CTRL_PVT_MASK;
         temp |= (dco_ctrl_pvt << CFGREG_PLL1DCO_CONF_CTRL_PVT_SHIFT);
+        temp &= ~CFGREG_PLL1DCO_CONF_CTRL_FINE_MASK;
+        temp |= (dco_ctrl_fine  << (dco_ctrl_fine  << (CFGREG_PLL1DCO_CONF_CTRL_FINE_SHIFT + 8)));
         CFG_REGS_PTR->CFGREG_UNLOCK = CFGREG_UNLOCK_DEF;
         CFG_REGS_PTR->CFGREG_PLL1DCO_CONF = temp;
 
@@ -226,16 +410,19 @@ void gnss_pll1_calibrate(uint8_t *dco_pvt, uint8_t *dco_fine)
     }
 
     // check if do not need to decrement PVT
+    dco_ctrl_fine = 3;
     temp = CFG_REGS_PTR->CFGREG_PLL1DCO_CONF;
+    temp &= ~CFGREG_PLL1DCO_CONF_CTRL_PVT_MASK;
+    temp |= (dco_ctrl_pvt << CFGREG_PLL1DCO_CONF_CTRL_PVT_SHIFT);
     temp &= ~CFGREG_PLL1DCO_CONF_CTRL_FINE_MASK;
-    temp |= (0 << CFGREG_PLL1DCO_CONF_CTRL_FINE_SHIFT);
+    temp |= (dco_ctrl_fine  << (CFGREG_PLL1DCO_CONF_CTRL_FINE_SHIFT + 8));
     CFG_REGS_PTR->CFGREG_UNLOCK = CFGREG_UNLOCK_DEF;
     CFG_REGS_PTR->CFGREG_PLL1DCO_CONF = temp;
 
     for(uint16_t i = 0;i<32768;i=i+1) 
         temp = CFG_REGS_PTR->CFGREG_PLL1_STAT;;
     ph_err = 0;
-    while((ph_err == 3) || (ph_err == -3))
+    while((ph_err != 3) && (ph_err != -3))
     {
         for(uint16_t i = 0;i<32768;i=i+1) 
             temp = CFG_REGS_PTR->CFGREG_PLL1_STAT;;
@@ -252,14 +439,15 @@ void gnss_pll1_calibrate(uint8_t *dco_pvt, uint8_t *dco_fine)
                 temp = CFG_REGS_PTR->CFGREG_PLL1_STAT;
         }
     }
-    if(ph_err == 3)
+    if(ph_err == -3)
         dco_ctrl_pvt -= 1;
 
     // start fine calibration
-    int8_t dco_ctrl_fine;
     for(dco_ctrl_fine = 0;dco_ctrl_fine < 64; dco_ctrl_fine = dco_ctrl_fine + 1)
     {
         temp = CFG_REGS_PTR->CFGREG_PLL1DCO_CONF;
+        temp &= ~CFGREG_PLL1DCO_CONF_CTRL_PVT_MASK;
+        temp |= (dco_ctrl_pvt << CFGREG_PLL1DCO_CONF_CTRL_PVT_SHIFT);
         temp &= ~CFGREG_PLL1DCO_CONF_CTRL_FINE_MASK;
         temp |= (dco_ctrl_fine << (CFGREG_PLL1DCO_CONF_CTRL_FINE_SHIFT+8));
         CFG_REGS_PTR->CFGREG_UNLOCK = CFGREG_UNLOCK_DEF;
@@ -313,12 +501,16 @@ void gnss_pll1_loop(uint8_t dco_pvt, uint8_t dco_fine)
 
         if(temp > 0)
         {
-            freq_counter -= 1;
+            if(freq_counter == 0)
+                dco_pvt -= 1;
+            freq_counter = (freq_counter - 1) % (1 << 26);
             dco_ctrl_fine = (freq_counter >> 20) - 0;
         }
         else
         {
-            freq_counter += 1;
+            if(freq_counter == ((1<<26) - 1))
+                dco_pvt += 1;
+            freq_counter = (freq_counter + 1) % (1 << 26);
             dco_ctrl_fine = (freq_counter >> 20) + 1;
         }
 
@@ -332,8 +524,12 @@ void gnss_pll1_loop(uint8_t dco_pvt, uint8_t dco_fine)
             dco_ctrl_fine -= 0;
         }
 
-        CFG_REGS_PTR->CFGREG_UNLOCK = CFGREG_UNLOCK_DEF;
-        CFG_REGS_PTR->CFGREG_PLL1DCO_CONF = CFGREG_PLL1DCO_CONF_CTRL_LOAD_MASK | CFGREG_PLL1DCO_CONF_AMP_LOAD_MASK | (dco_ctrl_fine << (CFGREG_PLL1DCO_CONF_CTRL_FINE_SHIFT + 8)) | (dco_pvt << CFGREG_PLL1DCO_CONF_CTRL_PVT_SHIFT);
+        uint32_t dco_conf = CFGREG_PLL1DCO_CONF_CTRL_LOAD_MASK | CFGREG_PLL1DCO_CONF_AMP_LOAD_MASK | (dco_ctrl_fine << (CFGREG_PLL1DCO_CONF_CTRL_FINE_SHIFT + 8)) | (dco_pvt << CFGREG_PLL1DCO_CONF_CTRL_PVT_SHIFT);
+        do
+        {
+            CFG_REGS_PTR->CFGREG_UNLOCK = CFGREG_UNLOCK_DEF;
+            CFG_REGS_PTR->CFGREG_PLL1DCO_CONF = dco_conf;
+        } while(CFG_REGS_PTR->CFGREG_PLL1DCO_CONF != dco_conf);
 
     }
 }

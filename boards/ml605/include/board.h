@@ -2,8 +2,8 @@
 *
 * Copyright (c) 2017 ChipCraft Sp. z o.o. All rights reserved
 *
-* $Date: 2020-10-30 11:47:46 +0100 (pią, 30 paź 2020) $
-* $Revision: 641 $
+* $Date: 2021-12-19 17:42:38 +0100 (nie, 19 gru 2021) $
+* $Revision: 804 $
 *
 *  ----------------------------------------------------------------------
 * Redistribution and use in source and binary forms, with or without
@@ -40,7 +40,7 @@
 #define IDCODE_PART_NUM         0
 #define IDCODE_PART_VER         0
 
-/* EXTERNAL W25W32 MEMORY */
+/* EXTERNAL W25Q32 MEMORY */
 #define FLASH_SIZE              (-1)//(1024*1024*4)
 #define FLASH_PAGE_SIZE         256
 
@@ -62,6 +62,6 @@
 #define MAX2771_L2E6_CS         10
 
 /* Initialize GNSS AFE */
-void gnss_afe_init(void);
+int gnss_afe_init(void);
 
 #endif /* _BOARD_H */

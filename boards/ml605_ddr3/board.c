@@ -2,8 +2,8 @@
 *
 * Copyright (c) 2017 ChipCraft Sp. z o.o. All rights reserved
 *
-* $Date: 2018-09-07 16:07:40 +0200 (Fri, 07 Sep 2018) $
-* $Revision: 296 $
+* $Date: 2022-01-10 10:09:36 +0100 (pon, 10 sty 2022) $
+* $Revision: 808 $
 *
 *  ----------------------------------------------------------------------
 * Redistribution and use in source and binary forms, with or without

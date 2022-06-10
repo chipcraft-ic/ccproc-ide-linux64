@@ -32,8 +32,8 @@
 * File Name : main.c
 * Author    : Krzysztof Marcinek
 * ******************************************************************************
-* $Date: 2020-07-27 09:43:47 +0200 (pon, 27 lip 2020) $
-* $Revision: 621 $
+* $Date: 2021-10-30 22:10:12 +0200 (sob, 30 paź 2021) $
+* $Revision: 781 $
 *H*****************************************************************************/
 
 #include "board.h"
@@ -48,6 +48,7 @@
 #include "test.h"
 
 #define RTC_FREQ    32768
+#define RAM_MEM_MAX 1024
 
 #define BACK0       0x11223344
 #define BACK1       0x55667788
@@ -82,6 +83,25 @@ static void testRTCpwd(void){
     printf("Restored from deep power down.\n");
 }
 
+void RTCRAMtest(void){
+    uint32_t ram_size = 1<<(RTC_GET_RAM_SIZE(RTCread((uint32_t*)&AMBA_RTC_PTR->STATUS))-2);
+    if (ram_size > 0)
+        ram_size = 1<<(ram_size-2);
+    if (ram_size > RAM_MEM_MAX)
+        ram_size = RAM_MEM_MAX;
+    if (ram_size>0){
+        printf("Testing RTC backup RAM...\n");
+        for (int i=0;i<ram_size;i+=50)
+        {
+            RTCwrite((uint32_t*)&AMBA_BKPRAM_PTR[i],i);
+        }
+        for (int i=0;i<ram_size;i+=50)
+        {
+            assertEq(RTCread((uint32_t*)&AMBA_BKPRAM_PTR[i]),i);
+        }
+    }
+}
+
 int main(void){
 
     int count;
@@ -105,6 +125,8 @@ int main(void){
         }
 
         RTCenable();
+
+        RTCRAMtest();
 
         RTCwrite((uint32_t*)&AMBA_RTC_PTR->PRES, 0);
 

@@ -875,6 +875,11 @@
               <description>GNSS Banks Number</description>
               <bitRange>[7:4]</bitRange>
             </field>
+            <field>
+              <name>VITERBI</name>
+              <description>Viterbi Decoder</description>
+              <bitRange>[8:8]</bitRange>
+            </field>
           </fields>
         </register>
         <register>
@@ -2643,6 +2648,11 @@
               <bitRange>[18:18]</bitRange>
             </field>
             <field>
+              <name>RTC_RDY</name>
+              <description>RTC Compare Timestamp Ready</description>
+              <bitRange>[19:19]</bitRange>
+            </field>
+            <field>
               <name>ACQPLAYIE</name>
               <description>Acquisition/Playback Interrupt Enable</description>
               <bitRange>[20:20]</bitRange>
@@ -2903,10 +2913,16 @@
           </fields>
         </register>
         <register>
-          <name>CARR_NCO</name>
-          <description>Carrier Removal NCO Register</description>
-          <addressOffset>0x7C</addressOffset>
-          <access>read-write</access>
+          <name>TMSTMP_RTC_CMP_LO</name>
+          <description>RTC Compare Timestamp LO Register</description>
+          <addressOffset>0x80</addressOffset>
+          <access>read-only</access>
+        </register>
+        <register>
+          <name>TMSTMP_RTC_CMP_HI</name>
+          <description>RTC Compare Timestamp HI Register</description>
+          <addressOffset>0x84</addressOffset>
+          <access>read-only</access>
         </register>
       </registers>
     </peripheral>
@@ -60296,7 +60312,7 @@
           <fields>
             <field>
               <name>NC</name>
-              <bitRange>[31:18]</bitRange>
+              <bitRange>[31:3]</bitRange>
               <access>read-only</access>
             </field>
             <field>

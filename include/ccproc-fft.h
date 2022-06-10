@@ -2,8 +2,8 @@
 *
 * Copyright (c) 2017 ChipCraft Sp. z o.o. All rights reserved
 *
-* $Date: 2019-01-09 12:10:59 +0100 (śro, 09 sty 2019) $
-* $Revision: 374 $
+* $Date: 2021-04-06 10:29:54 +0200 (wto, 06 kwi 2021) $
+* $Revision: 687 $
 *
 *  ----------------------------------------------------------------------
 * Redistribution and use in source and binary forms, with or without
@@ -121,7 +121,7 @@ enum
     FFT_TASK_UPLOAD      = 0x02,  /*!< Upload task           */
     FFT_TASK_FFT         = 0x03,  /*!< FFT task              */
     FFT_TASK_ABSSQR      = 0x04,  /*!< Absolute square task  */
-    FFT_TASK_CONJUATE    = 0x05,  /*!< Conjuate task         */
+    FFT_TASK_CONJUATE    = 0x05,  /*!< Conjugate task        */
 };
 
 /**

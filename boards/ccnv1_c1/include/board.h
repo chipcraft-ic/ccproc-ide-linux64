@@ -2,8 +2,8 @@
 *
 * Copyright (c) 2017 ChipCraft Sp. z o.o. All rights reserved
 *
-* $Date: 2018-10-25 10:58:01 +0200 (Thu, 25 Oct 2018) $
-* $Revision: 324 $
+* $Date: 2022-02-17 16:38:38 +0100 (czw, 17 lut 2022) $
+* $Revision: 819 $
 *
 *  ----------------------------------------------------------------------
 * Redistribution and use in source and binary forms, with or without
@@ -43,18 +43,41 @@
 #define FLASH_SIZE              (1024*1024)
 #define FLASH_PAGE_SIZE         512
 
-#define PERIPH0_FREQ            40000000UL
-#define CORE_FREQ               80000000UL
+#define PERIPH0_FREQ            49104000UL
+#define CORE_FREQ               98208000UL
+
+#define DBG_BAUDRATE            921600
 
 #define STDIO_UART              0
-#define STDIO_BAUDRATE          115200
+#define STDIO_BAUDRATE          460800
 #define STDIO_RTSCTS            0
 
 #define TIME_SOURCE             TIMER32
 #define TIME_SOURCE_TIMER_ID    0
 #define TIME_SOURCE_PRSC        ((PERIPH0_FREQ/1000000)-1)
 
+#include <stdint.h>
+
 /* Initialize GNSS AFE */
-void gnss_afe_init(void);
+void gnss_afe_regs(void);
+int gnss_afe_init(void);
+
+/**
+ * @brief Function to read L1E1 AGC gain in dB
+ *
+ *  @param gain_i pointer to variable where I gain will be saved.
+ *  @param gain_q pointer to variable where Q gain will be saved.
+ *  @return int Returns -1 in case of error.
+ */
+int GnssGnssReadL1AgcDb(uint8_t *gain_i, uint8_t *gain_q);
+
+/**
+ * @brief Function to read L5E5 AGC gain in dB
+ *
+ *  @param gain_i pointer to variable where I gain will be saved.
+ *  @param gain_q pointer to variable where Q gain will be saved.
+ *  @return int Returns -1 in case of error.
+ */
+int GnssGnssReadL5AgcDb(uint8_t *gain_i, uint8_t *gain_q);
 
 #endif /* _BOARD_H */

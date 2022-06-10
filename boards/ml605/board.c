@@ -2,8 +2,8 @@
 *
 * Copyright (c) 2017 ChipCraft Sp. z o.o. All rights reserved
 *
-* $Date: 2020-06-05 17:38:11 +0200 (pią, 05 cze 2020) $
-* $Revision: 590 $
+* $Date: 2021-12-19 17:42:38 +0100 (nie, 19 gru 2021) $
+* $Revision: 804 $
 *
 *  ----------------------------------------------------------------------
 * Redistribution and use in source and binary forms, with or without
@@ -56,10 +56,11 @@ void board_init(void)
 /**
  * @brief Initialize GNSS AFE for ML605 board
  */
-void gnss_afe_init(void)
+int gnss_afe_init(void)
 {
     max2771_conf_band(L1E1);
     max2771_conf_band(L5E5);
     max2771_conf_band(L2E6);
+    return 0;
 }
 

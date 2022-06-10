@@ -8,6 +8,10 @@
 #define MALLOC_ALIGNMENT 16
 #endif
 
+#ifdef __AMDGCN__
+#define __DYNAMIC_REENT__
+#endif
+
 /* exceptions first */
 #if defined(__H8500__) || defined(__W65__)
 #define __SMALL_BITFIELDS
@@ -17,7 +21,7 @@
 #endif
 
 /* 16 bit integer machines */
-#if defined(__Z8001__) || defined(__Z8002__) || defined(__H8500__) || defined(__W65__) || defined (__mn10200__) || defined (__AVR__)
+#if defined(__Z8001__) || defined(__Z8002__) || defined(__H8500__) || defined(__W65__) || defined (__mn10200__) || defined (__AVR__) || defined (__MSP430__)
 
 #undef INT_MAX
 #undef UINT_MAX
@@ -36,7 +40,7 @@
 
 #if (defined(__CR16__) || defined(__CR16C__) ||defined(__CR16CP__))
 #ifndef __INT32__
-#define __SMALL_BITFIELDS      
+#define __SMALL_BITFIELDS
 #undef INT_MAX
 #undef UINT_MAX
 #define INT_MAX 32767
@@ -75,7 +79,7 @@
 #define _POINTER_INT short
 #endif
 
-#if defined(__m68k__) || defined(__mc68000__)
+#if defined(__m68k__) || defined(__mc68000__) || defined(__riscv)
 #define _READ_WRITE_RETURN_TYPE _ssize_t
 #endif
 
@@ -108,7 +112,7 @@
 #define _POINTER_INT short
 #endif
 
-#ifdef __v850
+#if defined(__v850) && !defined(__rtems__)
 #define __ATTRIBUTE_IMPURE_PTR__ __attribute__((__sda__))
 #endif
 
@@ -158,10 +162,11 @@
 #define _REENT_SMALL
 #endif
 
+#define __BUFSIZ__ 256
 #define __SMALL_BITFIELDS
 
 #ifdef __MSP430X_LARGE__
-#define _POINTER_INT long
+#define _POINTER_INT __int20
 #else
 #define _POINTER_INT int
 #endif
@@ -242,6 +247,7 @@
 #define _READ_WRITE_RETURN_TYPE _ssize_t
 #define __DYNAMIC_REENT__
 #define _REENT_GLOBAL_ATEXIT
+#define _REENT_GLOBAL_STDIO_STREAMS
 #endif
 
 #ifndef __EXPORT
@@ -276,6 +282,18 @@
 #ifdef _WANT_REENT_SMALL
 #ifndef _REENT_SMALL
 #define _REENT_SMALL
+#endif
+#endif
+
+#ifdef _WANT_REENT_GLOBAL_STDIO_STREAMS
+#ifndef _REENT_GLOBAL_STDIO_STREAMS
+#define _REENT_GLOBAL_STDIO_STREAMS
+#endif
+#endif
+
+#ifdef _WANT_USE_LONG_TIME_T
+#ifndef _USE_LONG_TIME_T
+#define _USE_LONG_TIME_T
 #endif
 #endif
 

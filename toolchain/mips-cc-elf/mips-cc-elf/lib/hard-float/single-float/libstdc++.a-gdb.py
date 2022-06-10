@@ -1,5 +1,5 @@
 # -*- python -*-
-# Copyright (C) 2009-2017 Free Software Foundation, Inc.
+# Copyright (C) 2009-2021 Free Software Foundation, Inc.
 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -19,8 +19,8 @@ import gdb
 import os
 import os.path
 
-pythondir = '/home/mjemieli/TESTING/chipcraft-toolchain/outputroot/x86_64-chipcraft-linux-gnu/share/gcc-7.5.0/python'
-libdir = '/home/mjemieli/TESTING/chipcraft-toolchain/outputroot/x86_64-chipcraft-linux-gnu/mips-cc-elf/lib/hard-float/single-float'
+pythondir = '/home/mjemieli/TESTING/chipcraft-toolchain/outputroot/x86_64-chipcraft-linux-gnu/mips/share/gcc-12.0.0/python'
+libdir = '/home/mjemieli/TESTING/chipcraft-toolchain/outputroot/x86_64-chipcraft-linux-gnu/mips/mips-cc-elf/lib/hard-float/single-float'
 
 # This file might be loaded when there is no current objfile.  This
 # can happen if the user loads it manually.  In this case we don't

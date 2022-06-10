@@ -2,8 +2,8 @@
 *
 * Copyright (c) 2018 ChipCraft Sp. z o.o. All rights reserved
 *
-* $Date: 2020-02-13 11:00:59 +0100 (czw, 13 lut 2020) $
-* $Revision: 524 $
+* $Date: 2021-11-03 11:41:26 +0100 (śro, 03 lis 2021) $
+* $Revision: 782 $
 *
 *  ----------------------------------------------------------------------
 * Redistribution and use in source and binary forms, with or without
@@ -41,5 +41,8 @@ void board_init(void){}
 /**
  * @brief Initialize GNSS AFE
  */
-void gnss_afe_init(void){}
+int gnss_afe_init(void)
+{
+    return 0;
+}
 

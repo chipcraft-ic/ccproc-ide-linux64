@@ -2,8 +2,8 @@
 *
 * Copyright (c) 2017 ChipCraft Sp. z o.o. All rights reserved
 *
-* $Date: 2020-08-30 19:33:45 +0200 (nie, 30 sie 2020) $
-* $Revision: 630 $
+* $Date: 2021-04-06 10:29:54 +0200 (wto, 06 kwi 2021) $
+* $Revision: 687 $
 *
 *  ----------------------------------------------------------------------
 * Redistribution and use in source and binary forms, with or without
@@ -45,6 +45,7 @@
 #define __CCPROC_GNSS_ISE_H__
 
 #include <stdint.h>
+#include "ccproc.h"
 
 #ifndef __GNUC__
  #error Only GCC is supported by this header! Use your compiler inline assembly feature manually.
@@ -122,7 +123,7 @@ INLINE int32_t GNSS_AFE_RD(void)
 
 /**
  * write free accu mode
- * @param val bits[0:15] = accu_loop[0:15]
+ * @param val bits[15:0] = accu_loop[15:0]
  * @param trigger start trigger for current channel
  */
 INLINE void GNSS_FREE_ACCU_WR(uint32_t val, uint32_t trigger)
@@ -134,7 +135,7 @@ INLINE void GNSS_FREE_ACCU_WR(uint32_t val, uint32_t trigger)
 }
 
 /** write free update
- * @param val bits[0:15] = pll_loop[0:15], bits[15:31] = dll_loop[0:15]
+ * @param val bits[15:0] = pll_loop[15:0], bits[31:16] = dll_loop[15:0]
  */
 INLINE void GNSS_FREE_UPDATE_WR(uint32_t val)
 {
@@ -159,7 +160,7 @@ INLINE int32_t GNSS_FREE_ACCU_RD(void)
 
 /**
  * read free update
- * @return bits[0:15] = pll_loop[0:15], bits[15:31] = dll_loop[0:15]
+ * @return bits[15:0] = pll_loop[15:0], bits[31:16] = dll_loop[15:0]
  */
 INLINE int32_t GNSS_FREE_UPDATE_RD(void)
 {
@@ -168,6 +169,26 @@ INLINE int32_t GNSS_FREE_UPDATE_RD(void)
         : "=r" (res) /* output */
     );
     return res;
+}
+
+/** write joint configuration
+ * @param val bits[15:0] = joint_use[15:0], bits[31:16] = costas_use[15:0]
+ */
+INLINE void GNSS_FREE_JOINT_WR(uint32_t val)
+{
+    //not implemented for now
+    BREAKPOINT();
+}
+
+/**
+ * read joint configuration
+ * @return bits[15:0] = joint_use[15:0], bits[31:16] = costas_use[15:0]
+ */
+INLINE int32_t GNSS_FREE_JOINT_RD(void)
+{
+    //not implemented for now
+    BREAKPOINT();
+    return 0;
 }
 
 /// perform single tracking step
@@ -202,6 +223,7 @@ INLINE uint32_t GNSS_CHANN_GET(void)
 INLINE void GNSS_BANK_SET(uint32_t bankNr)
 {
     // only single-bank implementation supported
+    if (bankNr != 0) BREAKPOINT();
 }
 
 /// get bank index
@@ -239,12 +261,12 @@ INLINE int32_t GNSS_CARR_DISC(int32_t disc)
 }
 
 /// get carrier sample
-INLINE uint32_t GNSS_CARR_REM(uint32_t val, int32_t aid)
+INLINE uint32_t GNSS_CARR_REM(uint32_t val)
 {
     volatile uint32_t res;
     __asm__ __volatile__ ("gnss.carr.rem %0, %1, %2"
         : "=r" (res) /* output */
-        : "r" (val), "r" (aid) /* input */
+        : "r" (val), "r" (0) /* input */
     );
     return res;
 }
@@ -331,6 +353,44 @@ INLINE int32_t GNSS_DLL_DISC(int32_t I0, int32_t Q0, int32_t I2, int32_t Q2)
 }
 
 /**
+ * write PLL joint parameters
+ * @param alpha Alpha parameter for variance calculation, signed Q15.16
+ * @param weight Discriminator weight in joint tracking, signed Q15.16
+ */
+INLINE void GNSS_PLL_JOINT_WR(uint32_t alpha, uint32_t weight)
+{
+    //not implemented for now
+    BREAKPOINT();
+}
+
+/**
+ * write DLL joint parameters
+ * @param alpha Alpha parameter for variance calculation, signed Q15.16
+ * @param weight Discriminator weight in joint tracking, signed Q15.16
+ */
+INLINE void GNSS_DLL_JOINT_WR(uint32_t alpha, uint32_t weight)
+{
+    //not implemented for now
+    BREAKPOINT();
+}
+
+/// readout PLL discriminator variance
+INLINE int32_t GNSS_PLL_VARI(void)
+{
+    //not implemented for now
+    BREAKPOINT();
+    return 0;
+}
+
+/// readout DLL discriminator variance
+INLINE int32_t GNSS_DLL_VARI(void)
+{
+    //not implemented for now
+    BREAKPOINT();
+    return 0;
+}
+
+/**
  * @}
  *
  * \defgroup filters Filters
@@ -358,6 +418,26 @@ INLINE void GNSS_PLL_FLT_COEF(uint32_t c1, uint32_t c2)
     );
 }
 
+/// PLL filter set coefficients (third order c1 and c2)
+INLINE void GNSS_PLL_FLT_COEF_A(uint32_t c1, uint32_t c2)
+{
+    //not implemented for now
+    BREAKPOINT();
+}
+
+/// PLL filter set coefficients (third order c3)
+INLINE void GNSS_PLL_FLT_COEF_B(uint32_t c3)
+{
+    //not implemented for now
+    BREAKPOINT();
+}
+
+/// PLL filter set aiding
+INLINE void GNSS_PLL_FLT_AID(uint32_t aid)
+{
+    //not implemented for now
+}
+
 /// DLL filter set coefficients
 INLINE void GNSS_DLL_FLT_COEF(uint32_t c1, uint32_t c2)
 {
@@ -365,6 +445,12 @@ INLINE void GNSS_DLL_FLT_COEF(uint32_t c1, uint32_t c2)
         : /* output */
         : "r" (c1), "r" (c2) /* input */
     );
+}
+
+/// DLL filter set aiding
+INLINE void GNSS_DLL_FLT_AID(uint32_t aid)
+{
+    //not implemented for now
 }
 
 /// PLL filter get
@@ -427,7 +513,7 @@ INLINE void GNSS_PCODE_WR(uint32_t val)
 /// set code length
 INLINE void GNSS_PCODE_LEN(uint32_t len, uint32_t integr_mult, uint32_t coef, uint32_t scale)
 {
-    uint32_t val = (((integr_mult&31)<<16)|(scale&3)<<4)|(coef&15);
+    uint32_t val = (((integr_mult&31)<<16)|(scale&7)<<4)|(coef&15);
     __asm__ __volatile__ ("gnss.pcode.len %0, %1"
         : /* output */
         : "r" (len), "r" (val) /* input */

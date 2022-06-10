@@ -39,6 +39,7 @@
     "asic_tech": 2,
     "timer32_num": 2,
     "rtc_en": true,
+    "viterbi_en": false,
     "i2c_mst_num": 2,
     "perfcnt_en": true,
     "fpga_tech": 0,

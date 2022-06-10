@@ -32,8 +32,8 @@
 * File Name : main.c
 * Author    : Krzysztof Marcinek
 * ******************************************************************************
-* $Date: 2020-06-05 17:38:11 +0200 (pią, 05 cze 2020) $
-* $Revision: 590 $
+* $Date: 2022-01-10 10:09:36 +0100 (pon, 10 sty 2022) $
+* $Revision: 808 $
 *H*****************************************************************************/
 
 #include "board.h"
@@ -135,7 +135,7 @@ int main(void)
     }
     printf("INFO: FPU units:                %d (single-precision)\n",(int)(cpu_info_1 & CPU_FPU_MASK) >> CPU_FPU_SHIFT);
     if (cpu_info_0 & CPU_ICACHE) {
-        printf("INFO: Instruction cache:        %d ways * %d kbytes\n",(int)(cpu_info_0 & CPU_ICWAY_MASK)>>CPU_ICWAY_SHIFT,((int)1 << ((cpu_info_0 & CPU_ICSIZE_MASK) >> CPU_ICSIZE_SHIFT))/1024);
+        printf("INFO: Instruction cache:        %d ways * %d kbytes\n",(unsigned)(cpu_info_0 & CPU_ICWAY_MASK)>>CPU_ICWAY_SHIFT,(((int)1 << ((cpu_info_0 & CPU_ICSIZE_MASK) >> CPU_ICSIZE_SHIFT))/1024));
         printf("INFO: Instruction cache arch.:  ");
         switch ((ICACHE_PTR->INFO & ICACHE_IMPL_MASK) >> ICACHE_IMPL_SHIFT) {
             case ICACHE_IMPL_HP:
@@ -149,7 +149,7 @@ int main(void)
     }
 
     if (cpu_info_1 & CPU_DCACHE) {
-        printf("INFO: Data cache:               %d ways * %d kbytes\n",(int)(cpu_info_1 & CPU_DCWAY_MASK)>>CPU_DCWAY_SHIFT,((int)1 << ((cpu_info_1 & CPU_DCSIZE_MASK) >> CPU_DCSIZE_SHIFT))/1024);
+        printf("INFO: Data cache:               %d ways * %d kbytes\n",(unsigned)(cpu_info_1 & CPU_DCWAY_MASK)>>CPU_DCWAY_SHIFT,(((int)1 << ((cpu_info_1 & CPU_DCSIZE_MASK) >> CPU_DCSIZE_SHIFT))/1024));
         printf("INFO: Data cache arch.:         ");
         switch ((DCACHE_PTR->INFO & DCACHE_IMPL_MASK) >> DCACHE_IMPL_SHIFT) {
             case DCACHE_IMPL_HP:

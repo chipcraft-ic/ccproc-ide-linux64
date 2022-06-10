@@ -2,8 +2,8 @@
 *
 * Copyright (c) 2017 ChipCraft Sp. z o.o. All rights reserved
 *
-* $Date: 2019-10-03 19:22:07 +0200 (czw, 03 paź 2019) $
-* $Revision: 474 $
+* $Date: 2021-04-06 10:29:54 +0200 (wto, 06 kwi 2021) $
+* $Revision: 687 $
 *
 *  ----------------------------------------------------------------------
 * Redistribution and use in source and binary forms, with or without
@@ -83,6 +83,7 @@ typedef struct
 
 #ifdef CCPROC_SDK
  static volatile amba_rtc_t * const AMBA_RTC_PTR = (amba_rtc_t*)AMBA_RTC_BASE;  /*!< RTC pointer  */
+ static volatile uint32_t * const AMBA_BKPRAM_PTR = (uint32_t*)AMBA_BKPRAM_BASE;  /*!< RTC Backup RAM pointer  */
 #endif
 
 /** RTC Control Register Flags */
@@ -127,7 +128,7 @@ enum
     RTC_WKUP0IE   = 0x4,  /*!< WKUP0 Interrupt Enable               */
     RTC_READYIE   = 0x8,  /*!< READY Interrupt Enable               */
     RTC_TRERRIE   = 0x10, /*!< Transmission Error Interrupt Enable  */
-    RTC_TSCAPTIE  = 0x20  /*!< Timestamp Captured Interrupt Eanble  */
+    RTC_TSCAPTIE  = 0x20  /*!< Timestamp Captured Interrupt Enable  */
 };
 
 /** RTC Interrupt Flags */
@@ -140,6 +141,25 @@ enum
     RTC_TRERRIF   = 0x10, /*!< Transmission Error Interrupt Flag    */
     RTC_TSCAPTIF  = 0x20  /*!< Timestamp Captured Interrupt Flag    */
 };
+
+/** RTC Status Register bit offsets */
+enum
+{
+    RTC_STAT_RAM_SHIFT  = 24,   /*!< RTC Backup RAM Size Shift        */
+};
+
+/** RTC Status Register masks */
+enum
+{
+    RTC_STAT_RAM_MASK   = 0xFF << RTC_STAT_RAM_SHIFT,  /*!< RTC Backup RAM Size Mask       */
+};
+
+/**
+ * @name RTC macros
+ * @{
+ */
+#define RTC_GET_RAM_SIZE(status) ((status & RTC_STAT_RAM_MASK) >> RTC_STAT_RAM_SHIFT)  /*!< Gets RTC Backup RAM Size      */
+/** @} */
 
 /** @} */
 

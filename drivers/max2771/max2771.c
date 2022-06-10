@@ -32,8 +32,8 @@
 * File Name : max2771.c
 * Author    : Krzysztof Siwiec
 * ******************************************************************************
-* $Date: 2020-02-18 18:08:25 +0100 (wto, 18 lut 2020) $
-* $Revision: 526 $
+* $Date: 2022-01-10 10:09:36 +0100 (pon, 10 sty 2022) $
+* $Revision: 808 $
 *H*****************************************************************************/
 
 #include <stdio.h>
@@ -195,15 +195,15 @@ uint32_t max2771_conf_band(enum max2771_band band)
             break;
         case L5E5:
             //write register 0
-            max2771_spi_write(band,0x0,0xA226B621);
+            max2771_spi_write(band,0x0,0xBEA4B63D);
             //write register 1
             max2771_spi_write(band,0x1,0x28550288);
             //write register 2
-            max2771_spi_write(band,0x2,0x0EAFB1DC);
+            max2771_spi_write(band,0x2,0x0EAF31DC);
             //write register 3
-            max2771_spi_write(band,0x3,0x998C0000);
+            max2771_spi_write(band,0x3,0x998C0008);
             //write register 4
-            max2771_spi_write(band,0x4,0x0008C008);
+            max2771_spi_write(band,0x4,0x0047E040);
             //write register 5
             max2771_spi_write(band,0x5,0x0F565570);
             //write register 6
@@ -213,7 +213,7 @@ uint32_t max2771_conf_band(enum max2771_band band)
             //write register 8
             max2771_spi_write(band,0x8,0x01E0F401);
             //write register 9
-            max2771_spi_write(band,0x9,0x00000002);
+            max2771_spi_write(band,0x9,0x00C00002);
             //write register 10
             max2771_spi_write(band,0xA,0x010061B0);
             break;

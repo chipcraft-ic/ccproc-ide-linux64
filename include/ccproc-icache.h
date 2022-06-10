@@ -2,8 +2,8 @@
 *
 * Copyright (c) 2017 ChipCraft Sp. z o.o. All rights reserved
 *
-* $Date: 2020-07-13 19:33:44 +0200 (pon, 13 lip 2020) $
-* $Revision: 610 $
+* $Date: 2021-04-06 10:29:54 +0200 (wto, 06 kwi 2021) $
+* $Revision: 687 $
 *
 *  ----------------------------------------------------------------------
 * Redistribution and use in source and binary forms, with or without
@@ -106,7 +106,7 @@ enum
 /** ICC Info Register masks */
 enum
 {
-    ICACHE_ICWAY_MASK  = 0x03 << ICACHE_ICWAY_SHIFT,   /*!< Instruction Cache Ways Mask           */
+    ICACHE_ICWAY_MASK  = 0x07 << ICACHE_ICWAY_SHIFT,   /*!< Instruction Cache Ways Mask           */
     ICACHE_ICSIZE_MASK = 0x1F << ICACHE_ICSIZE_SHIFT,  /*!< Instruction Cache Size Mask           */
     ICACHE_ICLINE_MASK = 0x0F << ICACHE_ICLINE_SHIFT,  /*!< Instruction Cache Line Mask           */
     ICACHE_ICALG_MASK  = 0x03 << ICACHE_ICALG_SHIFT,   /*!< Instruction Cache Algorithm Mask      */

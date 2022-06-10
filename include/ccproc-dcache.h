@@ -2,8 +2,8 @@
 *
 * Copyright (c) 2017 ChipCraft Sp. z o.o. All rights reserved
 *
-* $Date: 2020-07-13 19:33:44 +0200 (pon, 13 lip 2020) $
-* $Revision: 610 $
+* $Date: 2021-04-06 10:29:54 +0200 (wto, 06 kwi 2021) $
+* $Revision: 687 $
 *
 *  ----------------------------------------------------------------------
 * Redistribution and use in source and binary forms, with or without
@@ -96,7 +96,7 @@ enum
 /** DCC Info Register masks */
 enum
 {
-    DCACHE_DCWAY_MASK  = 0x03 << DCACHE_DCWAY_SHIFT,   /*!< Data Cache Ways Mask           */
+    DCACHE_DCWAY_MASK  = 0x07 << DCACHE_DCWAY_SHIFT,   /*!< Data Cache Ways Mask           */
     DCACHE_DCSIZE_MASK = 0x1F << DCACHE_DCSIZE_SHIFT,  /*!< Data Cache Size Mask           */
     DCACHE_DCLINE_MASK = 0x0F << DCACHE_DCLINE_SHIFT,  /*!< Data Cache Line Mask           */
     DCACHE_DCALG_MASK  = 0x03 << DCACHE_DCALG_SHIFT,   /*!< Data Cache Algorithm Mask      */

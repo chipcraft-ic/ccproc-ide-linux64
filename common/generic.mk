@@ -32,8 +32,8 @@
 # File Name : generic.mk
 # Author    : Rafal Harabien
 # ******************************************************************************
-# $Date: 2020-09-03 13:37:17 +0200 (czw, 03 wrz 2020) $
-# $Revision: 635 $
+# $Date: 2022-03-25 11:46:14 +0100 (pią, 25 mar 2022) $
+# $Revision: 841 $
 #H******************************************************************************
 
 ifeq ($(OS),Windows_NT)
@@ -189,7 +189,7 @@ CPPFLAGS += -MMD -MP
 #CFLAGS_ARCH   ?= -march=ccproc
 CFLAGS_OPT    ?= -Os -fdata-sections -ffunction-sections
 CFLAGS_DEBUG  ?= -ggdb -g3
-CFLAGS_WARN   ?= -Wall
+CFLAGS_WARN   ?= -Wall -Wno-array-bounds
 CFLAGS_CSTD   ?= -std=gnu99
 CFLAGS_CXXSTD ?=
 

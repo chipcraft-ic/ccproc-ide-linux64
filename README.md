@@ -51,7 +51,7 @@ Optional environment variables:
 
 * `CCSDK_TOOLS_PATH` - path to binaries of Chipcraft tools, default for distribution is ${CCSDK_HOME}/tools
 * `VERILATOR_ROOT` - Verilator installation root directory, e.g. `/usr/local/share/verilator`
-* `CCSDK_VTESTBENCH_ROOT` - VTestbench project files directory`
+* `VTESTBENCH_ROOT` - VTestbench project files directory`
 
 To build ccsim from source, both of these variables have to be defined.
 Otherwise prebuilt ccsim version will be used.

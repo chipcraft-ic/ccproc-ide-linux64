@@ -2,8 +2,8 @@
 *
 * Copyright (c) 2017 ChipCraft Sp. z o.o. All rights reserved
 *
-* $Date: 2020-08-30 19:33:45 +0200 (nie, 30 sie 2020) $
-* $Revision: 630 $
+* $Date: 2021-06-07 17:56:02 +0200 (pon, 07 cze 2021) $
+* $Revision: 704 $
 *
 *  ----------------------------------------------------------------------
 * Redistribution and use in source and binary forms, with or without
@@ -98,6 +98,10 @@ typedef struct
     uint32_t CARR_NCO;          /*!< Carrier Removal NCO Register                         */
 #endif
 #endif
+#ifndef MCU_CCNV1
+    uint32_t TMSTMP_RTC_CMP_LO; /*!< RTC Compare Timestamp LO Register                    */
+    uint32_t TMSTMP_RTC_CMP_HI; /*!< RTC Compare Timestamp HI Register                    */
+#endif
 } gnss_regs_t;
 
 static volatile gnss_regs_t * const GNSS_PTR = (gnss_regs_t*)GNSS_BASE;
@@ -105,8 +109,6 @@ static volatile gnss_regs_t * const GNSS_PTR = (gnss_regs_t*)GNSS_BASE;
 #define GNSS_I_FIFO_BASE (GNSS_BASE+0x6000)       /*!< GNSS Real FIFO base address (for diagnostics, access only by core 0)        */
 #define GNSS_Q_FIFO_BASE (GNSS_BASE+0x6400)       /*!< GNSS Imaginary FIFO base address (for diagnostics, access only by core 0)   */
 #define GNSS_FIFO_SIZE   256                      /*!< GNSS FIFO size in 32-bit words                                              */
-
-#define GNSS_CODE_BASE   (GNSS_BASE+0x8000)       /*!< GNSS-ISE code memory base address (for diagnostics only)                    */
 
 /** GNSS Controller Status Register Flags */
 enum
@@ -124,6 +126,7 @@ enum
     GNSS_STAT_ERR         = 1 << 16, /*!< GNSS FIFO Error                             */
     GNSS_STAT_OVF_I       = 1 << 17, /*!< GNSS FIFO I Overflow                        */
     GNSS_STAT_OVF_Q       = 1 << 18, /*!< GNSS FIFO Q Overflow                        */
+    GNSS_STAT_RTC_RDY     = 1 << 19, /*!< RTC Compare Timestamp Ready                 */
     GNSS_STAT_ACQPLAYIE   = 1 << 20, /*!< Acquisition/Playback Interrupt Enable       */
     GNSS_STAT_ACQPLAYIF   = 1 << 21, /*!< Acquisition/Playback Interrupt Flag         */
     GNSS_STAT_RNGIE       = 1 << 22, /*!< Range Generation Interrupt Enable           */
@@ -149,9 +152,9 @@ enum
 /** GNSS Controller Status RF AFE */
 enum
 {
-    GNSS_RFAFE_L1E1   = 0x0,  /*!< GNSS L1/E1 RF AFE           */
-    GNSS_RFAFE_L5E5   = 0x1,  /*!< GNSS L5/E5 RF AFE           */
-    GNSS_RFAFE_L2E6   = 0x2,  /*!< GNSS L2/E6 RF AFE           */
+    GNSS_STAT_RFAFE_L1E1   = 0x0,  /*!< GNSS L1/E1 RF AFE           */
+    GNSS_STAT_RFAFE_L5E5   = 0x1,  /*!< GNSS L5/E5 RF AFE           */
+    GNSS_STAT_RFAFE_L2E6   = 0x2,  /*!< GNSS L2/E6 RF AFE           */
 };
 
 /** GNSS Controller GNSS-ISE Control Register Flags */

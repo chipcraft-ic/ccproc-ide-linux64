@@ -2,8 +2,8 @@
 *
 * Copyright (c) 2017 ChipCraft Sp. z o.o. All rights reserved
 *
-* $Date: 2020-06-30 02:27:52 +0200 (wto, 30 cze 2020) $
-* $Revision: 605 $
+* $Date: 2021-04-06 10:29:54 +0200 (wto, 06 kwi 2021) $
+* $Revision: 687 $
 *
 *  ----------------------------------------------------------------------
 * Redistribution and use in source and binary forms, with or without
@@ -106,6 +106,7 @@ enum
     AMBA_CAN1_BASE       = AMBA_BASE + 0x0000A000,          /*!< CAN 1 base address                         */
     AMBA_BLE0_BASE       = AMBA_BASE + 0x0000B000,          /*!< BLE 0 base address                         */
     AMBA_BLE1_BASE       = AMBA_BASE + 0x0000C000,          /*!< BLE 1 base address                         */
+    AMBA_BKPRAM_BASE     = AMBA_BASE + 0x0000F000,          /*!< RTC Backup Ram base address                */
     AMBA_APB1_BASE       = AMBA_BASE + 0x01000000,          /*!< APB 1 Bridge base address                  */
     AMBA_APB2_BASE       = AMBA_BASE + 0x02000000,          /*!< APB 2 Bridge base address                  */
     AMBA_FLASH_BASE      = AMBA_APB1_BASE + 0x00000000,     /*!< Embedded Flash base address                */

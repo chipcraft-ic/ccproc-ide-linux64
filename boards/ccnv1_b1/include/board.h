@@ -2,8 +2,8 @@
 *
 * Copyright (c) 2017 ChipCraft Sp. z o.o. All rights reserved
 *
-* $Date: 2020-10-30 11:47:46 +0100 (pią, 30 paź 2020) $
-* $Revision: 641 $
+* $Date: 2021-10-02 21:48:05 +0200 (sob, 02 paź 2021) $
+* $Revision: 763 $
 *
 *  ----------------------------------------------------------------------
 * Redistribution and use in source and binary forms, with or without
@@ -45,13 +45,22 @@
 #define FLASH_SIZE              (1024*1024)
 #define FLASH_PAGE_SIZE         512
 
-#define PERIPH0_FREQ            40920000UL
-#define CORE_FREQ               81840000UL
+//#define PERIPH0_FREQ            40920000UL
+//#define CORE_FREQ               81840000UL
 
-#define DBG_BAUDRATE            460800
+//#define PERIPH0_FREQ            49104000UL
+//#define CORE_FREQ               98208000UL
+
+#define PERIPH0_FREQ            65472000UL
+#define CORE_FREQ               130944000UL
+
+//#define PERIPH0_FREQ            65472000UL
+//#define CORE_FREQ               130944000UL
+
+#define DBG_BAUDRATE            921600
 
 #define STDIO_UART              0
-#define STDIO_BAUDRATE          115200
+#define STDIO_BAUDRATE          460800
 #define STDIO_RTSCTS            0
 
 #define TIME_SOURCE             TIMER32
@@ -60,6 +69,16 @@
 
 /* Initialize GNSS AFE */
 void gnss_afe_init(void);
+/* Increment ADC L1/E1 band */
+void gnss_agc1_inc(void);
+/* Decrement ADC L1/E1 band */
+void gnss_agc1_dec(void);
+/* Increment ADC L5/E5 band */
+void gnss_agc5_inc(void);
+/* Decrement ADC L5/E5 band */
+void gnss_agc5_dec(void);
+/* Maintain AGC */
+void gnss_agc_maintanance(uint32_t noise, uint8_t dwells_mult_1ms);
 /*  Calibrate PLL1 */
 void gnss_pll1_calibrate(uint8_t *dco_pvt, uint8_t *dco_fine);
 /* PLL1 control loop */

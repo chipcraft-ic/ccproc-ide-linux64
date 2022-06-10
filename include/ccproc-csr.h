@@ -2,8 +2,8 @@
 *
 * Copyright (c) 2017 ChipCraft Sp. z o.o. All rights reserved
 *
-* $Date: 2020-02-27 14:51:39 +0100 (czw, 27 lut 2020) $
-* $Revision: 531 $
+* $Date: 2021-04-06 10:29:54 +0200 (wto, 06 kwi 2021) $
+* $Revision: 687 $
 *
 *  ----------------------------------------------------------------------
 * Redistribution and use in source and binary forms, with or without
@@ -46,6 +46,7 @@
 #ifndef __CCPROC_CSR_H
 #define __CCPROC_CSR_H
 
+#include <stddef.h>
 #include <stdint.h>
 
 /************************//**
@@ -85,6 +86,8 @@ static volatile csr_regs_t * const CSR_CTRL_PTR = (csr_regs_t*)CSR_CTRL_BASE;
 
 #define CSR_REMAP_KEY        0x000000A5    /*!< Bootloader Remap Key      */
 #define CSR_ROM_UNLOCK_KEY   0xA5000000    /*!< ROM Unlock Key            */
+#define CSR_DBG_BAUD_OFFSET ( offsetof(csr_regs_t, DBG_BAUD) )
+#define CSR_MEM_REMAP_OFFSET ( offsetof(csr_regs_t, MEM_REMAP) )
 
 /** System Controller Status Register flags */
 enum
@@ -170,7 +173,7 @@ enum
     CPU_DMSIZE_MASK  = 0x1F << CPU_DMSIZE_SHIFT,   /*!< Data Memory Size Mask        */
     CPU_ICSIZE_MASK  = 0x1F << CPU_ICSIZE_SHIFT,   /*!< Instruction Cache Size Mask  */
     CPU_SPRSIZE_MASK = 0x1F << CPU_SPRSIZE_SHIFT,  /*!< Scratch-Pad RAM Size Mask    */
-    CPU_ICWAY_MASK   = 0x03 << CPU_ICWAY_SHIFT,    /*!< Instruction Cache Ways Mask  */
+    CPU_ICWAY_MASK   = 0x07 << CPU_ICWAY_SHIFT,    /*!< Instruction Cache Ways Mask  */
 };
 
 /** System Controller CPU Info 0 Register bits */
@@ -217,7 +220,7 @@ enum
 enum
 {
     CPU_DCSIZE_MASK      = 0x1F << CPU_DCSIZE_SHIFT,   /*!< Data Cache Size Mask      */
-    CPU_DCWAY_MASK       = 0x03 << CPU_DCWAY_SHIFT,    /*!< Data Cache Ways Mask      */
+    CPU_DCWAY_MASK       = 0x07 << CPU_DCWAY_SHIFT,    /*!< Data Cache Ways Mask      */
     CPU_FPU_MASK         = 0x0F << CPU_FPU_SHIFT,      /*!< FPU Mask                  */
     CPU_MUL_MASK         = 0x03 << CPU_MUL_SHIFT,      /*!< Multiplier Mask           */
     CPU_BPRED_MASK       = 0x07 << CPU_BPRED_SHIFT,    /*!< Branch Prediction Mask    */
@@ -247,6 +250,12 @@ enum
 #define CPU_INFO_GET_FPU(cpu_info1)          ((cpu_info1 & CPU_FPU_MASK)         >> CPU_FPU_SHIFT)           /*!< FPU Number                 */
 #define CPU_INFO_GET_GNSS_ISE_NUM(cpu_info1) ((cpu_info1 & CPU_GNSS_ISE_MASK)    >> CPU_GNSS_ISE_SHIFT)      /*!< GNSS Channels Number       */
 /** @} */
+
+/** System Controller CPU Info 2 Register bits */
+enum
+{
+    CPU_VITERBI = 1 << 8,  /*!< Viterbi Decoder       */
+};
 
 /** System Controller CPU Info 2 Register bit offsets */
 enum

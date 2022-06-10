@@ -32,12 +32,13 @@
 * File Name : rtc_util.h
 * Author    : Rafal Harabien
 * ******************************************************************************
-* $Date: 2019-06-25 14:24:19 +0200 (wto, 25 cze 2019) $
-* $Revision: 424 $
+* $Date: 2021-12-19 17:42:38 +0100 (nie, 19 gru 2021) $
+* $Revision: 804 $
 *H*****************************************************************************/
 
 #pragma once
 
+void RTCwait(void);
 void RTCenable(void);
 void RTCwrite(uint32_t *addr, uint32_t val);
 uint32_t RTCread(uint32_t *addr);
