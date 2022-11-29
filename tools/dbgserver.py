@@ -8,8 +8,8 @@
 #
 # Author: Rafal Harabien
 #
-# $Date: 2022-11-10 21:24:20 +0100 (czw, 10 lis 2022) $
-# $Revision: 908 $
+# $Date: 2022-11-29 21:00:59 +0100 (wto, 29 lis 2022) $
+# $Revision: 925 $
 #
 
 import time, sys, os, stat, select, threading, logging, re, struct, binascii, socket, serial, getopt, signal
@@ -106,7 +106,7 @@ class GdbConn:
 				logging.debug('Received ACK from GDB')
 				return True
 			else:
-				logging.warning('Expected ACK from GDB, got \'%s\' (%s) (packet %s)', ack, binascii.hexlify(ack), packet)
+				logging.warning('Expected ACK from GDB, got \'%s\' (%s) (packet %s)', ack, binascii.hexlify(ack).decode('ascii'), packet)
 
 	def _input_thread_proc(self):
 		try:
@@ -184,8 +184,12 @@ class GdbConn:
 
 	def _prepare_packet(self, data):
 		checksum = 0
+		if type(data) is str: data = data.encode('ascii')
+		if is_py2 and type(data) is unicode: data = data.encode('ascii')
 		for b in data:
-			checksum += ord(b) if is_py2 else b
+				if type(b) is str: b = ord(b.encode('ascii'))
+				if is_py2 and type(b) is unicode: b = ord(b.encode('ascii'))
+				checksum += b
 		checksum = checksum % 256
 		return b'$' + data + b'#' + ('%02X' % checksum).encode('ascii')
 
@@ -806,7 +810,7 @@ class DbgBridge:
 		data = self._cpu_dbg.read_mem(addr, length)
 		if not data:
 			return b'E01'
-		data_hex = binascii.hexlify(data)
+		data_hex = binascii.hexlify(data).decode('ascii')
 		logging.info('Read %d bytes from 0x%08X: %s', length, addr, data_hex)
 		return data_hex
 
@@ -839,7 +843,7 @@ class DbgBridge:
 		if len(data) != length:
 			logging.error('Invalid length field in write_mem_bin command %d %d', len(data), length)
 
-		logging.info('Writing %d bytes at 0x%08X: %s', len(data), addr, binascii.hexlify(data))
+		logging.info('Writing %d bytes at 0x%08X: %s', len(data), addr, binascii.hexlify(data).decode('ascii'))
 		if self._cpu_dbg.write_mem(addr, data):
 			if len(data) > 1024:
 				logging.info('Writing operation finished!')

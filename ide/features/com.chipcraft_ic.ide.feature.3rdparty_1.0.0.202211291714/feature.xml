@@ -2,7 +2,7 @@
 <feature
  id="com.chipcraft_ic.ide.feature.3rdparty"
  label="%ide.property.feature.3rdparty.name"
- version="1.0.0.202211291236"
+ version="1.0.0.202211291714"
 >
  <description>%ide.property.feature.3rdparty.description</description>
  <copyright>%ide.property.copyright</copyright>

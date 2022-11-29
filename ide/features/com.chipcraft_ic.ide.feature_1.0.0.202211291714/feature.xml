@@ -2,7 +2,7 @@
 <feature
  id="com.chipcraft_ic.ide.feature"
  label="%ide.property.feature.name"
- version="1.0.0.202211291236"
+ version="1.0.0.202211291714"
 >
  <description>%ide.property.feature.description</description>
  <copyright>%ide.property.copyright</copyright>
@@ -10,17 +10,17 @@
 
  <plugin
   id="com.chipcraft_ic.ide.branding"
-  download-size="155"
-  install-size="472"
-  version="1.0.0.202211291236"
+  download-size="145"
+  install-size="368"
+  version="1.0.0.202211291714"
   unpack="true"
  />
 
  <plugin
   id="com.chipcraft_ic.ide.controller"
   download-size="124"
-  install-size="253"
-  version="1.0.0.202211291236"
+  install-size="254"
+  version="1.0.0.202211291714"
   unpack="false"
  />
 
@@ -28,7 +28,7 @@
   id="com.chipcraft_ic.ide.debugger"
   download-size="36"
   install-size="80"
-  version="1.0.0.202211291236"
+  version="1.0.0.202211291714"
   unpack="false"
  />
 
@@ -46,7 +46,7 @@
   id="com.chipcraft_ic.ide.logging"
   download-size="8"
   install-size="19"
-  version="1.0.0.202211291236"
+  version="1.0.0.202211291714"
   unpack="false"
  />
 
@@ -54,7 +54,7 @@
   id="com.chipcraft_ic.ide.model"
   download-size="160"
   install-size="316"
-  version="1.0.0.202211291236"
+  version="1.0.0.202211291714"
   unpack="false"
  />
 
@@ -62,7 +62,7 @@
   id="com.chipcraft_ic.ide.view"
   download-size="63"
   install-size="137"
-  version="1.0.0.202211291236"
+  version="1.0.0.202211291714"
   unpack="false"
  />
 

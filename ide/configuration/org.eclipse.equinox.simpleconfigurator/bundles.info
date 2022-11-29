@@ -1,11 +1,11 @@
 #encoding=UTF-8
 #version=1
-com.chipcraft_ic.ide.branding,1.0.0.202211291236,plugins/com.chipcraft_ic.ide.branding_1.0.0.202211291236/,4,false
-com.chipcraft_ic.ide.controller,1.0.0.202211291236,plugins/com.chipcraft_ic.ide.controller_1.0.0.202211291236.jar,4,false
-com.chipcraft_ic.ide.debugger,1.0.0.202211291236,plugins/com.chipcraft_ic.ide.debugger_1.0.0.202211291236.jar,4,false
-com.chipcraft_ic.ide.logging,1.0.0.202211291236,plugins/com.chipcraft_ic.ide.logging_1.0.0.202211291236.jar,4,false
-com.chipcraft_ic.ide.model,1.0.0.202211291236,plugins/com.chipcraft_ic.ide.model_1.0.0.202211291236.jar,4,false
-com.chipcraft_ic.ide.view,1.0.0.202211291236,plugins/com.chipcraft_ic.ide.view_1.0.0.202211291236.jar,4,false
+com.chipcraft_ic.ide.branding,1.0.0.202211291714,plugins/com.chipcraft_ic.ide.branding_1.0.0.202211291714/,4,false
+com.chipcraft_ic.ide.controller,1.0.0.202211291714,plugins/com.chipcraft_ic.ide.controller_1.0.0.202211291714.jar,4,false
+com.chipcraft_ic.ide.debugger,1.0.0.202211291714,plugins/com.chipcraft_ic.ide.debugger_1.0.0.202211291714.jar,4,false
+com.chipcraft_ic.ide.logging,1.0.0.202211291714,plugins/com.chipcraft_ic.ide.logging_1.0.0.202211291714.jar,4,false
+com.chipcraft_ic.ide.model,1.0.0.202211291714,plugins/com.chipcraft_ic.ide.model_1.0.0.202211291714.jar,4,false
+com.chipcraft_ic.ide.view,1.0.0.202211291714,plugins/com.chipcraft_ic.ide.view_1.0.0.202211291714.jar,4,false
 com.google.gson,2.8.2.v20180104-1110,plugins/com.google.gson_2.8.2.v20180104-1110.jar,4,false
 com.ibm.icu,64.2.0.v20190507-1337,plugins/com.ibm.icu_64.2.0.v20190507-1337.jar,4,false
 com.jcraft.jsch,0.1.55.v20190404-1902,plugins/com.jcraft.jsch_0.1.55.v20190404-1902.jar,4,false
