@@ -1,5 +1,7 @@
+-include ../../common/legacy-env-var-support.mk
+
 PROGNAME   := bitcount
-COMMON_DIR := $(CCSDK_HOME)/common
+COMMON_DIR := $(CHIPCRAFT_SDK_HOME)/common
 
 ifdef ITERATIONS
 CPPFLAGS += -DITERATIONS=$(ITERATIONS)

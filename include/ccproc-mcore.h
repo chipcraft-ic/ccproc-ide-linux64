@@ -2,8 +2,8 @@
 *
 * Copyright (c) 2017 ChipCraft Sp. z o.o. All rights reserved
 *
-* $Date: 2020-07-22 21:42:29 +0200 (śro, 22 lip 2020) $
-* $Revision: 614 $
+* $Date: 2022-10-19 14:05:14 +0200 (śro, 19 paź 2022) $
+* $Revision: 897 $
 *
 *  ----------------------------------------------------------------------
 * Redistribution and use in source and binary forms, with or without
@@ -71,6 +71,7 @@ typedef struct
     uint32_t INJECT_MASK_0;  /*!< Core 0 Error Inject Mask (FT-only)  */
     uint32_t INJECT_MASK_1;  /*!< Core 1 Error Inject Mask (FT-only)  */
     uint32_t DEADLOCK_MAX;   /*!< Core Deadlock Counter Max (FT-only) */
+    uint32_t ERROR_PC;       /*!< Error Program Counter (FT-only)     */
 } multicore_regs_t;
 
 static volatile multicore_regs_t * const MCORE_PTR = (multicore_regs_t*)MCORE_BASE;

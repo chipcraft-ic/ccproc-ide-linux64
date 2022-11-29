@@ -1,4 +1,4 @@
-CCSDK
+ChipCraft SDK
 =====
 
 Software Development Kit for ChipCraft microcontrollers.
@@ -34,22 +34,22 @@ To simplify environment configuration `ccenv.sh`/`ccenv.cmd` scripts are provide
 
 Essential environment variables:
 
-* `CCSDK_HOME` - CCSDK root directory, e.g. `/home/user/ccsdk`
-* `CCSDK_DBG_PORT` - debug UART port, e.g. `/dev/ttyUSB1` (Linux), `COM1` (Windows)
-* `CCSDK_UART_PORT` - console UART port, e.g. `/dev/ttyUSB2` (Linux), `COM2` (Windows)
-* `CCSDK_BOARD` - board identifier (see `boards` directory for example names), e.g. `ml605`
-* `CCSDK_TOOLCHAIN_PATH` - path to MIPS toolchain binaries, e.g. /usr/local/mips-cc-elf/x86_64-chipcraft-linux-gnu/bin
-* `CCSDK_LINUX_IDE_PATH` - path to Eclipse-based IDE for Linux platform, used to generate distribution package
-* `CCSDK_WINDOWS_IDE_PATH` - path to Eclipse-based IDE for Windows platform, used to generate distribution package
-* `PATH` - search paths for executable binaries, ${CCSDK_HOME}/tools/srecord (for release) and ${CCSDK_HOME}/tools/resources/{linux,windows}/srecord (for development) have to be added to PATH for ccprog to work correctly
+* `CHIPCRAFT_SDK_HOME` - ChipCraft SDK root directory, e.g. `/home/user/ccsdk`
+* `CHIPCRAFT_SDK_DBG_PORT` - debug UART port, e.g. `/dev/ttyUSB1` (Linux), `COM1` (Windows)
+* `CHIPCRAFT_SDK_UART_PORT` - console UART port, e.g. `/dev/ttyUSB2` (Linux), `COM2` (Windows)
+* `CHIPCRAFT_SDK_BOARD` - board identifier (see `boards` directory for example names), e.g. `ml605`
+* `CHIPCRAFT_SDK_TOOLCHAIN_PATH` - path to MIPS toolchain binaries, e.g. /usr/local/mips-cc-elf/x86_64-chipcraft-linux-gnu/bin
+* `CHIPCRAFT_SDK_LINUX_IDE_PATH` - path to Eclipse-based IDE for Linux platform, used to generate distribution package
+* `CHIPCRAFT_SDK_WINDOWS_IDE_PATH` - path to Eclipse-based IDE for Windows platform, used to generate distribution package
+* `PATH` - search paths for executable binaries, ${CHIPCRAFT_SDK_HOME}/tools/srecord (for release) and ${CHIPCRAFT_SDK_HOME}/tools/resources/{linux,windows}/srecord (for development) have to be added to PATH for ccprog to work correctly
 
-CCSDK contains script for quick definition of those variables.
+ChipCraft SDK contains script for quick definition of those variables.
 Please run `ccenv.cmd` on Windows or `ccenv.sh` on Linux.
-`ccenv` script sets `CCSDK_HOME` to current directory and asks user for values for the rest of variables.
+`ccenv` script sets `CHIPCRAFT_SDK_HOME` to current directory and asks user for values for the rest of variables.
 
 Optional environment variables:
 
-* `CCSDK_TOOLS_PATH` - path to binaries of Chipcraft tools, default for distribution is ${CCSDK_HOME}/tools
+* `CHIPCRAFT_SDK_TOOLS_PATH` - path to binaries of Chipcraft tools, default for distribution is ${CHIPCRAFT_SDK_HOME}/tools
 * `VERILATOR_ROOT` - Verilator installation root directory, e.g. `/usr/local/share/verilator`
 * `VTESTBENCH_ROOT` - VTestbench project files directory`
 
@@ -68,8 +68,8 @@ When using SDK Makefiles following targets are available:
 * `ram-write` - write program into RAM memory,
 * `flash-write` - write program into Flash memory (permanent),
 * `debug` - run GDB debugger and connect to microcontroller,
-* `term` - simple UART terminal connected to `CCSDK_UART_PORT`,
-* `sim` - run program in CCSDK included simulator,
+* `term` - simple UART terminal connected to `CHIPCRAFT_SDK_UART_PORT`,
+* `sim` - run program in ChipCraft SDK included simulator,
 * `sim-debug` - run GDB and connect it to a program in the simulator,
 
 To build and save in RAM `hello-world` example run:

@@ -32,8 +32,8 @@
 * File Name : main.c
 * Author    : Rafal Harabien
 * ******************************************************************************
-* $Date: 2020-06-18 08:20:40 +0200 (czw, 18 cze 2020) $
-* $Revision: 602 $
+* $Date: 2022-09-13 17:14:02 +0200 (wto, 13 wrz 2022) $
+* $Revision: 889 $
 *H*****************************************************************************/
 
 #include "board.h"
@@ -113,7 +113,7 @@ static void testPin(unsigned pin)
     // test Pull Down
     setGpioPinPullCfg(pin, GPIO_PULL_DOWN);
     for (i = 0; i < 100; ++i);
-#if CCSDK_BOARD != ml605
+#if CHIPCRAFT_SDK_BOARD != ml605
     assertEq(AMBA_GPIO_PTR->IN & pinFlag, 0);
 #endif
 
@@ -141,7 +141,7 @@ static void testPin(unsigned pin)
     g_expectedIrq = 1;
     setGpioPinPullCfg(pin, GPIO_PULL_UP);
     for (i = 0; i < 100; ++i);
-#if CCSDK_BOARD != ml605
+#if CHIPCRAFT_SDK_BOARD != ml605
     assertFalse(g_expectedIrq);
 #endif
 
@@ -149,7 +149,7 @@ static void testPin(unsigned pin)
     g_expectedIrq = 1;
     setGpioPinPullCfg(pin, GPIO_PULL_DOWN);
     for (i = 0; i < 100; ++i);
-#if CCSDK_BOARD != ml605
+#if CHIPCRAFT_SDK_BOARD != ml605
     assertFalse(g_expectedIrq);
 #endif
 }

@@ -2,8 +2,8 @@
 *
 * Copyright (c) 2017 ChipCraft Sp. z o.o. All rights reserved
 *
-* $Date: 2020-12-12 20:49:22 +0100 (sob, 12 gru 2020) $
-* $Revision: 649 $
+* $Date: 2022-11-24 15:32:16 +0100 (czw, 24 lis 2022) $
+* $Revision: 916 $
 *
 *  ----------------------------------------------------------------------
 * Redistribution and use in source and binary forms, with or without
@@ -77,6 +77,7 @@ enum memory_layout_t
     FFT_BASE        = 0x30080000,  /*!< FFT Controller base address                */
     MBIST_BASE      = 0x30090000,  /*!< Memory BIST Controller base address        */
     VITERBI_BASE    = 0x300A0000,  /*!< Viterbi Decoder Controller base address    */
+    DBGIFACE_BASE   = 0x300B0000,  /*!< Debug Interface Controller base address    */
     RAM_BASE        = 0x40000000,  /*!< RAM Memory base address                    */
     RAM_EXT_BASE    = 0x50000000,  /*!< External RAM Memory base address           */
     AMBA_BASE       = 0x80000000,  /*!< AMBA Bus base address                      */

@@ -2,8 +2,8 @@
 *
 * Copyright (c) 2017 ChipCraft Sp. z o.o. All rights reserved
 *
-* $Date: 2021-04-06 10:29:54 +0200 (wto, 06 kwi 2021) $
-* $Revision: 687 $
+* $Date: 2022-11-24 15:32:16 +0100 (czw, 24 lis 2022) $
+* $Revision: 916 $
 *
 *  ----------------------------------------------------------------------
 * Redistribution and use in source and binary forms, with or without
@@ -64,6 +64,8 @@ typedef struct
     uint32_t ERR_CNT_1;         /*!< Error Counter 1 (FT-only)        */
     uint32_t INJECT_MASK_LO;    /*!< Error Injection Mask (FT-only)   */
     uint32_t INJECT_MASK_HI;    /*!< Error Injection Mask (FT-only)   */
+    uint32_t ERR_ADDR;          /*!< Error Address (FT-only)          */
+    uint32_t ERR_STAT;          /*!< Error Statistics (FT-only)       */
 } dcache_regs_t;
 
 static volatile dcache_regs_t * const DCACHE_PTR = (dcache_regs_t*)DCACHE_BASE;
@@ -74,7 +76,7 @@ enum
     DCACHE_STAT_EN                = 1 << 0,  /*!< Data Cache Enable                                             */
     DCACHE_STAT_FLUSH             = 1 << 1,  /*!< Data Cache Flush in Progress (not available in lockstep mode) */
     DCACHE_STAT_BUSY              = 1 << 2,  /*!< Data Cache Write Buffer Busy (not available in lockstep mode) */
-    DCACHE_STAT_PARITY_EN         = 1 << 3,  /*!< Parity Enable (FT-only)                                       */
+    DCACHE_STAT_ECC_EN            = 1 << 3,  /*!< ECC Enable (FT-only)                                          */
     DCACHE_STAT_ERR_TRIG          = 1 << 4,  /*!< Error Count Trigger (FT-only)                                 */
     DCACHE_STAT_SCRAMBLE_EN       = 1 << 5,  /*!< Scramble Enable (FT-only)                                     */
     DCACHE_STAT_MEM_ERR_INJECT    = 1 << 6,  /*!< Memory Error Injection Enable (FT-only)                       */

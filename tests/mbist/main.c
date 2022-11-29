@@ -32,8 +32,8 @@
 * File Name : main.c
 * Author    : Krzysztof Marcinek
 * ******************************************************************************
-* $Date: 2022-01-10 10:09:36 +0100 (pon, 10 sty 2022) $
-* $Revision: 808 $
+* $Date: 2022-10-19 14:05:14 +0200 (śro, 19 paź 2022) $
+* $Revision: 897 $
 *H*****************************************************************************/
 
 #include "board.h"
@@ -67,9 +67,9 @@ int main(void)
     }
 
     // Disable lockstep mode if present
-    if (lockstepDisable() == 0){
-        printf("\nDisabling lockstep mode!\n");
-    }
+    //if (lockstepDisable() == 0){
+    //    printf("\nDisabling lockstep mode!\n");
+    //}
 
     if (PWD_PTR->RSTRSN == PWD_RSN_MBIST){
 

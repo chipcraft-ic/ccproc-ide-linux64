@@ -8,17 +8,17 @@
 #
 # Author: Rafal Harabien
 #
-# $Date: 2022-03-08 14:52:22 +0100 (wto, 08 mar 2022) $
-# $Revision: 824 $
+# $Date: 2022-11-10 21:24:20 +0100 (czw, 10 lis 2022) $
+# $Revision: 908 $
 #
 
 import time, sys, os, stat, select, threading, logging, re, struct, binascii, socket, serial, getopt, signal
 
 is_py2 = sys.version[0] == '2'
 if is_py2:
-    import Queue as queue
+	import Queue as queue
 else:
-    import queue as queue
+	import queue as queue
 
 # Default options
 GDB_PORT = 3333
@@ -41,16 +41,16 @@ MEM_REGION_ALIGNMENT = 0x10000
 
 
 class DebuggerDisconnectedException(Exception):
-    """Raised when GDB debugger disconnects from debug server."""
-    pass
+	"""Raised when GDB debugger disconnects from debug server."""
+	pass
 
 class DebuggerInterruptedException(Exception):
-    """Raised when GDB debugger sends interrupt byte (0x03) to stop program execution."""
-    pass
+	"""Raised when GDB debugger sends interrupt byte (0x03) to stop program execution."""
+	pass
 
 class TargetDisconnectedException(Exception):
-    """Raised when target hardware is disconnected."""
-    pass
+	"""Raised when target hardware is disconnected."""
+	pass
 
 class GdbConn:
 	"""Represents connection with GDB client. Uses socket for communication.
@@ -640,7 +640,7 @@ class CpuDebug:
 				logging.warning('Core %d is executing 16-bit instruction at 0x%X: %s', core_id, addr, instr_str[4:])
 			else:
 				logging.info('Core %d is executing instruction at 0x%X: %s', core_id, addr, instr_str)
-				logging.info('  result 0x%X data 0x%X lsaddr 0x%X ldata 0x%X', result, data, lsaddr, ldata)
+				logging.info('	result 0x%X data 0x%X lsaddr 0x%X ldata 0x%X', result, data, lsaddr, ldata)
 		else:
 			ctx = None
 			logging.info('Core %d is halted', core_id)
@@ -1235,24 +1235,24 @@ class Options:
 		self.log_level = logging.INFO
 		self.log_filename = None
 		self.debug_proto_log_path = None
-		self.mcu_name = 'ml605'
+		self.mcu_name = 'ccnv1'
 		self.pipe = False
 	
 	def _show_help(self):
 		print('Usage: dbgserver.py [OPTIONS]\n')
 		print('Options:')
-		print('  -p, --port=DBG_PORT            path to debug port device')
-		print('                                 (default: {0})'.format(DBG_PORT))
-		print('  -b, --baudrate=BAUDRATE        debug port baudrate (default: {0})'.format(DBG_BAUDRATE))
-		print('  -g, --gdbport=TCP_PORT         listen on TCP port for GDB connection')
-		print('                                 (default: {0})'.format(GDB_PORT))
-		print('  -u, --unix-socket=FILE         use Unix domain socket for GDB connection')
-		print('  --pipe                         use standard streams for GDB connection')
-		print('  -l, --log=LEVEL                logging level - one of: DEBUG, INFO (default),')
-		print('                                 WARNING, ERROR, CRITICAL')
-		print('  -o, --log-file=FILE            log to FILE')
-		print('  --debug-proto-log=FILE         log debug proto to FILE (slow)')
-		print('  --mcu=ml605|ccnv1              enable compatibility with mcu')
+		print('  -p, --port=DBG_PORT			path to debug port device')
+		print('									(default: {0})'.format(DBG_PORT))
+		print('  -b, --baudrate=BAUDRATE		debug port baudrate (default: {0})'.format(DBG_BAUDRATE))
+		print('  -g, --gdbport=TCP_PORT			listen on TCP port for GDB connection')
+		print('									(default: {0})'.format(GDB_PORT))
+		print('  -u, --unix-socket=FILE			use Unix domain socket for GDB connection')
+		print('  --pipe							use standard streams for GDB connection')
+		print('  -l, --log=LEVEL				logging level - one of: DEBUG, INFO (default),')
+		print('									WARNING, ERROR, CRITICAL')
+		print('  -o, --log-file=FILE			log to FILE')
+		print('  --debug-proto-log=FILE			log debug proto to FILE (slow)')
+		print('  --mcu=ml605|ccnv1				enable compatibility with mcu')
 
 	def parse(self, argv):
 		opts, args = getopt.getopt(argv,
@@ -1282,7 +1282,7 @@ class Options:
 			elif opt in ('--debug-proto-log'):
 				self.debug_proto_log_path = arg
 			elif opt in ('--mcu'):
-				if arg not in ('ml605', 'ccnv1'):
+				if arg not in ('ml605', 'ccnv1', 'sim'):
 					raise ValueError('Invalid mcu name: %s' % arg)
 				self.mcu_name = arg
 

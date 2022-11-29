@@ -2,8 +2,8 @@
 *
 * Copyright (c) 2017 ChipCraft Sp. z o.o. All rights reserved
 *
-* $Date: 2021-04-06 10:29:54 +0200 (wto, 06 kwi 2021) $
-* $Revision: 687 $
+* $Date: 2022-11-24 15:32:16 +0100 (czw, 24 lis 2022) $
+* $Revision: 916 $
 *
 *  ----------------------------------------------------------------------
 * Redistribution and use in source and binary forms, with or without
@@ -254,7 +254,8 @@ enum
 /** System Controller CPU Info 2 Register bits */
 enum
 {
-    CPU_VITERBI = 1 << 8,  /*!< Viterbi Decoder       */
+    CPU_VITERBI = 1 << 8,  /*!< Viterbi Decoder             */
+    CPU_XPRAM   = 1 << 9,  /*!< Executable Scratch-Pad RAM  */
 };
 
 /** System Controller CPU Info 2 Register bit offsets */

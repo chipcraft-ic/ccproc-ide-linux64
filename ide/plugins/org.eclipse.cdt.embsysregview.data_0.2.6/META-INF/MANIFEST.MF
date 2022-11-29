@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-SymbolicName: org.eclipse.cdt.embsysregview.data
+Bundle-Name: Data
+Bundle-Version: 0.2.6
+Bundle-ManifestVersion: 2
+Build-Jdk-Spec: 1.8
+Created-By: Maven Archiver 3.5.0
+Eclipse-BundleShape: dir
+

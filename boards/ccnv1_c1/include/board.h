@@ -2,8 +2,8 @@
 *
 * Copyright (c) 2017 ChipCraft Sp. z o.o. All rights reserved
 *
-* $Date: 2022-02-17 16:38:38 +0100 (czw, 17 lut 2022) $
-* $Revision: 819 $
+* $Date: 2022-09-02 10:14:17 +0200 (pią, 02 wrz 2022) $
+* $Revision: 888 $
 *
 *  ----------------------------------------------------------------------
 * Redistribution and use in source and binary forms, with or without
@@ -42,6 +42,7 @@
 #define FLASH_DELAY             37UL
 #define FLASH_SIZE              (1024*1024)
 #define FLASH_PAGE_SIZE         512
+#define FLASH_ENDURANCE         20000
 
 #define PERIPH0_FREQ            49104000UL
 #define CORE_FREQ               98208000UL

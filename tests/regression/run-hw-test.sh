@@ -13,7 +13,14 @@ tail -f "$stdout_log" &
 tail_pid=$!
 sleep 0.2
 
-if [ "$CCSDK_BOARD" == "ml605" ]; then
+# support for legacy environment variable
+if [ "x$CCSDK_BOARD" != "x" ]; then
+    if [ "x$CHIPCRAFT_SDK_BOARD" == "x" ]; then
+        CHIPCRAFT_SDK_BOARD=$CCSDK_BOARD
+    fi
+fi
+
+if [ "$CHIPCRAFT_SDK_BOARD" == "ml605" ]; then
     make -s ram-write
 else
     make -s flash-write

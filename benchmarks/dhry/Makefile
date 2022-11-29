@@ -1,5 +1,7 @@
+-include ../../common/legacy-env-var-support.mk
+
 PROGNAME   := dhry
-COMMON_DIR := $(CCSDK_HOME)/common
+COMMON_DIR := $(CHIPCRAFT_SDK_HOME)/common
 
 DEFAULT_COMMON_SOURCES ?= board.c libc_multicore.c
 COMMON_SOURCES := syscalls.c uart.c

@@ -32,8 +32,8 @@
 # File Name : generic.mk
 # Author    : Rafal Harabien
 # ******************************************************************************
-# $Date: 2022-03-25 11:46:14 +0100 (pią, 25 mar 2022) $
-# $Revision: 841 $
+# $Date: 2022-10-04 18:06:49 +0200 (wto, 04 paź 2022) $
+# $Revision: 895 $
 #H******************************************************************************
 
 ifeq ($(OS),Windows_NT)
@@ -46,22 +46,48 @@ else
     $(error Unsupported platform)
 endif
 
-#CCSDK_HOME          ?= $(HOME)/ccsdk
-ifndef CCSDK_HOME
-  $(error Define CCSDK_HOME variable, eg.: $(HOME)/ccsdk!)
+ifneq ($(CHIPCRAFT_SDK_LEGACY_ENV_VAR_SUPPORT),1)
+# apply rules for setting unified environment variables
+# <CHIPCRAFT_SDK_.*> from legacy ones <CCSDK_.*>
+# this is done again, apart from legacy-env-var-support.mk
+# so 3rd party makefiles calling generic.mk continue to work correctly
+ define env_var_unification_from_generic
+ ifneq ($$(CCSDK_$1),)
+  ifeq ($$(CHIPCRAFT_SDK_$1),)
+    CHIPCRAFT_SDK_$1 := $$(CCSDK_$1)
+    $$(info [generic.mk] setting CHIPCRAFT_SDK_$1 to CCSDK_$1 = $$(CCSDK_$1))
+  endif
+ endif
+ endef
+
+ $(eval $(call env_var_unification_from_generic,BOARD))
+ $(eval $(call env_var_unification_from_generic,DBG_BAUDRATE))
+ $(eval $(call env_var_unification_from_generic,DBG_PORT))
+ $(eval $(call env_var_unification_from_generic,HOME))
+ $(eval $(call env_var_unification_from_generic,JTAG_FLAG))
+ $(eval $(call env_var_unification_from_generic,MCU))
+ $(eval $(call env_var_unification_from_generic,TOOLCHAIN_PATH))
+ $(eval $(call env_var_unification_from_generic,UART_BAUDRATE))
+ $(eval $(call env_var_unification_from_generic,UART_PORT))
+ $(eval $(call env_var_unification_from_generic,USE_JTAG))
 endif
 
--include $(CCSDK_HOME)/common/customization.mk
+#CHIPCRAFT_SDK_HOME          ?= $(HOME)/ccsdk
+ifndef CHIPCRAFT_SDK_HOME
+  $(error Define CHIPCRAFT_SDK_HOME variable, eg.: $(HOME)/ccsdk!)
+endif
 
-ifeq ($(CCSDK_TOOLS_PATH),)
+-include $(CHIPCRAFT_SDK_HOME)/common/customization.mk
+
+ifeq ($(CHIPCRAFT_SDK_TOOLS_PATH),)
   # set development tools path
-  CCSDK_TOOLS_PATH := $(CCSDK_HOME)/build/tools/$(PLATFORM)/stripped
+  CHIPCRAFT_SDK_TOOLS_PATH := $(CHIPCRAFT_SDK_HOME)/build/tools/$(PLATFORM)/stripped
 endif
-CCSDK_TRIPLET       ?= mips-cc-elf
-ifeq ($(CCSDK_TOOLCHAIN_PATH),)
-  $(error ChipCraft toolchain path not set, ensure chipcraft-toolchain is installed and CCSDK_TOOLCHAIN_PATH variable is set.)
+CHIPCRAFT_SDK_TRIPLET       ?= mips-cc-elf
+ifeq ($(CHIPCRAFT_SDK_TOOLCHAIN_PATH),)
+  $(error ChipCraft toolchain path not set, ensure chipcraft-toolchain is installed and CHIPCRAFT_SDK_TOOLCHAIN_PATH variable is set.)
 endif
-PREFIX              ?= $(CCSDK_TOOLCHAIN_PATH)/$(CCSDK_TRIPLET)-
+PREFIX              ?= $(CHIPCRAFT_SDK_TOOLCHAIN_PATH)/$(CHIPCRAFT_SDK_TRIPLET)-
 
 NULLSTR := # creating a null string
 SPACE   := $(NULLSTR) # end of the line
@@ -81,17 +107,23 @@ OBJCOPY           := "$(PREFIX)objcopy$(EXEEXT)"
 OBJDUMP           := "$(PREFIX)objdump$(EXEEXT)"
 SIZE              := "$(PREFIX)size$(EXEEXT)"
 DEBUGGER          := "$(PREFIX)gdb$(EXEEXT)"
-CCPROG            := "$(CCSDK_TOOLS_PATH)/ccprog$(EXEEXT)"
-CCTERM            := "$(CCSDK_TOOLS_PATH)/ccterm$(EXEEXT)"
-DBGSERVER_RS      := $(PYTHON) "$(CCSDK_TOOLS_PATH)/dbgserver.py"
-DBGSERVER_JTAG    := $(CCSDK_TOOLS_PATH)/debugserverjtag$(EXEEXT)
+CCPROG            := "$(CHIPCRAFT_SDK_TOOLS_PATH)/ccprog$(EXEEXT)"
+CCTERM            := "$(CHIPCRAFT_SDK_TOOLS_PATH)/ccterm$(EXEEXT)"
+DBGSERVER_RS      := $(PYTHON) "$(CHIPCRAFT_SDK_TOOLS_PATH)/dbgserver.py"
+DBGSERVER_JTAG    := $(CHIPCRAFT_SDK_TOOLS_PATH)/debugserverjtag$(EXEEXT)
 DBGSERVER_SIM     := $(DBGSERVER_RS)
-CCSIM             := "$(CCSDK_TOOLS_PATH)/ccsim$(EXEEXT)"
+CCSIM             := "$(CHIPCRAFT_SDK_TOOLS_PATH)/ccsim$(EXEEXT)"
 
 MINITERM          := miniterm.py
 ECHO              := @echo
 
-ifeq ($(CCSDK_USE_JTAG),Yes)
+ifeq ($(PLATFORM),linux)
+CD := cd
+else ifeq ($(PLATFORM),windows)
+CD := cd
+endif
+
+ifeq ($(CHIPCRAFT_SDK_USE_JTAG),Yes)
  DBGSERVER := $(DBGSERVER_JTAG)
 else
  DBGSERVER := $(DBGSERVER_RS)
@@ -113,49 +145,50 @@ else
  rmdir = rm -rf "$(call native_path,$(1))"
 endif
 
-
+SRCDIR := $(CURDIR)
 
 ifneq ($(QUIET),0)
 Q := @
 endif
 
-BUILDDIR        ?= build
+BUILDDIR        ?= $(SRCDIR)/build
 COMMON_BUILDDIR := $(BUILDDIR)/common
 PROGBIN         := $(BUILDDIR)/$(PROGNAME)
 PROGSREC        := $(BUILDDIR)/$(PROGNAME).srec
 
 # Default ports
-CCSDK_DBG_PORT   ?= /dev/ttyUSB0
-CCSDK_UART_PORT  ?= /dev/ttyUSB1
+CHIPCRAFT_SDK_DBG_PORT   ?= /dev/ttyUSB0
+CHIPCRAFT_SDK_UART_PORT  ?= /dev/ttyUSB1
 
-ifndef CCSDK_BOARD
-  $(error Define CCSDK_BOARD variable, eg.: sim!)
+ifndef CHIPCRAFT_SDK_BOARD
+  $(error Define CHIPCRAFT_SDK_BOARD variable, eg.: sim!)
 endif
 
 # Default target
 all: $(PROGSREC)
 
 # Board specific assignments
-include $(CCSDK_HOME)/boards/$(CCSDK_BOARD)/board.properties
-CCSDK_MCU             ?= $(MCU)
-CCSDK_DBG_BAUDRATE    ?= $(DBG_BAUDRATE)
-CCSDK_UART_BAUDRATE   ?= $(UART_BAUDRATE)
+include $(CHIPCRAFT_SDK_HOME)/boards/$(CHIPCRAFT_SDK_BOARD)/board.properties
+CHIPCRAFT_SDK_MCU             ?= $(MCU)
+CHIPCRAFT_SDK_DBG_BAUDRATE    ?= $(DBG_BAUDRATE)
+CHIPCRAFT_SDK_UART_BAUDRATE   ?= $(UART_BAUDRATE)
+CHIPCRAFT_SDK_CCPROG_BAUDRATE ?= auto
 
-CCPROG_FLAGS          += --mcu $(CCSDK_MCU)
-DBGSERVER_FLAGS += --mcu $(CCSDK_MCU)
-ifeq ($(CCSDK_USE_JTAG),Yes)
+CCPROG_FLAGS          += --mcu $(CHIPCRAFT_SDK_MCU)
+DBGSERVER_FLAGS += --mcu $(CHIPCRAFT_SDK_MCU)
+ifeq ($(CHIPCRAFT_SDK_USE_JTAG),Yes)
  $(info Using JTAG connection.)
- CCPROG_FLAGS          += $(CCSDK_JTAG_FLAG)
+ CCPROG_FLAGS          += $(CHIPCRAFT_SDK_JTAG_FLAG)
 else
- CCPROG_FLAGS          += -p $(CCSDK_DBG_PORT) -b auto
- DBGSERVER_FLAGS += -p $(CCSDK_DBG_PORT) -b $(CCSDK_DBG_BAUDRATE)
+ CCPROG_FLAGS          += -p $(CHIPCRAFT_SDK_DBG_PORT) -b $(CHIPCRAFT_SDK_CCPROG_BAUDRATE)
+ DBGSERVER_FLAGS += -p $(CHIPCRAFT_SDK_DBG_PORT) -b $(CHIPCRAFT_SDK_DBG_BAUDRATE)
 endif
 
-include $(CCSDK_HOME)/boards/$(CCSDK_BOARD)/board.mk
+include $(CHIPCRAFT_SDK_HOME)/boards/$(CHIPCRAFT_SDK_BOARD)/board.mk
 
 
-ifndef CCSDK_MCU
-  $(error Define CCSDK_MCU variable, eg.: ml605!)
+ifndef CHIPCRAFT_SDK_MCU
+  $(error Define CHIPCRAFT_SDK_MCU variable, eg.: ml605!)
 endif
 
 # Overridable default common sources
@@ -169,20 +202,19 @@ TOUPPER=$(strip $(subst a,A,$(subst b,B,$(subst c,C,$(subst d,D,$(subst e,E,$(su
   $(subst h,H,$(subst i,I,$(subst j,J,$(subst k,K,$(subst l,L,$(subst m,M,$(subst n,N,$(subst o,O,\
   $(subst p,P,$(subst q,Q,$(subst r,R,$(subst s,S,$(subst t,T,$(subst u,U,$(subst v,V,$(subst w,W,\
   $(subst x,X,$(subst y,Y,$(subst z,Z,$1)))))))))))))))))))))))))))
-BOARD_UPPER := $(call TOUPPER,$(CCSDK_BOARD))
-MCU_UPPER := $(call TOUPPER,$(CCSDK_MCU))
+BOARD_UPPER := $(call TOUPPER,$(CHIPCRAFT_SDK_BOARD))
+MCU_UPPER := $(call TOUPPER,$(CHIPCRAFT_SDK_MCU))
 
 # Preprocessor flags
-CPPFLAGS += -DBOARD=$(CCSDK_BOARD) -DBOARD_$(BOARD_UPPER) -DMCU_$(MCU_UPPER)
-CPPFLAGS += -I$(CCSDK_HOME)/include
-CPPFLAGS += -I$(CCSDK_HOME)/include/flash
-CPPFLAGS += -I$(CCSDK_HOME)/common/include
-CPPFLAGS += -I$(CCSDK_HOME)/drivers/include
-CPPFLAGS += -I$(CCSDK_HOME)/drivers/flash/include
-CPPFLAGS += -I$(CCSDK_HOME)/drivers/max2771/include
-CPPFLAGS += -I$(CCSDK_HOME)/boards/$(CCSDK_BOARD)
-CPPFLAGS += -I$(CCSDK_HOME)/boards/$(CCSDK_BOARD)/include
-CPPFLAGS += -MMD -MP
+CPPFLAGS += -DBOARD=$(CHIPCRAFT_SDK_BOARD) -DBOARD_$(BOARD_UPPER) -DMCU_$(MCU_UPPER)
+CPPFLAGS += -I$(CHIPCRAFT_SDK_HOME)/include
+CPPFLAGS += -I$(CHIPCRAFT_SDK_HOME)/include/flash
+CPPFLAGS += -I$(CHIPCRAFT_SDK_HOME)/common/include
+CPPFLAGS += -I$(CHIPCRAFT_SDK_HOME)/drivers/include
+CPPFLAGS += -I$(CHIPCRAFT_SDK_HOME)/drivers/flash/include
+CPPFLAGS += -I$(CHIPCRAFT_SDK_HOME)/drivers/max2771/include
+CPPFLAGS += -I$(CHIPCRAFT_SDK_HOME)/boards/$(CHIPCRAFT_SDK_BOARD)
+CPPFLAGS += -I$(CHIPCRAFT_SDK_HOME)/boards/$(CHIPCRAFT_SDK_BOARD)/include
 
 # MIPS II (Big Endian) without coprocessor, unaligned load/store, trap, branch-likely instructions
 #CFLAGS_ARCH   ?= -mips2 -EB -msoft-float -mno-branch-likely -mdivide-breaks -mpatfree
@@ -199,18 +231,18 @@ ASFLAGS  += $(CFLAGS_ARCH) $(CFLAGS_DEBUG)
 
 LDFLAGS_OPT    ?= -Wl,--gc-sections
 LDFLAGS_DEBUG  ?= -Wl,-Map,$(BUILDDIR)/$(PROGNAME).map
-LDSCRIPT       ?= "$(CCSDK_HOME)/linker/ccproc.ld"
+LDSCRIPT       ?= "$(CHIPCRAFT_SDK_HOME)/linker/ccproc.ld"
 #LDFLAGS += -Wl,-melf32ccproc
 
 LDFLAGS  += $(CFLAGS_ARCH) -T $(LDSCRIPT) $(LDFLAGS_OPT) $(LDFLAGS_DEBUG)
-DEFAULT_LDLIBS ?= -lstdc++ -lc
+DEFAULT_LDLIBS ?= -lm -lstdc++ -lc
 LDLIBS   += $(DEFAULT_LDLIBS)
 # TODO: add stdc++ only for C++ projects
 
 ifndef windir
-  DEBUGGER_FLAGS  ?= -tui -q -x "$(CCSDK_HOME)/common/gdbinit"
+  DEBUGGER_FLAGS  ?= -tui -q -x "$(CHIPCRAFT_SDK_HOME)/common/gdbinit"
 else
-  DEBUGGER_FLAGS  ?= -q -x "$(CCSDK_HOME)/common/gdbinit"
+  DEBUGGER_FLAGS  ?= -q -x "$(CHIPCRAFT_SDK_HOME)/common/gdbinit"
 endif
 
 GDB_UNIX_SOCK ?= 0
@@ -272,27 +304,45 @@ COMMON_OBJECTS := $(COMMON_OBJECTS:%.S=%.o)
 ALL_OBJECTS := $(COMMON_OBJECTS) $(OBJECTS)
 ALL_OBJECTS := $(START_OBJ) $(filter-out $(START_OBJ),$(ALL_OBJECTS))
 
+DEPS := $(ALL_OBJECTS:.o=.d)
+
 # buildrules(input_dir,output_dir)
 define buildrules
+$(1)/%.d: $(2)%.c
+	$(Q)$$(call mkdir_recursive,$$(dir $$@))
+	$(Q)$(CC) $$< $(CPPFLAGS) $(CFLAGS) $(EXTFLAGS) -M -MM -MP -MF $$@
+
+$(1)/%.d: $(2)%.cpp
+	$(Q)$$(call mkdir_recursive,$$(dir $$@))
+	$(Q)$(CXX) $$< $(CPPFLAGS) $(CXXFLAGS) -M -MM -MP -MF $$@
+
+$(1)/%.d: $(2)%.s
+	$(Q)$$(call mkdir_recursive,$$(dir $$@))
+	$(Q)$(CC) $$< $(ASFLAGS) $(EXTFLAGS) -M -MM -MP -MF $$@
+
+$(1)/%.d: $(2)%.S
+	$(Q)$$(call mkdir_recursive,$$(dir $$@))
+	$(Q)$(CC) $$< $(CPPFLAGS) $(ASFLAGS) $(EXTFLAGS) -M -MM -MP -MF $$@
+
 $(1)/%.o: $(2)%.c
 	$(ECHO) Compiling $$@
 	$(Q)$$(call mkdir_recursive,$$(dir $$@))
-	$(Q)$(CC) $(CPPFLAGS) $(CFLAGS) $(EXTFLAGS) -c $$< -o $$@
+	$(Q)$(CD) $$(<D) && $(CC) $$(<F) $(CPPFLAGS) $(CFLAGS) $(EXTFLAGS) -c -o $$@
 
 $(1)/%.o: $(2)%.cpp
 	$(ECHO) Compiling $$@
 	$(Q)$$(call mkdir_recursive,$$(dir $$@))
-	$(Q)$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $$< -o $$@
+	$(Q)$(CD) $$(<D) && $(CXX) $$(<F) $(CPPFLAGS) $(CXXFLAGS) -c -o $$@
 
 $(1)/%.o: $(2)%.s
 	$(ECHO) Compiling $$@
 	$(Q)$$(call mkdir_recursive,$$(dir $$@))
-	$(Q)$(CC) $(ASFLAGS) $(EXTFLAGS) -c $$< -o $$@
+	$(Q)$(CD) $$(<D) && $(CC) $$(<F) $(ASFLAGS) $(EXTFLAGS) -c -o $$@
 
 $(1)/%.o: $(2)%.S
 	$(ECHO) Compiling $$@
 	$(Q)$$(call mkdir_recursive,$$(dir $$@))
-	$(Q)$(CC) $(CPPFLAGS) $(ASFLAGS) $(EXTFLAGS) -c $$< -o $$@
+	$(Q)$(CD) $$(<D) && $(CC) $$(<F) $(CPPFLAGS) $(ASFLAGS) $(EXTFLAGS) -c -o $$@
 endef
 
 $(BUILDDIR):
@@ -302,14 +352,14 @@ $(COMMON_BUILDDIR):
 	$(Q)$(call mkdir_recursive,$(COMMON_BUILDDIR))
 
 $(eval $(call buildrules,$(BUILDDIR),))
-$(eval $(call buildrules,$(COMMON_BUILDDIR),$(CCSDK_HOME)/common/))
-$(eval $(call buildrules,$(COMMON_BUILDDIR),$(CCSDK_HOME)/boards/$(CCSDK_BOARD)/))
-$(eval $(call buildrules,$(COMMON_BUILDDIR),$(CCSDK_HOME)/drivers/))
+$(eval $(call buildrules,$(COMMON_BUILDDIR),$(CHIPCRAFT_SDK_HOME)/common/))
+$(eval $(call buildrules,$(COMMON_BUILDDIR),$(CHIPCRAFT_SDK_HOME)/boards/$(CHIPCRAFT_SDK_BOARD)/))
+$(eval $(call buildrules,$(COMMON_BUILDDIR),$(CHIPCRAFT_SDK_HOME)/drivers/))
 $(foreach dir,$(SOURCE_DIRS),$(eval $(call buildrules,$(BUILDDIR)/$(subst ../,,$(dir)),$(dir)/)))
 
-$(PROGBIN): $(ALL_OBJECTS)
+$(PROGBIN): $(ALL_OBJECTS) $(DEPS)
 	$(ECHO) Linking $@
-	$(Q)$(LINK) $(LDFLAGS) -o $@ $^ $(LDLIBS)
+	$(Q)$(LINK) $(LDFLAGS) -o $@ $(ALL_OBJECTS) $(LDLIBS)
 	$(Q)$(SIZE) $@
 
 $(PROGSREC): $(PROGBIN)
@@ -345,10 +395,10 @@ disasm: $(PROGBIN)
 	$(Q)$(OBJDUMP) -d -l $(PROGBIN) > "$(BUILDDIR)/$(PROGNAME)_disasm.S"
 
 term:
-	$(Q)$(CCTERM) $(CCSDK_UART_PORT) $(CCSDK_UART_BAUDRATE)
+	$(Q)$(CCTERM) $(CHIPCRAFT_SDK_UART_PORT) $(CHIPCRAFT_SDK_UART_BAUDRATE)
 
 miniterm:
-	$(Q)$(MINITERM) $(CCSDK_UART_PORT) $(CCSDK_UART_BAUDRATE)
+	$(Q)$(MINITERM) $(CHIPCRAFT_SDK_UART_PORT) $(CHIPCRAFT_SDK_UART_BAUDRATE)
 
 .PHONY: all clean size sim debug debug-server sim-debug-server reset disasm term miniterm
 

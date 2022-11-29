@@ -4,4 +4,5 @@ COMMON_SOURCES := syscalls.c uart.c ccproc-verification.c core.S libc_multicore.
 
 LDLIBS += -lm
 
-include $(CCSDK_HOME)/common/generic.mk
+-include ../../common/legacy-env-var-support.mk
+include $(CHIPCRAFT_SDK_HOME)/common/generic.mk

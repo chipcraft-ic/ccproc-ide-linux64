@@ -2,8 +2,8 @@
 *
 * Copyright (c) 2022 ChipCraft Sp. z o.o. All rights reserved
 *
-* $Date: 2022-01-15 10:20:27 +0100 (sob, 15 sty 2022) $
-* $Revision: 812 $
+* $Date: 2022-08-02 11:37:02 +0200 (wto, 02 sie 2022) $
+* $Revision: 877 $
 *
 *  ----------------------------------------------------------------------
 * Redistribution and use in source and binary forms, with or without
@@ -400,6 +400,9 @@ enum
     FLASH_INFO_MODULE_SIZE_UNDEFINED = 0,  /*!< Flash Info Module Size undefined */
     FLASH_INFO_MODULE_SIZE_128_PAGES = 1,  /*!< Flash Info Module Size 128 pages */
 };
+
+/** Helper macro for calculating read wait states count */
+#define FLASH_READ_WAIT_STATES_CALC(hclk) ( FLASH_DELAY / (1000000000UL/(hclk)) )
 
 /** @} */
 
