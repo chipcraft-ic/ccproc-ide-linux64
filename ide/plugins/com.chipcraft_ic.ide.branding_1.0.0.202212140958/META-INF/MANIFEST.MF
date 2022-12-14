@@ -1,0 +1,18 @@
+Manifest-Version: 1.0
+Automatic-Module-Name: com.chipcraft_ic.ide.branding
+Bundle-SymbolicName: com.chipcraft_ic.ide.branding;singleton:=true
+Require-Bundle: org.eclipse.collections,   org.eclipse.core.runtime,  
+  org.eclipse.jface,   org.eclipse.ui.workbench
+Bundle-ActivationPolicy: lazy
+Bundle-ManifestVersion: 2
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-Vendor: %ide.property.vendor
+Export-Package: com.chipcraft_ic.ide.branding
+Bundle-Name: %ide.property.plugin.branding.name
+Bundle-Version: 1.0.0.202212140958
+Bundle-Localization: plugin
+Bundle-Activator: com.chipcraft_ic.ide.branding.Activator
+Build-Jdk-Spec: 1.8
+Created-By: Maven Archiver 3.5.0
+Eclipse-BundleShape: dir
+

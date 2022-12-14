@@ -2,8 +2,8 @@
 *
 * Copyright (c) 2017 ChipCraft Sp. z o.o. All rights reserved
 *
-* $Date: 2021-06-07 17:56:02 +0200 (pon, 07 cze 2021) $
-* $Revision: 704 $
+* $Date: 2022-12-12 15:09:34 +0100 (pon, 12 gru 2022) $
+* $Revision: 936 $
 *
 *  ----------------------------------------------------------------------
 * Redistribution and use in source and binary forms, with or without
@@ -83,7 +83,11 @@ typedef struct
 #endif
     uint32_t TMSTMP_RNG_LO;     /*!< Range Generation Timestamp LO Register               */
     uint32_t TMSTMP_RNG_HI;     /*!< Range Generation Timestamp HI Register               */
+#ifndef MCU_CCNV1
+    uint32_t FLAGS;             /*!< Interrupt Flags Register                             */
+#else
     uint32_t _reserved1[1];
+#endif
 #ifndef BOARD_CCNV1_A1
 #ifndef BOARD_CCNV1_B1
     uint32_t PPS_IN_CFG;        /*!< PPS Input Configuration Register                     */
@@ -101,6 +105,10 @@ typedef struct
 #ifndef MCU_CCNV1
     uint32_t TMSTMP_RTC_CMP_LO; /*!< RTC Compare Timestamp LO Register                    */
     uint32_t TMSTMP_RTC_CMP_HI; /*!< RTC Compare Timestamp HI Register                    */
+    uint32_t GNSS_DIAG_FUNCT;   /*!< GNSS-ISE Diagnostic Function Register                */
+    uint32_t GNSS_DIAG_DATA1;   /*!< GNSS-ISE Diagnostic Data Register                    */
+    uint32_t GNSS_DIAG_DATA2;   /*!< GNSS-ISE Diagnostic Data Register                    */
+    uint32_t GNSS_DIAG_RESULT;  /*!< GNSS-ISE Diagnostic Result Register                  */
 #endif
 } gnss_regs_t;
 
@@ -164,6 +172,15 @@ enum
     GNSS_CTRL_CODE_OVR_IE    = 0x2,  /*!< GNSS-ISE Code Overrun Interrupt Enable         */
     GNSS_CTRL_CODE_ERR_IE    = 0x4,  /*!< GNSS-ISE Code Error Interrupt Enable           */
 };
+
+#ifndef MCU_CCNV1
+/** GNSS Controller Flags Register Flags */
+enum
+{
+    GNSS_FLAGS_ACQPLAY  = 1 << 0, /*!< Acquisition/Playback Interrupt Flag         */
+    GNSS_FLAGS_RNGIF    = 1 << 1, /*!< Range Generation Interrupt Flag             */
+};
+#endif
 
 #ifdef BOARD_CCNV1_B1
 /** GNSS Controller PPS Register high bit offsets */

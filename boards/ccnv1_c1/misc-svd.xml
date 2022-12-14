@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- External Memory Controller -->
+<peripheral>
+  <name>MEMCTRL</name>
+  <description>External Memory Controller</description>
+  <baseAddress>0x81001000</baseAddress>
+  <addressBlock>
+    <offset>0</offset>
+    <size>0x300</size>
+    <usage>registers</usage>
+  </addressBlock>
+  <registers>
+
+    <register>
+      <name>STATUS</name>
+      <description>Status Register</description>
+      <addressOffset>0x0</addressOffset>
+      <access>read-only</access>
+      <fields>
+        <field>
+          <name>BUSY</name>
+          <description>Bypass Command in Progress</description>
+          <bitRange>[0:0]</bitRange>
+        </field>
+        <field>
+          <name>ADDR_ERR</name>
+          <description>Address Error</description>
+          <bitRange>[1:1]</bitRange>
+        </field>
+        <field>
+          <name>NOT_INIT</name>
+          <description>Controller Not Initialized</description>
+          <bitRange>[2:2]</bitRange>
+        </field>
+        <field>
+          <name>HB_RD_DATA</name>
+          <description>Bypass Data Output</description>
+          <bitRange>[31:16]</bitRange>
+        </field>
+      </fields>
+    </register>
+
+    <register>
+      <name>CONF</name>
+      <description>Configuration Register</description>
+      <addressOffset>0x4</addressOffset>
+      <access>read-write</access>
+      <fields>
+        <field>
+          <name>CS</name>
+          <description>Chip Select</description>
+          <bitRange>[7:0]</bitRange>
+        </field>
+        <field>
+          <name>CS_OVR</name>
+          <description>Device Chip Select Override</description>
+          <bitRange>[8:8]</bitRange>
+        </field>
+        <field>
+          <name>CS_ENA</name>
+          <description>Device Chip Select Enable</description>
+          <bitRange>[9:9]</bitRange>
+        </field>
+        <field>
+          <name>CK_ENA</name>
+          <description>Device CLock Enable</description>
+          <bitRange>[10:10]</bitRange>
+        </field>
+        <field>
+          <name>BURST_LIM</name>
+          <description>Burst Size Limit</description>
+          <bitRange>[13:12]</bitRange>
+          <enumeratedValues>
+            <enumeratedValue>
+              <name>16_BEAT</name>
+              <description>Max 16-beats burt</description>
+              <value>0x0</value>
+            </enumeratedValue>
+            <enumeratedValue>
+              <name>8_BEAT</name>
+              <description>Max 8-beats burt</description>
+              <value>0x1</value>
+            </enumeratedValue>
+            <enumeratedValue>
+              <name>4_BEAT</name>
+              <description>Max 4-beats burt</description>
+              <value>0x2</value>
+            </enumeratedValue>
+          </enumeratedValues>
+        </field>
+        <field>
+          <name>PRESC</name>
+          <description>Device Clock prescaler</description>
+          <bitRange>[27:16]</bitRange>
+        </field>
+        <field>
+          <name>CLK_REQ</name>
+          <description>Clock Request</description>
+          <bitRange>[31:31]</bitRange>
+        </field>
+      </fields>
+    </register>
+
+    <register>
+      <name>COMMAND</name>
+      <description>Command Register</description>
+      <addressOffset>0x8</addressOffset>
+      <access>read-write</access>
+      <fields>
+        <field>
+          <name>HB_READ</name>
+          <description>HyperBus Read</description>
+          <bitRange>[0:0]</bitRange>
+        </field>
+        <field>
+          <name>HB_WRITE</name>
+          <description>HyperBus Write</description>
+          <bitRange>[1:1]</bitRange>
+        </field>
+        <field>
+          <name>HB_WRITE_ZD</name>
+          <description>HyperBus Write Zero-Delay</description>
+          <bitRange>[2:2]</bitRange>
+        </field>
+        <field>
+          <name>SPI_READ</name>
+          <description>SPI Read</description>
+          <bitRange>[3:3]</bitRange>
+        </field>
+        <field>
+          <name>SPI_WRITE</name>
+          <description>SPI Write</description>
+          <bitRange>[4:4]</bitRange>
+        </field>
+        <field>
+          <name>SPI_CMD_CNT</name>
+          <description>SPI Command Bytes</description>
+          <bitRange>[10:8]</bitRange>
+        </field>
+        <field>
+          <name>SPI_DUM_CNT</name>
+          <description>SPI Dummy Count</description>
+          <bitRange>[16:11]</bitRange>
+        </field>
+        <field>
+          <name>SPI_DAT_CNT</name>
+          <description>SPI Data Count</description>
+          <bitRange>[22:17]</bitRange>
+        </field>
+        <field>
+          <name>CS_HOLD</name>
+          <description>Chip Select Hold</description>
+          <bitRange>[31:31]</bitRange>
+        </field>
+      </fields>
+    </register>
+
+    <register>
+      <name>COMM_DATA_0</name>
+      <description>Command Daa Register 0</description>
+      <addressOffset>0x40</addressOffset>
+      <access>read-write</access>
+    </register>
+
+    <register>
+      <name>COMM_DATA_1</name>
+      <description>Command Daa Register 1</description>
+      <addressOffset>0x44</addressOffset>
+      <access>read-write</access>
+    </register>
+
+    <register>
+      <name>DEVICE_DATA</name>
+      <description>Device Data Register</description>
+      <addressOffset>0x48</addressOffset>
+      <access>read-only</access>
+    </register>
+
+    <register>
+      <dim>8</dim>
+      <dimIncrement>4</dimIncrement>
+      <name>DEVICE_CONF[%s]</name>
+      <description>Device Configuration Register</description>
+      <addressOffset>0x200</addressOffset>
+      <access>read-write</access>
+      <fields>
+        <field>
+          <name>LATENCY</name>
+          <description>Device Latency</description>
+          <bitRange>[5:0]</bitRange>
+        </field>
+        <field>
+          <name>CS_HOLD</name>
+          <description>Chip Select Hold</description>
+          <bitRange>[8:8]</bitRange>
+        </field>
+        <field>
+          <name>DEV_ACT</name>
+          <description>Device Active</description>
+          <bitRange>[9:9]</bitRange>
+        </field>
+        <field>
+          <name>ZD_WRITE</name>
+          <description>Zero-Delay Write</description>
+          <bitRange>[10:10]</bitRange>
+        </field>
+        <field>
+          <name>SPI_DEV</name>
+          <description>SPI Device</description>
+          <bitRange>[16:16]</bitRange>
+        </field>
+        <field>
+          <name>SPI_EXT</name>
+          <description>Extended SPI Mode</description>
+          <bitRange>[17:17]</bitRange>
+        </field>
+        <field>
+          <name>SPI_DDR</name>
+          <description>SPI Double Data Rate</description>
+          <bitRange>[18:18]</bitRange>
+        </field>
+      </fields>
+    </register>
+
+    <register>
+      <dim>8</dim>
+      <dimIncrement>4</dimIncrement>
+      <name>DEVICE_ADD_HIGH[%s]</name>
+      <description>Device Higher Bound Address Space Register</description>
+      <addressOffset>0x240</addressOffset>
+      <access>read-write</access>
+    </register>
+
+    <register>
+      <dim>8</dim>
+      <dimIncrement>4</dimIncrement>
+      <name>DEVICE_ADD_LOW[%s]</name>
+      <description>Device Lower Bound Address Space Register</description>
+      <addressOffset>0x280</addressOffset>
+      <access>read-write</access>
+    </register>
+
+  </registers>
+</peripheral>

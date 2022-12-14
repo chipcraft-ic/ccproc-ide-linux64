@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+ <extension
+  id="com.chipcraft_ic.ide"
+  point="org.eclipse.core.runtime.products"
+ >
+  <product
+   application="org.eclipse.ui.ide.workbench"
+   name="%ide.property.product.name"
+  >
+   <property name="appName" value="%ide.property.product.name"/>
+   <property name="aboutImage" value="res/icons/icon128.png"/>
+   <property name="aboutText" value="%ide.property.plugin.branding.about.text"/>
+
+   <property
+    name="windowImages"
+    value="res/icons/icon16.png,res/icons/icon32.png,res/icons/icon48.png,res/icons/icon64.png,res/icons/icon128.png,res/icons/icon256.png"
+   />
+
+   <property name="cssTheme" value="org.eclipse.e4.ui.css.theme.e4_default" />
+
+   <property name="startupForegroundColor" value="51f544"/>
+   <property name="startupMessageRect" value="7,265,320,20"/>
+   <property name="startupProgressRect" value="2,290,448,10"/>
+
+   <property name="preferenceCustomization" value="customization.ini"/>
+  </product>
+ </extension>
+
+ <extension
+  point="org.eclipse.ui.perspectiveExtensions"
+ >
+  <perspectiveExtension
+   targetID="org.eclipse.debug.ui.DebugPerspective">
+   <view
+    ratio="0.5"
+    relative="org.eclipse.ui.views.TaskList"
+    relationship="right"
+    id="org.eclipse.cdt.embsysregview.views.EmbSysRegView"
+   />
+  </perspectiveExtension>
+ </extension>
+
+ <!-- hide CDT contributions to 'New Project' UI -->
+ <extension
+  point="org.eclipse.ui.activities"
+ >
+  <activity
+   id="com.chipcraft_ic.ide.branding.activity.cdt"
+   name="%ide.property.branding.cdt.activity.name"
+   description="%ide.property.branding.cdt.activity.description"
+  />
+  <category
+   id="com.chipcraft_ic.ide.branding.category.cdt"
+   name="%ide.property.branding.cdt.category.name"
+   description="%ide.property.branding.cdt.category.description"
+  />
+  <categoryActivityBinding
+   activityId="com.chipcraft_ic.ide.branding.activity.cdt"
+   categoryId="com.chipcraft_ic.ide.branding.category.cdt"
+  />
+  <activityPatternBinding
+   activityId="com.chipcraft_ic.ide.branding.activity.cdt"
+   pattern="org.eclipse.cdt.ui/org.eclipse.cdt.ui.wizard.project"
+  />
+  <activityPatternBinding
+   activityId="com.chipcraft_ic.ide.branding.activity.cdt"
+   pattern="org.eclipse.cdt.ui/org.eclipse.cdt.ui.wizards.NewCWizard[12]"
+  />
+  <activityPatternBinding
+   activityId="com.chipcraft_ic.ide.branding.activity.cdt"
+   pattern="org.eclipse.cdt.managedbuilder.ui/org.eclipse.cdt.ui.wizards.NewMakeFromExisting"
+  />
+  <activityPatternBinding
+   activityId="com.chipcraft_ic.ide.branding.activity.cdt"
+   pattern="org.eclipse.cdt.managedbuilder.ui/org.eclipse.cdt.ui.wizards.ConvertToMakeWizard"
+  />
+ </extension>
+
+ <extension
+  point="org.eclipse.debug.ui.launchConfigurationTypeImages"
+ >
+  <launchConfigurationTypeImage
+   icon="res/buttons/terminal.png"
+   configTypeID="com.chipcraft_ic.ide.debugger.simulator"
+   id="com.chipcraft_ic.ide.branding.launch.simulator"
+  />
+  <launchConfigurationTypeImage
+   icon="res/buttons/serial.png"
+   configTypeID="com.chipcraft_ic.ide.debugger.device"
+   id="com.chipcraft_ic.ide.branding.launch.device"
+  />
+ </extension>
+
+ <extension
+  point="org.eclipse.ui.menus"
+ >
+  <menuContribution
+   locationURI="toolbar:org.eclipse.ui.main.toolbar"
+  >
+   <toolbar
+    id="com.chipcraft_ic.ide.branding.toolbar"
+    label="%ide.property.branding.toolbar.label"
+   >
+    <command
+     commandId="com.chipcraft_ic.ide.branding.commands.clean"
+     icon="res/buttons/actions/clear.gif"
+     label="%ide.property.branding.toolbar.clean.label"
+     tooltip="%ide.property.branding.toolbar.clean.tooltip"
+    />
+    <command
+     commandId="com.chipcraft_ic.ide.branding.commands.build"
+     icon="res/buttons/actions/all.gif"
+     label="%ide.property.branding.toolbar.build.label"
+     tooltip="%ide.property.branding.toolbar.build.tooltip"
+    />
+    <command
+     commandId="com.chipcraft_ic.ide.branding.commands.rebuild"
+     icon="res/buttons/actions/rebuild.gif"
+     label="%ide.property.branding.toolbar.rebuild.label"
+     tooltip="%ide.property.branding.toolbar.rebuild.tooltip"
+    />
+    <command
+     commandId="com.chipcraft_ic.ide.branding.commands.flash"
+     icon="res/buttons/actions/flash.gif"
+     label="%ide.property.branding.toolbar.flash.label"
+     tooltip="%ide.property.branding.toolbar.flash.tooltip"
+    />
+    <command
+     commandId="com.chipcraft_ic.ide.branding.commands.program"
+     icon="res/buttons/actions/program.gif"
+     label="%ide.property.branding.toolbar.program.label"
+     tooltip="%ide.property.branding.toolbar.program.tooltip"
+    />
+    <command
+     commandId="com.chipcraft_ic.ide.branding.commands.reset"
+     icon="res/buttons/actions/reset.gif"
+     label="%ide.property.branding.toolbar.reset.label"
+     tooltip="%ide.property.branding.toolbar.reset.tooltip"
+    />
+    <command
+     commandId="com.chipcraft_ic.ide.branding.commands.terminal"
+     icon="res/buttons/serial.png"
+     label="%ide.property.branding.toolbar.terminal.label"
+     tooltip="%ide.property.branding.toolbar.terminal.tooltip"
+    />
+   </toolbar>
+  </menuContribution>
+ </extension>
+
+ <extension
+  point="org.eclipse.ui.commands"
+ >
+  <category
+   name="%ide.property.branding.commands.category.name"
+   id="com.chipcraft_ic.ide.branding.commands.category"
+  />
+  <command
+   name="%ide.property.branding.toolbar.clean.label"
+   categoryId="com.chipcraft_ic.ide.branding.commands.category"
+   id="com.chipcraft_ic.ide.branding.commands.clean"
+   label="%ide.property.branding.toolbar.clean.label"
+  />
+  <command
+   name="%ide.property.branding.toolbar.build.label"
+   categoryId="com.chipcraft_ic.ide.branding.commands.category"
+   id="com.chipcraft_ic.ide.branding.commands.build"
+   label="%ide.property.branding.toolbar.build.label"
+  />
+  <command
+   name="%ide.property.branding.toolbar.rebuild.label"
+   categoryId="com.chipcraft_ic.ide.branding.commands.category"
+   id="com.chipcraft_ic.ide.branding.commands.rebuild"
+   label="%ide.property.branding.toolbar.rebuild.label"
+  />
+  <command
+   name="%ide.property.branding.toolbar.flash.label"
+   categoryId="com.chipcraft_ic.ide.branding.commands.category"
+   id="com.chipcraft_ic.ide.branding.commands.flash"
+   label="%ide.property.branding.toolbar.flash.label"
+  />
+  <command
+   name="%ide.property.branding.toolbar.program.label"
+   categoryId="com.chipcraft_ic.ide.branding.commands.category"
+   id="com.chipcraft_ic.ide.branding.commands.program"
+   label="%ide.property.branding.toolbar.program.label"
+  />
+  <command
+   name="%ide.property.branding.toolbar.reset.label"
+   categoryId="com.chipcraft_ic.ide.branding.commands.category"
+   id="com.chipcraft_ic.ide.branding.commands.reset"
+   label="%ide.property.branding.toolbar.reset.label"
+  />
+  <command
+   name="%ide.property.branding.toolbar.terminal.label"
+   categoryId="com.chipcraft_ic.ide.branding.commands.category"
+   id="com.chipcraft_ic.ide.branding.commands.terminal"
+   label="%ide.property.branding.toolbar.terminal.label"
+  />
+ </extension>
+
+</plugin>
+

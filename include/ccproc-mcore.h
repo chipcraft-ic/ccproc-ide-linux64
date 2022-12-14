@@ -2,8 +2,8 @@
 *
 * Copyright (c) 2017 ChipCraft Sp. z o.o. All rights reserved
 *
-* $Date: 2022-10-19 14:05:14 +0200 (śro, 19 paź 2022) $
-* $Revision: 897 $
+* $Date: 2022-12-12 15:09:34 +0100 (pon, 12 gru 2022) $
+* $Revision: 936 $
 *
 *  ----------------------------------------------------------------------
 * Redistribution and use in source and binary forms, with or without
@@ -72,12 +72,26 @@ typedef struct
     uint32_t INJECT_MASK_1;  /*!< Core 1 Error Inject Mask (FT-only)  */
     uint32_t DEADLOCK_MAX;   /*!< Core Deadlock Counter Max (FT-only) */
     uint32_t ERROR_PC;       /*!< Error Program Counter (FT-only)     */
+    uint32_t ERROR_STAT;     /*!< Error Statistics (FT-only)          */
+    uint32_t DCLS_CTRL;      /*!< Lockstep Control (FT-only)          */
 } multicore_regs_t;
 
 static volatile multicore_regs_t * const MCORE_PTR = (multicore_regs_t*)MCORE_BASE;
 
 #define MCORE_RUN_KEY   0x000000A5  /*!< Core Run Key        */
 #define MCORE_SHDN_KEY  0xA5000000  /*!< Core Shut Down Key  */
+
+/** Lockstep Control Register bit offsets */
+enum
+{
+    DCLS_CTRL_RNG_THRES_SHIFT   = 0,    /*!< Dummy Cycles RNG Threshold Offset  */
+};
+
+/** Lockstep Control Register masks */
+enum
+{
+    DCLS_CTRL_RNG_THRES_MASK    = 0x3F, /*!< Dummy Cycles RNG Threshold Mask    */
+};
 
 /** @} */
 

@@ -32,8 +32,8 @@
 # File Name : generic.mk
 # Author    : Rafal Harabien
 # ******************************************************************************
-# $Date: 2022-10-04 18:06:49 +0200 (wto, 04 paź 2022) $
-# $Revision: 895 $
+# $Date: 2022-12-09 14:30:40 +0100 (pią, 09 gru 2022) $
+# $Revision: 935 $
 #H******************************************************************************
 
 ifeq ($(OS),Windows_NT)
@@ -304,44 +304,30 @@ COMMON_OBJECTS := $(COMMON_OBJECTS:%.S=%.o)
 ALL_OBJECTS := $(COMMON_OBJECTS) $(OBJECTS)
 ALL_OBJECTS := $(START_OBJ) $(filter-out $(START_OBJ),$(ALL_OBJECTS))
 
-DEPS := $(ALL_OBJECTS:.o=.d)
-
 # buildrules(input_dir,output_dir)
 define buildrules
-$(1)/%.d: $(2)%.c
-	$(Q)$$(call mkdir_recursive,$$(dir $$@))
-	$(Q)$(CC) $$< $(CPPFLAGS) $(CFLAGS) $(EXTFLAGS) -M -MM -MP -MF $$@
-
-$(1)/%.d: $(2)%.cpp
-	$(Q)$$(call mkdir_recursive,$$(dir $$@))
-	$(Q)$(CXX) $$< $(CPPFLAGS) $(CXXFLAGS) -M -MM -MP -MF $$@
-
-$(1)/%.d: $(2)%.s
-	$(Q)$$(call mkdir_recursive,$$(dir $$@))
-	$(Q)$(CC) $$< $(ASFLAGS) $(EXTFLAGS) -M -MM -MP -MF $$@
-
-$(1)/%.d: $(2)%.S
-	$(Q)$$(call mkdir_recursive,$$(dir $$@))
-	$(Q)$(CC) $$< $(CPPFLAGS) $(ASFLAGS) $(EXTFLAGS) -M -MM -MP -MF $$@
-
 $(1)/%.o: $(2)%.c
 	$(ECHO) Compiling $$@
 	$(Q)$$(call mkdir_recursive,$$(dir $$@))
+	$(Q)$(CC) $$< $(CPPFLAGS) $(CFLAGS) $(EXTFLAGS) -M -MM -MP -MT $$@ -MF $$(@:.o=.d)
 	$(Q)$(CD) $$(<D) && $(CC) $$(<F) $(CPPFLAGS) $(CFLAGS) $(EXTFLAGS) -c -o $$@
 
 $(1)/%.o: $(2)%.cpp
 	$(ECHO) Compiling $$@
 	$(Q)$$(call mkdir_recursive,$$(dir $$@))
+	$(Q)$(CXX) $$< $(CPPFLAGS) $(CXXFLAGS) -M -MM -MP -MT $$@ -MF $$(@:.o=.d)
 	$(Q)$(CD) $$(<D) && $(CXX) $$(<F) $(CPPFLAGS) $(CXXFLAGS) -c -o $$@
 
 $(1)/%.o: $(2)%.s
 	$(ECHO) Compiling $$@
 	$(Q)$$(call mkdir_recursive,$$(dir $$@))
+	$(Q)$(CC) $$< $(ASFLAGS) $(EXTFLAGS) -M -MM -MP -MT $$@ -MF $$(@:.o=.d)
 	$(Q)$(CD) $$(<D) && $(CC) $$(<F) $(ASFLAGS) $(EXTFLAGS) -c -o $$@
 
 $(1)/%.o: $(2)%.S
 	$(ECHO) Compiling $$@
 	$(Q)$$(call mkdir_recursive,$$(dir $$@))
+	$(Q)$(CC) $$< $(CPPFLAGS) $(ASFLAGS) $(EXTFLAGS) -M -MM -MP -MT $$@ -MF $$(@:.o=.d)
 	$(Q)$(CD) $$(<D) && $(CC) $$(<F) $(CPPFLAGS) $(ASFLAGS) $(EXTFLAGS) -c -o $$@
 endef
 
@@ -357,7 +343,7 @@ $(eval $(call buildrules,$(COMMON_BUILDDIR),$(CHIPCRAFT_SDK_HOME)/boards/$(CHIPC
 $(eval $(call buildrules,$(COMMON_BUILDDIR),$(CHIPCRAFT_SDK_HOME)/drivers/))
 $(foreach dir,$(SOURCE_DIRS),$(eval $(call buildrules,$(BUILDDIR)/$(subst ../,,$(dir)),$(dir)/)))
 
-$(PROGBIN): $(ALL_OBJECTS) $(DEPS)
+$(PROGBIN): $(ALL_OBJECTS)
 	$(ECHO) Linking $@
 	$(Q)$(LINK) $(LDFLAGS) -o $@ $(ALL_OBJECTS) $(LDLIBS)
 	$(Q)$(SIZE) $@
