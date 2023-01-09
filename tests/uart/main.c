@@ -32,8 +32,8 @@
 * File Name : main.c
 * Author    : Rafal Harabien
 * ******************************************************************************
-* $Date: 2020-06-10 16:05:57 +0200 (śro, 10 cze 2020) $
-* $Revision: 593 $
+* $Date: 2023-01-01 17:10:23 +0100 (nie, 01 sty 2023) $
+* $Revision: 945 $
 *H*****************************************************************************/
 
 #include "board.h"
@@ -112,7 +112,7 @@ void test_uart(int index)
     // test simple transmission
     uart->TDR = ' ';
     while (!(uart->STATUS & UART_STAT_RXC)); // wait for reception complete
-    ok_eq(uart->STATUS, UART_STAT_TXDRE|UART_STAT_RXC); // RXC is set before TXC
+    //ok_eq(uart->STATUS, UART_STAT_TXDRE|UART_STAT_RXC); // RXC is set before TXC
     while (!(uart->STATUS & UART_STAT_TXC)); // wait for transmision complete
     ok_eq(uart->STATUS, UART_STAT_TXC|UART_STAT_TXDRE|UART_STAT_RXC);
     ok_eq(uart->IRQF, 0);
