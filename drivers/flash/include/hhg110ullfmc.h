@@ -32,8 +32,8 @@
  * File Name : hhg110ullfmc.h
  * Author    : Maciej Plasota
  * ******************************************************************************
- * $Date: 2020-10-30 11:47:46 +0100 (pią, 30 paź 2020) $
- * $Revision: 641 $
+ * $Date: 2024-06-04 16:15:15 +0200 (wto, 04 cze 2024) $
+ * $Revision: 1060 $
  *H*****************************************************************************/
 
 #ifndef _FLASH_H_
@@ -44,6 +44,7 @@
 #include <ccproc-amba-flash.h>
 #include <ccproc-csr.h>
 #include <stdbool.h>
+#include <stdint.h>
 
 /*! \brief flash driver status returned by some of the functions.
  */
@@ -51,6 +52,8 @@ typedef enum
 {
     READY = 0, BUSY, PROGRAMMING_ERROR, LOCK_ERROR, ARGUMENT_ERROR
 } flash_access_status_t;
+
+#define CHIPCRAFT_SDK_FLASH_ACCESS_STATUS_T_DEFINED 1
 
 /*! \brief Sets the frequency of HCLK clock.
  *
@@ -102,6 +105,31 @@ static inline void flash_disable_sequential_prefetch()
  *  \retval false sequential prefetch is disabled
  */
 static inline bool flash_is_sequential_prefetch_enabled()
+{
+    return ( (AMBA_FLASH_PTR->CTRL & FLASH_CTRL_SEQUENTIAL_PREFETCH) != 0);
+}
+
+/*! \brief Enable sequential prefetch.
+ */
+static inline void flash_sequential_prefetch_enable()
+{
+    AMBA_FLASH_PTR->CTRL |= FLASH_CTRL_SEQUENTIAL_PREFETCH;
+}
+
+/*! \brief Disable sequential prefetch.
+ */
+static inline void flash_sequential_prefetch_disable()
+{
+    AMBA_FLASH_PTR->CTRL &= ~FLASH_CTRL_SEQUENTIAL_PREFETCH;
+}
+
+/*! \brief Check if sequential prefetch is enabled.
+ *
+ * \return State of sequential prefetch configuration
+ *  \retval true sequential prefetch is enabled
+ *  \retval false sequential prefetch is disabled
+ */
+static inline bool flash_sequential_prefetch_state()
 {
     return ( (AMBA_FLASH_PTR->CTRL & FLASH_CTRL_SEQUENTIAL_PREFETCH) != 0);
 }
@@ -192,6 +220,23 @@ static inline void flash_issue_command(amba_flash_command_t command)
  *   \retval LOCK_ERROR operation should have been unlocked first.
  */
 flash_access_status_t flash_clear_page_buffer();
+
+/*! \brief Writes contents of the page buffer into program memory.
+ *
+ * \param offset Flash offset (needs to be aligned to page size).
+ *
+ * This function stores current contents of the page buffer in program memory.
+ * The write is done using APB indirect access.
+ *
+ * \return Status of operation.
+ *   \retval READY operation completed.
+ *   \retval PROGRAMMING_ERROR data could not be read from the buffer due to invalid parameters or asset being inaccessible.
+ *   \retval ARGUMENT_ERROR invalid function input parameter.
+ */
+flash_access_status_t
+flash_page_buffer_write(
+    void * const address
+);
 
 /*! \brief Writes single word of data into the page buffer.
  *
@@ -851,10 +896,73 @@ static inline uint32_t flash_get_mapping_of_interrupts()
 
 /*! \brief Reads data from main array.
  *
- * \param address Address to start readng from.
- * \param data Pointer to output data.
- * \param words Number of words to read.
+ * \param address Address to start reading from.
+ * \param data Pointer to output data buffer.
+ * \param bytes Number of bytes to read, must fit in output data buffer.
+ *
+ * The read access is done using AHB interface.
+ * The address is allowed to be unaligned.
+ *
+ * \return Status of operation.
+ *   \retval READY operation completed.
+ *   \retval ARGUMENT_ERROR invalid function input parameter.
  */
-void flash_read(uint32_t* address, uint32_t* data, uint32_t words);
+flash_access_status_t
+flash_read(
+    void const * const address,
+    uint8_t * const data,
+    size_t const bytes
+);
+
+/*! \brief Write data to main array.
+ *
+ * \param address Address to start writing from.
+ * \param data Pointer to output data buffer.
+ * \param bytes Number of bytes to write, must fit in output data buffer.
+ *
+ * The write access is done using AHB interface.
+ * The address is allowed to be unaligned.
+ *
+ * \return Status of operation.
+ *   \retval READY operation completed.
+ *   \retval PROGRAMMING_ERROR programming error occurred - data page could not be erased due to invalid parameters or asset being inaccessible (region locked).
+ *   \retval LOCK_ERROR operation should have been unlocked first.
+ *   \retval ARGUMENT_ERROR invalid function input parameter.
+ */
+flash_access_status_t
+flash_write(
+    void * const address,
+    uint8_t const * const data,
+    size_t const bytes
+);
+
+/*! \brief Ensure any buffered data chages are synchronized to flash.
+ *
+ * Function can be used to write any outstanding buffered writes to the flash.
+ * The status only applies complex operations (like program/erase) initiated through COMMAND interface.
+ *
+ * \return Status of flash controller.
+ *   \retval READY all operations completed. Ready for next command
+ *   \retval BUSY operation in progress.
+ *   \retval PROGRAMMING_ERROR programming error occurred (data could not be written to the buffer due to invalid parameters or asset being inaccessible).
+ *   \retval LOCK_ERROR command should have been unlocked first (by writing a password to LOCK register).
+ *   \retval ECC_CORR_ERROR ECC correctable error detected during flash data read.
+ *   \retval ECC_UNCORR_ERROR ECC uncorrectable error detected during flash data read - data read is invalid.
+ */
+flash_access_status_t
+flash_sync( void );
+
+/*! \brief Set minimum and maximum writes threshold for cache synchronization.
+ *
+ * TSMC40ULPFMC driver uses page buffer cache to optimize flash accesses. The
+ * cache is synchronized to theunderlying storage after some amount of writes
+ * were done. The threshold acts as a limit of writes after which cache must be
+ * synchronized. Minimum threshold value is the amount of writes after which the
+ * driver will try flushing cache if possible. Maximum threshold value is the
+ * amount of writes after which the driver shall always perform a flush, waiting
+ * until cache has been written to the underlying storage device.
+ */
+void
+flash_cache_threshold( uint8_t const min, uint8_t const max );
 
 #endif  // _FLASH_H_

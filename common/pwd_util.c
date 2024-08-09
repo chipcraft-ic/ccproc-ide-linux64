@@ -32,8 +32,8 @@
 * File Name : pwd_util.c
 * Author    : Krzysztof Marcinek
 * ******************************************************************************
-* $Date: 2019-06-25 14:24:19 +0200 (wto, 25 cze 2019) $
-* $Revision: 424 $
+* $Date: 2024-01-14 21:55:43 +0100 (nie, 14 sty 2024) $
+* $Revision: 1038 $
 *H*****************************************************************************/
 
 #include <ccproc.h>
@@ -55,6 +55,7 @@ int mainPowerDown(uint32_t flush_dcache)
     // flush data cache
     if (flush_dcache) DCACHE_PTR->FLUSH = 1;
     // flush write buffer
+    while (DCACHE_PTR->STCR & DCACHE_STCR_BUSY);
     MEMORY_BARRIER();
     // main core power down
     PWD_PTR->CTRL |= PWD_CTRL_MAINPWD | PWD_CTRL_KEY;
@@ -72,6 +73,7 @@ void corePowerDown(uint32_t flush_dcache)
     // flush data cache
     if (flush_dcache) DCACHE_PTR->FLUSH = 1;
     // flush write buffer
+    while (DCACHE_PTR->STCR & DCACHE_STCR_BUSY);
     MEMORY_BARRIER();
     // core power down
     PWD_PTR->CTRL |= PWD_CTRL_COREPWD | PWD_CTRL_KEY;
@@ -82,6 +84,7 @@ void corePowerDown(uint32_t flush_dcache)
 void systemPowerDown(void)
 {
     // flush write buffer
+    while (DCACHE_PTR->STCR & DCACHE_STCR_BUSY);
     MEMORY_BARRIER();
     // system power down
     PWD_PTR->CTRL |= PWD_CTRL_SYSPWD | PWD_CTRL_KEY;

@@ -32,8 +32,8 @@
 # File Name : startup.S
 # Author    : Rafal Harabien, Krzysztof Marcinek
 # ******************************************************************************
-# $Date: 2020-07-24 11:25:59 +0200 (pią, 24 lip 2020) $
-# $Revision: 617 $
+# $Date: 2024-02-01 10:30:21 +0100 (czw, 01 lut 2024) $
+# $Revision: 1040 $
 #H******************************************************************************
 
 # Useful defines:
@@ -163,15 +163,15 @@ common_start:
 cache_init:
   lui $t0, CACHE_CTRL_BASE              # Cache Controller address
   or $t1, $zero, CACHE_SC_MASK          # cache scrambling enable mask
-  sw $t1, ICACHE_STAT_OFFSET($t0)       # enable instruction cache scrambling
-  sw $t1, DCACHE_STAT_OFFSET($t0)       # enable data cache scrambling
+  sw $t1, ICACHE_STCR_OFFSET($t0)       # enable instruction cache scrambling
+  sw $t1, DCACHE_STCR_OFFSET($t0)       # enable data cache scrambling
   sw $zero, ICACHE_FLUSH_OFFSET($t0)    # flush instruction cache
   sw $zero, DCACHE_FLUSH_OFFSET($t0)    # flush data cache
   or $t1, $zero, CACHE_EN_MASK          # cache enable mask
   or $t1, $t1, CACHE_FT_MASK            # cache parity/ecc enable mask
   or $t1, $t1, CACHE_HE_MASK            # cache hard error enable mask
-  sw $t1, ICACHE_STAT_OFFSET($t0)       # enable instruction cache
-  sw $t1, DCACHE_STAT_OFFSET($t0)       # enable data cache
+  sw $t1, ICACHE_STCR_OFFSET($t0)       # enable instruction cache
+  sw $t1, DCACHE_STCR_OFFSET($t0)       # enable data cache
   la $gp, _gp                           # init global pointer
   lui $t3, CSR_CTRL_BASE                # System Controller base address
 #ifdef _STARTUP_STACK_IN_RAM
@@ -434,6 +434,18 @@ exception_handler:
 #ifndef _DONT_BREAK_ON_EXCEPTION
   break 0, BREAK_CODE                   # break to debug mode
 #endif
+
+  nop                                   # dummy insctructions for lockstep operation
+  nop                                   # in corner case where exception occures
+  nop                                   # immediately after previous one
+  nop                                   # because of presence of signature buffer
+  nop                                   # slave core can still be acknowledging
+  nop                                   # previous exception while master core
+  nop                                   # the current one
+  nop                                   # because of that the number of instructions
+  nop                                   # in exception handler should be greater
+  nop                                   # than the signature buffer
+
   mfc0 $k1, C0_EPC                      # get Return Address
   add $k1, 4                            # go to next instruction
   jr $k1

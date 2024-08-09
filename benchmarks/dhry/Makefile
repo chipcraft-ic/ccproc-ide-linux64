@@ -3,8 +3,7 @@
 PROGNAME   := dhry
 COMMON_DIR := $(CHIPCRAFT_SDK_HOME)/common
 
-DEFAULT_COMMON_SOURCES ?= board.c libc_multicore.c
-COMMON_SOURCES := syscalls.c uart.c
+COMMON_SOURCES := syscalls.c uart.c core_util.c crc-verification.c core.S
 
 ifndef RUNS_NUMBER
 	CPPFLAGS += -DRUNS_NUMBER=1000000

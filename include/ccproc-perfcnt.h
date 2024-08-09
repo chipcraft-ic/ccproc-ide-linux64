@@ -2,8 +2,8 @@
 *
 * Copyright (c) 2018 ChipCraft Sp. z o.o. All rights reserved
 *
-* $Date: 2019-10-21 09:43:30 +0200 (pon, 21 paź 2019) $
-* $Revision: 477 $
+* $Date: 2023-03-17 14:31:06 +0100 (pią, 17 mar 2023) $
+* $Revision: 954 $
 *
 *  ----------------------------------------------------------------------
 * Redistribution and use in source and binary forms, with or without
@@ -88,9 +88,7 @@ enum
 enum
 {
     PERFCNT_STAT_SRC_CORE   = 0x0,  /*!< Processor Clock Source       */
-    PERFCNT_STAT_SRC_L1E1   = 0x1,  /*!< GNSS L1/E1 Source            */
-    PERFCNT_STAT_SRC_L5E5   = 0x2,  /*!< GNSS L5/E5 Source            */
-    PERFCNT_STAT_SRC_L2E6   = 0x3,  /*!< GNSS L2/E6 Source            */
+    PERFCNT_STAT_SRC_AFE    = 0x1,  /*!< GNSS AFE Clock Source        */
     PERFCNT_STAT_SRC_VIRT   = 0x4,  /*!< GNSS Virtual Frontend Source */
 };
 

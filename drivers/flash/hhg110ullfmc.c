@@ -32,11 +32,65 @@
  * File Name : hhg110ullfmc.c
  * Author    : Maciej Plasota
  * ******************************************************************************
- * $Date: 2020-10-30 11:47:46 +0100 (pią, 30 paź 2020) $
- * $Revision: 641 $
+ * $Date: 2024-06-04 16:15:15 +0200 (wto, 04 cze 2024) $
+ * $Revision: 1060 $
  *H*****************************************************************************/
 
+#include <limits.h>
+#include <stddef.h>
+#include <stdint.h>
+
+#include <ccproc.h>
+#include <ccproc-dcache.h>
+
 #include "flash.h"
+
+/*
+ * We need to get the word that contains given (possibly unaligned) address.
+ * This means we should align down, by zeroing two least significant bits.
+ */
+#define WORD_ALIGN( address ) \
+    ( \
+        ( \
+            ( address ) \
+            | ( sizeof( uint32_t ) - 1U ) \
+        ) \
+            ^ \
+        ( sizeof( uint32_t ) - 1U ) \
+    )
+
+#define PAGE_ALIGN( address ) \
+    ( \
+        ( \
+            ( address ) \
+            | ( flash_get_page_size_in_bytes() - 1U ) \
+        ) \
+            ^ \
+        ( flash_get_page_size_in_bytes() - 1U ) \
+    )
+
+#define BYTE2WORD( byte, index ) \
+    ( uint32_t ) ( \
+        ( ( uint32_t ) ( byte ) ) \
+        << ( ( sizeof( uint32_t ) - 1U - ( index ) ) * CHAR_BIT ) \
+    )
+
+#define WORD2BYTE( word, index ) \
+	( uint8_t ) ( \
+		( ( uint32_t ) ( word ) ) \
+		>> ( ( sizeof( uint32_t ) - 1U - ( index ) ) * CHAR_BIT ) \
+	)
+
+#define CLEARBYTE( word, index ) \
+    { \
+        ( word ) |= BYTE2WORD( 0xFF, ( index ) ); \
+        ( word ) ^= BYTE2WORD( 0xFF, ( index ) ); \
+    }
+
+#define IS_PAGE_ALIGNED( ADDRESS ) \
+    ( \
+        0U == ( ADDRESS & ( flash_get_page_size_in_bytes() - 1U )) \
+    )
 
 /*! \brief Sets the frequency of HCLK clock.
  *
@@ -1003,14 +1057,533 @@ flash_access_status_t flash_lock_chip_erase()
 
 /*! \brief Reads data from main array.
  *
- * \param address Address to start read from.
- * \param data Pointer to output data.
- * \param words Number of words to read.
+ * \param address Address to start reading from.
+ * \param data Pointer to output data buffer.
+ * \param bytes Number of bytes to read, must fit in output data buffer.
+ *
+ * The read access is done using AHB interface.
+ * The address is allowed to be unaligned.
+ *
+ * \return Status of operation.
+ *   \retval READY operation completed.
+ *   \retval ARGUMENT_ERROR invalid function input parameter.
  */
-void flash_read(uint32_t* address, uint32_t* data, uint32_t words)
+flash_access_status_t
+flash_read(
+    void const * const address,
+    uint8_t * const data,
+    size_t const bytes
+)
 {
-    for (uint32_t i=0; i<words; i++)
-    {
-        data[i] = *(address+i);
+    flash_access_status_t result = ARGUMENT_ERROR;
+    if ( NULL == data ) {
+        goto failure_arguments;
     }
+
+    /*
+     * by setting end byte to last actually read we work around situation
+     * where one byte after is the first byte of a new word
+     * depending on position (first of new word or not), we would need to
+     * either not read a word or do read it, using branch
+     * if instead we use last read, we don't have such problem, because
+     * we always know we'll read the word including last byte
+     */
+    uintptr_t const uintptr_start = ( uintptr_t ) address;
+    uintptr_t const uintptr_end = uintptr_start + bytes - 1U;
+
+    /* TODO: check against flash size. */
+
+    /* just in case */
+    flash_loop_while_busy();
+
+    /* AHB operates on words, calculate first and last word to read */
+    uintptr_t const uintptr_start_word = WORD_ALIGN( uintptr_start );
+    /* last word containing last read byte */
+    uintptr_t const uintptr_end_word = WORD_ALIGN( uintptr_end );
+	/* where the first byte is in first word, between 0 and 3 */
+	size_t const uintptr_start_word_offset = uintptr_start - uintptr_start_word;
+	/* where the last byte is in last word, between 0 and 3 */
+	size_t const uintptr_end_word_offset = uintptr_end - uintptr_end_word;
+    /*
+     * difference_in_words == 0U: we stay within the same word
+     * else we need to get at least two different words
+     * ultimately we read (difference_in_words + 1) words
+     */
+    size_t const difference_in_words =
+        ( uintptr_end_word - uintptr_start_word ) / sizeof( uint32_t );
+    bool const manual_prefetch_control = ! flash_sequential_prefetch_state();
+
+    if ( manual_prefetch_control && ( 0U < difference_in_words )) {
+        flash_sequential_prefetch_enable();
+    }
+
+    /*
+     * Reading is done word-aligned so it's faster.
+     * Possible unaligned bytes in first and last words are handled separately.
+     */
+
+    uint32_t wordbuffer = 0U;
+    size_t buffer_index = 0U;
+
+	/*
+	 * handle first word:
+	 * copy bytes from uintptr_start_word_offset to either
+	 * end of word or uintptr_end_word_offset (inclusive)
+	 */
+	{
+		/* h/w translates into AHB access */
+		wordbuffer = *( ( uint32_t const * ) ( uintptr_start_word ) );
+		register size_t const last_byte_offset = /* will be read often */
+			(
+				( 0U == difference_in_words )
+					?
+						( uintptr_end_word_offset + 1U ) /* max 4 */
+					:
+						sizeof( uint32_t )
+			);
+		for (
+			size_t i = uintptr_start_word_offset;
+			i < last_byte_offset;
+			( ++i ), ( ++buffer_index )
+		) {
+			data[ buffer_index ] = WORD2BYTE( wordbuffer, i );
+		}
+	}
+
+	if ( 0U == difference_in_words ) {
+		goto skip; /* we're done */
+	}
+
+	/*
+	 * handle intermediate full words, only if > 2 words are read
+	 * note: words read == (difference_in_words + 1)
+	 * so if only two words are read, we won't enter this loop
+	 */
+	for (
+		size_t i = 1U;
+		i < difference_in_words;
+		( ++i ), ( buffer_index += sizeof( uint32_t ) )
+	) {
+		/* h/w translates into AHB access */
+		wordbuffer =
+			*(
+				( uint32_t const * ) (
+					uintptr_start_word + ( sizeof( uint32_t ) * i )
+				)
+			);
+		/* looks better unrolled */
+		data[ buffer_index + 0U ] = WORD2BYTE( wordbuffer, 0U );
+		data[ buffer_index + 1U ] = WORD2BYTE( wordbuffer, 1U );
+		data[ buffer_index + 2U ] = WORD2BYTE( wordbuffer, 2U );
+		data[ buffer_index + 3U ] = WORD2BYTE( wordbuffer, 3U );
+	}
+
+	/*
+	 * handle last word:
+	 * copy bytes from start of word to uintptr_end_word_offset
+	 */
+	{
+		/* h/w translates into AHB access */
+		wordbuffer = *( ( uint32_t const * ) ( uintptr_end_word ) );
+		for (
+			size_t i = 0U;
+			i < ( uintptr_end_word_offset + 1U ); /* so max 4 */
+			( ++i ), ( ++buffer_index )
+		) {
+			data[ buffer_index ] = WORD2BYTE( wordbuffer, i );
+		}
+	}
+
+
+    if ( manual_prefetch_control && ( 0U < difference_in_words )) {
+        flash_sequential_prefetch_disable();
+    }
+
+skip:
+    result = flash_check_status();
+
+failure_arguments:
+    return result;
 }
+
+/*! \brief Writes contents of the page buffer into program memory.
+ *
+ * \param offset Flash offset (needs to be aligned to page size).
+ *
+ * This function stores current contents of the page buffer in program memory.
+ * The write is done using APB indirect access.
+ *
+ * \return Status of operation.
+ *   \retval READY operation completed.
+ *   \retval PROGRAMMING_ERROR data could not be read from the buffer due to invalid parameters or asset being inaccessible.
+ *   \retval ARGUMENT_ERROR invalid function input parameter.
+ */
+flash_access_status_t
+flash_page_buffer_write(
+    void * const address
+)
+{
+    flash_access_status_t result = ARGUMENT_ERROR;
+    uint32_t const offset = ( uintptr_t ) address;
+    if ( ! IS_PAGE_ALIGNED( offset )) {
+        goto failure_arguments;
+    }
+
+    AMBA_FLASH_PTR->ADDRESS = offset;
+
+    flash_unlock_command();
+    flash_issue_command( FLASH_COMMAND_WRITE_PAGE );
+    result = flash_check_status();
+
+failure_arguments:
+    return result;
+}
+
+static size_t
+memcpy_hhg110ullfmc(
+    uintptr_t const start,
+    uintptr_t const end,
+    uint8_t const * const src
+) {
+    size_t index = 0U;
+
+    for (
+        uintptr_t i = start;
+        i < end;
+        ( i += sizeof( uint32_t )), ( index += sizeof( uint32_t ))
+    ) {
+        /* we have to read byte by byte, because src may not be aligned */
+        register uint32_t const wordbuffer =
+            0U
+            | BYTE2WORD( src[ index + 0U ], 0U )
+            | BYTE2WORD( src[ index + 1U ], 1U )
+            | BYTE2WORD( src[ index + 2U ], 2U )
+            | BYTE2WORD( src[ index + 3U ], 3U )
+            ;
+        uint32_t volatile * const ahb = ( uint32_t volatile * ) ( i );
+        *ahb = wordbuffer;
+    }
+
+    return index;
+}
+
+/*! \brief Write data to main array.
+ *
+ * \param address Address to start writing from.
+ * \param data Pointer to output data buffer.
+ * \param bytes Number of bytes to write, must fit in output data buffer.
+ *
+ * The write access is done using AHB interface.
+ * The address is allowed to be unaligned.
+ *
+ * \return Status of operation.
+ *   \retval READY operation completed.
+ *   \retval PROGRAMMING_ERROR programming error occurred - data page could not be erased due to invalid parameters or asset being inaccessible (region locked).
+ *   \retval LOCK_ERROR operation should have been unlocked first.
+ *   \retval ARGUMENT_ERROR invalid function input parameter.
+ */
+flash_access_status_t
+flash_write(
+    void * const address,
+    uint8_t const * const data,
+    size_t const bytes
+)
+{
+    flash_access_status_t result = ARGUMENT_ERROR;
+    if ( NULL == data ) {
+        goto failure_arguments;
+    }
+
+    size_t const page_size = flash_get_page_size_in_bytes();
+    /*
+     * by setting end byte to last actually written we work around situation
+     * where one byte after is the first byte of a new word
+     * depending on position (first of new word or not), we would need to
+     * either not write a word or do write it, using branch
+     * if instead we use last write, we don't have such problem, because
+     * we always know we'll write the word including last byte
+     */
+    uintptr_t const uintptr_start = ( uintptr_t ) address;
+    uintptr_t const uintptr_end = uintptr_start + bytes - 1U;
+
+    /* TODO: check against flash size. */
+
+    /* just in case */
+    flash_loop_while_busy();
+
+    /* writes operate on pages, calculate first and last page to write */
+    uintptr_t const uintptr_start_page = PAGE_ALIGN( uintptr_start );
+    /* last page containing last write byte */
+    uintptr_t const uintptr_end_page = PAGE_ALIGN( uintptr_end );
+    /*
+     * AHB operates on words, calculate first and last words
+     * to write in page, between 0 and ( page size / sizeof( uint32_t ) - 1
+     */
+    uintptr_t const uintptr_start_word = WORD_ALIGN( uintptr_start);
+    uintptr_t const uintptr_end_word = WORD_ALIGN( uintptr_end );
+    /* where the first byte is in first word, between 0 and 3 */
+    size_t const uintptr_start_page_first_word_offset =
+        ( uintptr_start - uintptr_start_word );
+    /* where the last byte is in last word, between 0 and 3 */
+    size_t const uintptr_end_page_last_word_offset =
+        ( uintptr_end - uintptr_end_word );
+    /*
+     * difference_in_pages == 0U: we stay within the same page
+     * else we need to get at least two different pages
+     * ultimately we write (difference_in_pages + 1) pages
+     */
+    size_t const difference_in_pages =
+        ( uintptr_end_page - uintptr_start_page ) / page_size;
+    size_t const difference_in_words =
+        ( uintptr_end_word - uintptr_start_word ) / ( sizeof( uint32_t ));
+
+    uint32_t wordbuffer = 0U;
+    size_t buffer_index = 0U;
+
+    /*
+     * handle first page:
+     * 1. read words from start of page to
+     *    uintptr_start_page_first_word_offset (exclusive), copy them to
+     *    page buffer via AHB write
+     * 2. read uintptr_start_first_page_word_offset word into variable
+     * 3. modify bytes from uintptr_start_page_first_word_offset to either:
+     *    uintptr_end_page_last_word_offset or end of word, depending on bytes
+     *    to write
+     * 4. write modified word into page buffer via AHB
+     * 5. write words from buffer to page buffer via AHB, until end of page
+     *    buffer
+     * 6. commit page buffer
+     */
+    {
+        flash_clear_page_buffer();
+        flash_loop_while_busy();
+
+        /* copy words from flash to page buffer without modification */
+        ( void ) memcpy_hhg110ullfmc(
+            uintptr_start_page,
+            uintptr_start_word,
+            ( uint8_t const * ) uintptr_start_page
+        );
+        /* get word that could be modified */
+        {
+            uint32_t volatile * const ahb =
+                ( uint32_t volatile * ) ( uintptr_start_word );
+            /* AHB interface reads from flash memory cells */
+            /* modify the word */
+            {
+                register size_t last_byte_offset = /* will be read often */
+                    (
+                        ( 0U == difference_in_pages )
+                        && ( 0U == difference_in_words )
+                    )
+                        ?
+                            (
+                                uintptr_end_page_last_word_offset
+                                + 1U
+                            )
+                        :
+                            sizeof( uint32_t )
+                        ;
+                for (
+                    /* iterate through bytes in a word in a page */
+                    size_t i = uintptr_start_page_first_word_offset;
+                    i < last_byte_offset;
+                    ( ++i ), ( ++buffer_index )
+                ) {
+                    CLEARBYTE( wordbuffer, i );
+                    /* modify wordbuffer from buffer */
+                    wordbuffer |=
+                        BYTE2WORD(
+                            data[ buffer_index ],
+                            i
+                        );
+                }
+            }
+            /* write modified word to page buffer */
+            *ahb = wordbuffer;
+        }
+
+        if ( 0U == difference_in_words ) {
+            goto handle_end_page;
+        }
+
+        /* copy words from given bufffer to page buffer until it fills */
+        {
+            uintptr_t const last_word =
+                (
+                    ( 0U == difference_in_pages )
+                        ?
+                            /* same page */
+                            uintptr_end_word
+                        :
+                            /* last word in this page */
+                            ( uintptr_start_page + page_size )
+                );
+            buffer_index +=
+                memcpy_hhg110ullfmc(
+                    ( uintptr_start_word + sizeof( uint32_t )),
+                    last_word,
+                    &( data[ buffer_index ] )
+                );
+        }
+
+        if ( 0U == difference_in_pages ) {
+            goto handle_end_word;
+        }
+
+        /* we've written full page buffer */
+        result =
+            flash_erase_page(( uint32_t * ) uintptr_start_page );
+        if ( BUSY < result ) {
+            goto failure_page_buffer_write;
+        }
+        flash_loop_while_busy();
+        result =
+            flash_page_buffer_write(( void * ) uintptr_start_page );
+        if ( BUSY < result ) {
+            goto failure_page_buffer_write;
+        }
+        flash_loop_while_busy();
+    }
+
+    /*
+     * handle intermediate full pages, only if > 2 pages are written:
+     * 1. read words from buffer to page buffer untill full page is ready
+     * 2. commit page
+     * note: pages written == (difference_in_pages + 1)
+     * so if only two pages are written, we won't enter this loop
+     */
+    for (
+        size_t i = 1U; /* iterate through pages */
+        i < difference_in_pages;
+        ++i
+    ) {
+        uintptr_t const page_to_handle =
+            uintptr_start_page + ( page_size * i );
+        flash_clear_page_buffer();
+        flash_loop_while_busy();
+
+        buffer_index +=
+            memcpy_hhg110ullfmc(
+                page_to_handle,
+                ( page_to_handle + page_size ),
+                &( data[ buffer_index ] )
+            );
+
+        result =
+            flash_erase_page(( uint32_t * ) page_to_handle );
+        if ( BUSY < result ) {
+            goto failure_page_buffer_write;
+        }
+        flash_loop_while_busy();
+        result =
+            flash_page_buffer_write(( void * ) page_to_handle );
+        if ( BUSY < result ) {
+            goto failure_page_buffer_write;
+        }
+        flash_loop_while_busy();
+    }
+
+    /*
+     * handle last page:
+     * 1. write words from buffer to page buffer, starting from first word in
+     *    page to uintptr_end_page_word_offset (exclusive)
+     * 2. read uintptr_end_page_word_offset word into variable
+     * 3. modify bytes from start of word, until
+     *    uintptr_end_page_last_word_offset in the variable
+     * 4. write modified word into page buffer
+     * 5. read words from uintptr_end_page_word_offset (exclusive) to end of
+     *    page, copy them to page buffer
+     * 6. commit page buffer
+     */
+    {
+        flash_clear_page_buffer();
+        flash_loop_while_busy();
+
+        buffer_index +=
+            memcpy_hhg110ullfmc(
+                uintptr_end_page,
+                uintptr_end_word,
+                &( data[ buffer_index ] )
+            );
+
+handle_end_word:
+        /* get word that will be modified */
+        {
+            uint32_t volatile * const ahb =
+                ( uint32_t volatile * ) uintptr_end_word;
+            /* AHB interface reads from flash memory cells */
+            /* modify the word */
+            for (
+                /* iterate through bytes in a word in a page */
+                size_t i = 0U;
+                i < uintptr_end_page_last_word_offset + 1U;
+                ( ++i ), ( ++buffer_index )
+            ) {
+                CLEARBYTE( wordbuffer, i);
+                /* modify wordbuffer from buffer */
+                wordbuffer |=
+                    BYTE2WORD(
+                        data[ buffer_index ],
+                        i
+                    );
+            }
+            /* write modified word to page buffer */
+            *ahb = wordbuffer;
+        }
+
+handle_end_page:
+        ( void ) memcpy_hhg110ullfmc(
+            ( uintptr_end_word + sizeof( uint32_t )),
+            ( uintptr_end_page + page_size ),
+            ( uint8_t const * )( uintptr_end_word + sizeof( uint32_t ))
+        );
+
+        result =
+            flash_erase_page(( uint32_t * ) uintptr_end_page );
+        if ( BUSY < result ) {
+            goto failure_page_buffer_write;
+        }
+        flash_loop_while_busy();
+        result =
+            flash_page_buffer_write(( void * ) uintptr_end_page );
+        if ( BUSY < result ) {
+            goto failure_page_buffer_write;
+        }
+        flash_loop_while_busy();
+    }
+
+    /*
+     * Need to flush data cache,
+     * as it may not see updated values
+     * in AHB address space
+     * TODO: find less magicky way to do it
+     */
+    {
+        DCACHE_PTR->FLUSH = 1U;
+    }
+
+    result = flash_check_status();
+
+failure_page_buffer_write:
+failure_arguments:
+    return result;
+}
+
+/* Dummy function to maintain compatibility with CCRV32 API. */
+flash_access_status_t
+flash_sync( void )
+{
+    static flash_access_status_t const result = READY;
+    /* Do nothing. */
+    return result;
+}
+/* Dummy function to maintain compatibility with CCRV32 API. */
+void
+flash_cache_threshold( uint8_t const min, uint8_t const max )
+{
+    ( void ) min;
+    ( void ) max;
+    /* Do nothing. */
+}
+

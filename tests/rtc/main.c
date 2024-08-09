@@ -32,8 +32,8 @@
 * File Name : main.c
 * Author    : Krzysztof Marcinek
 * ******************************************************************************
-* $Date: 2021-10-30 22:10:12 +0200 (sob, 30 paź 2021) $
-* $Revision: 781 $
+* $Date: 2023-02-17 10:33:47 +0100 (pią, 17 lut 2023) $
+* $Revision: 951 $
 *H*****************************************************************************/
 
 #include "board.h"
@@ -84,7 +84,7 @@ static void testRTCpwd(void){
 }
 
 void RTCRAMtest(void){
-    uint32_t ram_size = 1<<(RTC_GET_RAM_SIZE(RTCread((uint32_t*)&AMBA_RTC_PTR->STATUS))-2);
+    uint32_t ram_size = RTC_GET_RAM_SIZE(RTCread((uint32_t*)&AMBA_RTC_PTR->STATUS));
     if (ram_size > 0)
         ram_size = 1<<(ram_size-2);
     if (ram_size > RAM_MEM_MAX)

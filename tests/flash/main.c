@@ -32,13 +32,14 @@
  * File Name : main.c
  * Author    : Maciej Plasota
  * ******************************************************************************
- * $Date: 2019-10-21 09:43:30 +0200 (pon, 21 paź 2019) $
- * $Revision: 477 $
+ * $Date: 2023-09-18 16:45:07 +0200 (pon, 18 wrz 2023) $
+ * $Revision: 999 $
  *H*****************************************************************************/
 
 #include "board.h"
 #include <ccproc.h>
 #include <ccproc-amba.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
@@ -235,8 +236,8 @@ static void testFLASH_MemoryWriteRead()
             }
             else
             {
-//                printf(" Page");
-                status = flash_write_page(dataPointer, testVector, PAGE_SIZE_BYTES / 4);
+//                printf(" Generic write");
+                status = flash_write(dataPointer, (uint8_t const *) testVector, PAGE_SIZE_BYTES);
                 status = util_waitForReady(status);
             }
 //            printf("\n - Verify");
@@ -269,8 +270,8 @@ static void testFLASH_MemoryLock()
         status = flash_erase_page(dataPointer);
         status = util_waitForReady(status);
 
-//        printf("\n - Write Page");
-        status = flash_write_page(dataPointer, testVector, PAGE_SIZE_BYTES / 4);
+//        printf("\n - Write");
+        status = flash_write(dataPointer, (uint8_t const *) testVector, PAGE_SIZE_BYTES);
         status = util_waitForReady(status);
 
 //        printf("\n - Verify");
@@ -295,8 +296,8 @@ static void testFLASH_MemoryLock()
             ok_eq(dataPointer[idx_col], testVector[idx_col]);
         }
 
-//        printf("\n - Locked Write Page");
-        status = flash_write_page(dataPointer, testVector, PAGE_SIZE_BYTES / 4);
+//        printf("\n - Locked Write");
+        status = flash_write(dataPointer, (uint8_t const *) testVector, PAGE_SIZE_BYTES);
         status = util_waitForProgrammingError(status);
     }
 }

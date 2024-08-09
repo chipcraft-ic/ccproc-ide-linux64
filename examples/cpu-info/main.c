@@ -32,8 +32,8 @@
 * File Name : main.c
 * Author    : Krzysztof Marcinek
 * ******************************************************************************
-* $Date: 2022-01-10 10:09:36 +0100 (pon, 10 sty 2022) $
-* $Revision: 808 $
+* $Date: 2024-04-08 13:38:29 +0200 (pon, 08 kwi 2024) $
+* $Revision: 1047 $
 *H*****************************************************************************/
 
 #include "board.h"
@@ -66,20 +66,12 @@ int main(void)
     if (cpu_info_2 & CPU_ARCH_MASK) {
         printf("unknown\n");
     }
-    else if (cpu_info_1 & CPU_MI16) {
-        if (cpu_info_2 & CPU_DCLS) {
-            printf("CC250-C\n");
-        }
-        else {
-            printf("CC150-C\n");
-        }
-    }
     else {
         if (cpu_info_2 & CPU_DCLS) {
-            printf("CC200-C\n");
+            printf("MI32HR\n");
         }
         else {
-            printf("CC100-C\n");
+            printf("MI32ST\n");
         }
     }
     printf("INFO: User mode:                ");

@@ -32,8 +32,8 @@
 # File Name : specialreg.h
 # Author    : Krzysztof Marcinek
 # ******************************************************************************
-# $Date: 2020-07-13 19:33:44 +0200 (pon, 13 lip 2020) $
-# $Revision: 610 $
+# $Date: 2024-01-14 21:55:43 +0100 (nie, 14 sty 2024) $
+# $Revision: 1038 $
 #H******************************************************************************
 
 #ifndef _SPECIALREG_H_
@@ -81,9 +81,9 @@
  * Cache Controller Utils
  */
 #define CACHE_CTRL_BASE         0x3007       /* Upper base address of Cache Controller (I&D)     */
-#define ICACHE_STAT_OFFSET      0x0000       /* Instruction Cache Controller Status offset       */
+#define ICACHE_STCR_OFFSET      0x0000       /* Instruction Cache Controller Status offset       */
 #define ICACHE_FLUSH_OFFSET     0x0004       /* Instruction Cache Controller Flush offset        */
-#define DCACHE_STAT_OFFSET      0x2000       /* Data Cache Controller Status offset              */
+#define DCACHE_STCR_OFFSET      0x2000       /* Data Cache Controller Status offset              */
 #define DCACHE_FLUSH_OFFSET     0x2004       /* Data Cache Controller Flush offset               */
 #define DCACHE_BUSY_MASK        0x0004       /* Data Cache Controller busy bit mask              */
 

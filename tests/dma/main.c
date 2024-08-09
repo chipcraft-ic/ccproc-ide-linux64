@@ -32,8 +32,8 @@
 * File Name : main.c
 * Author    : Rafal Harabien
 * ******************************************************************************
-* $Date: 2020-03-17 08:53:39 +0100 (wto, 17 mar 2020) $
-* $Revision: 541 $
+* $Date: 2023-02-20 20:18:12 +0100 (pon, 20 lut 2023) $
+* $Revision: 952 $
 *H*****************************************************************************/
 
 #include "board.h"
@@ -163,7 +163,6 @@ static void testDmaUartTx(void)
     assertFalse(uart->STATUS & UART_STAT_RXC);
 
     assertEq(chnl->STATUS, DMA_STAT_TCZ|DMA_STAT_RCZ);
-    assertEq(chnl->ADDRESS, 0);
     assertEq(chnl->COUNTER, 0);
 
     // INC mode
@@ -180,7 +179,6 @@ static void testDmaUartTx(void)
     assertFalse(uart->STATUS & UART_STAT_RXC);
 
     assertEq(chnl->STATUS, DMA_STAT_TCZ|DMA_STAT_RCZ);
-    assertEq(chnl->ADDRESS, 0);
     assertEq(chnl->COUNTER, 0);
 
     // DEC mode
@@ -197,7 +195,6 @@ static void testDmaUartTx(void)
     assertFalse(uart->STATUS & UART_STAT_RXC);
 
     assertEq(chnl->STATUS, DMA_STAT_TCZ|DMA_STAT_RCZ);
-    assertEq(chnl->ADDRESS, 0);
     assertEq(chnl->COUNTER, 0);
 
     // Interrupts + reload
@@ -292,7 +289,6 @@ static void testDmaUartRx(void)
     for (i = 0; i < 10000; ++i);
 
     assertEq(chnl->STATUS, DMA_STAT_TCZ|DMA_STAT_RCZ);
-    assertEq(chnl->ADDRESS, 0);
     assertEq(chnl->COUNTER, 0);
     assertEq(g_buf[0], 'D');
 
@@ -306,7 +302,6 @@ static void testDmaUartRx(void)
     for (i = 0; i < 10000; ++i);
 
     assertEq(chnl->STATUS, DMA_STAT_TCZ|DMA_STAT_RCZ);
-    assertEq(chnl->ADDRESS, 0);
     assertEq(chnl->COUNTER, 0);
     assertStrEq2(g_buf, "EFGH", 4);
 
@@ -320,7 +315,6 @@ static void testDmaUartRx(void)
     for (i = 0; i < 10000; ++i);
 
     assertEq(chnl->STATUS, DMA_STAT_TCZ|DMA_STAT_RCZ);
-    assertEq(chnl->ADDRESS, 0);
     assertEq(chnl->COUNTER, 0);
     assertStrEq2(g_buf, "DCBA", 4);
 

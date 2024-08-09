@@ -676,6 +676,11 @@
               <bitRange>[5:5]</bitRange>
             </field>
             <field>
+              <name>UBE</name>
+              <description>User Mode Big Endianess</description>
+              <bitRange>[6:6]</bitRange>
+            </field>
+            <field>
               <name>MPIE</name>
               <description>Machine Previous Interrupt Enable</description>
               <bitRange>[7:7]</bitRange>
@@ -797,6 +802,24 @@
               <name>SD</name>
               <description>Some Dirty</description>
               <bitRange>[31:31]</bitRange>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>MSTATUSH</name>
+          <description>Additional Machine Status Register</description>
+          <addressOffset>0xC10</addressOffset>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>SBE</name>
+              <description>Supervisor Mode Big Endianess</description>
+              <bitRange>[4:4]</bitRange>
+            </field>
+            <field>
+              <name>MBE</name>
+              <description>Machine Mode Big Endianess</description>
+              <bitRange>[5:5]</bitRange>
             </field>
           </fields>
         </register>
@@ -1469,12 +1492,12 @@
           <fields>
             <field>
               <name>IMSIZE</name>
-              <description>Instruction Memory Size</description>
+              <description>Instruction Memory Bus Address Size</description>
               <bitRange>[4:0]</bitRange>
             </field>
             <field>
               <name>DMSIZE</name>
-              <description>Data Memory Size</description>
+              <description>Data Memory Bus Address Size</description>
               <bitRange>[9:5]</bitRange>
             </field>
             <field>
@@ -1685,11 +1708,6 @@
               <bitRange>[3:3]</bitRange>
             </field>
             <field>
-              <name>DCLS</name>
-              <description>Dual-core Lockstep</description>
-              <bitRange>[3:3]</bitRange>
-            </field>
-            <field>
               <name>GNSS_BANKS</name>
               <description>GNSS Banks Number</description>
               <bitRange>[7:4]</bitRange>
@@ -1754,6 +1772,11 @@
               <name>BPREDDIS</name>
               <description>Disable Dynamic Branch Prediction</description>
               <bitRange>[8:8]</bitRange>
+            </field>
+            <field>
+              <name>NMIDIS</name>
+              <description>Disable NMI</description>
+              <bitRange>[9:9]</bitRange>
             </field>
             <field>
               <name>CORE_ID</name>
@@ -1894,11 +1917,11 @@
                   <value>0x0</value>
                 </enumeratedValue>
                 <enumeratedValue>
-                  <name>L1E1</name>
-                  <description>GNSS L1/E1 RF AFE</description>
+                  <name>AFE</name>
+                  <description>GNSS AFE Clock</description>
                   <value>0x1</value>
                 </enumeratedValue>
-                <enumeratedValue>
+                <!--<enumeratedValue>
                   <name>L5E5a</name>
                   <description>GNSS L5/E5a RF AFE</description>
                   <value>0x2</value>
@@ -1917,16 +1940,21 @@
                   <name>E6</name>
                   <description>GNSS E6 RF AFE</description>
                   <value>0x5</value>
-                </enumeratedValue>
+                </enumeratedValue>-->
                 <enumeratedValue>
-                  <name>AUX0</name>
-                  <description>GNSS AUX0 RF AFE</description>
+                  <name>AUX</name>
+                  <description>GNSS AUX Clock</description>
                   <value>0xA</value>
                 </enumeratedValue>
-                <enumeratedValue>
+                <!--<enumeratedValue>
                   <name>AUX1</name>
                   <description>GNSS AUX1 RF AFE</description>
                   <value>0xB</value>
+                </enumeratedValue>-->
+                <enumeratedValue>
+                  <name>VIRT</name>
+                  <description>GNSS Virtual Clock</description>
+                  <value>0xF</value>
                 </enumeratedValue>
               </enumeratedValues>
             </field>
@@ -2223,11 +2251,11 @@
       </addressBlock>
       <registers>
         <register>
-          <name>STATUS</name>
-          <description>Status Register</description>
+          <name>STCR</name>
+          <description>Status and Control Register</description>
           <addressOffset>0x0</addressOffset>
           <access>read-write</access>
-          <!-- GNSS Controller Status Register Flags -->
+          <!-- GNSS Controller Status and Control Register Flags -->
           <fields>
             <field>
               <name>L1E1</name>
@@ -2676,8 +2704,8 @@
       </addressBlock>
       <registers>
         <register>
-          <name>STATUS</name>
-          <description>Status Register</description>
+          <name>STCR</name>
+          <description>Status and Control Register</description>
           <addressOffset>0x0</addressOffset>
           <access>read-write</access>
           <fields>
@@ -2827,8 +2855,8 @@
       </addressBlock>
       <registers>
         <register>
-          <name>STATUS</name>
-          <description>Control Register</description>
+          <name>STCR</name>
+          <description>Status and Control Register</description>
           <addressOffset>0x0</addressOffset>
           <access>read-write</access>
           <fields>
@@ -14382,8 +14410,9 @@
     </peripheral>
     <!-- Acquisition Engine -->
     <peripheral>
-      <name>ACQENG</name>
+      <name>ACQENG0</name>
       <description>Acquisition Engine</description>
+      <groupName>ACQENG</groupName>
       <baseAddress>0xE2100000</baseAddress>
       <addressBlock>
         <offset>0</offset>
@@ -103187,7 +103216,7 @@
             </field>
             <field>
               <name>RM</name>
-              <description>Read Margin., '0' - VDDMIN, '1' - SLOW, '2' - DEFAULT, '3' &#x2013; FAST</description>
+              <description>Read Margin., '0' - VDDMIN, '1' - SLOW, '2' - DEFAULT, '3' - FAST</description>
               <bitRange>[3:0]</bitRange>
               <access>read-write</access>
             </field>
@@ -103237,7 +103266,7 @@
             </field>
             <field>
               <name>RC_RTC_VAL_SRC</name>
-              <description>Select source of RC oscillator frequency trimming value, '0' &#x2013; Flash, '1' &#x2013; configuration register</description>
+              <description>Select source of RC oscillator frequency trimming value, '0' - Flash, '1' - configuration register</description>
               <bitRange>[10:10]</bitRange>
               <access>read-write</access>
             </field>
@@ -103286,7 +103315,7 @@
             </field>
             <field>
               <name>RC_CORE_VAL_SRC</name>
-              <description>Select source of RC oscillator frequency trimming value, '0' &#x2013; Flash, '1' &#x2013; configuration register</description>
+              <description>Select source of RC oscillator frequency trimming value, '0' - Flash, '1' - configuration register</description>
               <bitRange>[10:10]</bitRange>
               <access>read-write</access>
             </field>
@@ -103445,7 +103474,7 @@
             </field>
             <field>
               <name>GNSS_OUT_BAND</name>
-              <description>Config ADC Test Output Band., '0' - L1 band, '1' &#x2013; L25 band</description>
+              <description>Config ADC Test Output Band., '0' - L1 band, '1' - L25 band</description>
               <bitRange>[2:2]</bitRange>
               <access>read-write</access>
             </field>
@@ -103482,13 +103511,13 @@
             </field>
             <field>
               <name>ADC_CLK_DIV</name>
-              <description>PLL1 division coefficient control of adc clock frequency divider, '0' &#x2013; divided by 6, '1' &#x2013; divided by 8</description>
+              <description>PLL1 division coefficient control of adc clock frequency divider, '0' - divided by 6, '1' - divided by 8</description>
               <bitRange>[26:26]</bitRange>
               <access>read-write</access>
             </field>
             <field>
               <name>LOPCB_EN</name>
-              <description>PLL1 allow extarnal LO signal, '1' - PLL1 external LO enabled, '0' PLL1 external LO disabled</description>
+              <description>PLL1 allow extarnal LO signal, '1' - PLL1 external LO enabled, '0' - PLL1 external LO disabled</description>
               <bitRange>[25:25]</bitRange>
               <access>read-write</access>
             </field>
@@ -103629,7 +103658,7 @@
             </field>
             <field>
               <name>AMP_LOW</name>
-              <description>PLL1 DCO amplitude status, '1' &#x2013; amplitude low</description>
+              <description>PLL1 DCO amplitude status, '1' - amplitude low</description>
               <bitRange>[19:19]</bitRange>
               <access>read-write</access>
             </field>
@@ -103666,13 +103695,13 @@
             </field>
             <field>
               <name>ADC_CLK_DIV</name>
-              <description>PLL25 division coefficient control of adc clock frequency divider, '0' &#x2013; divided by 6, '1' &#x2013; divided by 8</description>
+              <description>PLL25 division coefficient control of adc clock frequency divider, '0' - divided by 6, '1' - divided by 8</description>
               <bitRange>[26:26]</bitRange>
               <access>read-write</access>
             </field>
             <field>
               <name>LOPCB_EN</name>
-              <description>PLL25 allow extarnal LO signal, '1' - PLL1 external LO enabled, '0' PLL1 external LO disabled</description>
+              <description>PLL25 allow extarnal LO signal, '1' - PLL1 external LO enabled, '0' - PLL1 external LO disabled</description>
               <bitRange>[25:25]</bitRange>
               <access>read-write</access>
             </field>
@@ -103813,7 +103842,7 @@
             </field>
             <field>
               <name>AMP_LOW</name>
-              <description>PLL25 DCO amplitude status, '1' &#x2013; amplitude low</description>
+              <description>PLL25 DCO amplitude status, '1' - amplitude low</description>
               <bitRange>[20:20]</bitRange>
               <access>read-write</access>
             </field>
@@ -104039,7 +104068,7 @@
             </field>
             <field>
               <name>CLK_SEL</name>
-              <description>IF1 clock source selection, '00' &#x2013; PLL1 output clock (PLL1 output frequency divided by 24), '01' &#x2013; PLL5 output clock (PLL5 output frequency divided by 18), '10' &#x2013; XTAL, '11 &#x2013; XTAL</description>
+              <description>IF1 clock source selection, '00' - PLL1 output clock (PLL1 output frequency divided by 24), '01' - PLL5 output clock (PLL5 output frequency divided by 18), '10' - XTAL, '11' - XTAL</description>
               <bitRange>[7:6]</bitRange>
               <access>read-write</access>
             </field>
@@ -104088,13 +104117,13 @@
             </field>
             <field>
               <name>CLK_SEL</name>
-              <description>IF1 clock source selection, '00' &#x2013; PLL1 output clock (PLL1 output frequency divided by 24), '01' &#x2013; PLL5 output clock (PLL5 output frequency divided by 18), '10' &#x2013; XTAL, '11 &#x2013; XTAL</description>
+              <description>IF25 clock source selection, '00' - PLL1 output clock (PLL1 output frequency divided by 24), '01' - PLL5 output clock (PLL5 output frequency divided by 18), '10' - XTAL, '11' - XTAL</description>
               <bitRange>[7:6]</bitRange>
               <access>read-write</access>
             </field>
             <field>
               <name>CLK_CONF</name>
-              <description>IF1 clock frequency control, IF1_FREQ = CLK_SRC ? PLL1_OUT_FREQ/24/POWER(2,CLK_CONF) : PLL5_OUT_FREQ/18/POWER(2,CLK_CONF)</description>
+              <description>IF25 clock frequency control, IF1_FREQ = CLK_SRC ? PLL1_OUT_FREQ/24/POWER(2,CLK_CONF) : PLL5_OUT_FREQ/18/POWER(2,CLK_CONF)</description>
               <bitRange>[5:4]</bitRange>
               <access>read-write</access>
             </field>
@@ -105003,13 +105032,13 @@
             </field>
             <field>
               <name>L25_TUNE_SRC</name>
-              <description>Select source of LNA125 L25 frequency tuning value, '0' &#x2013; Flash, '1' &#x2013; configuration register</description>
+              <description>Select source of LNA125 L25 frequency tuning value, '0' - Flash, '1' - configuration register</description>
               <bitRange>[3:3]</bitRange>
               <access>read-write</access>
             </field>
             <field>
               <name>L1_TUNE_SRC</name>
-              <description>Select source of LNA125 L1 frequency tuning value, '0' &#x2013; Flash, '1' &#x2013; configuration register</description>
+              <description>Select source of LNA125 L1 frequency tuning value, '0' - Flash, '1' - configuration register</description>
               <bitRange>[2:2]</bitRange>
               <access>read-write</access>
             </field>
@@ -105060,7 +105089,7 @@
             </field>
             <field>
               <name>BALUN_TUNE_SRC</name>
-              <description>Select source of BALUN1 frequency tuning value, '0' &#x2013; Flash, '1' &#x2013; configuration register</description>
+              <description>Select source of BALUN1 frequency tuning value, '0' - Flash, '1' - configuration register</description>
               <bitRange>[18:18]</bitRange>
               <access>read-write</access>
             </field>
@@ -105097,7 +105126,7 @@
             </field>
             <field>
               <name>BALUN_TUNE_SRC</name>
-              <description>Select source of BALUN25 frequency tuning value, '0' &#x2013; Flash, '1' &#x2013; configuration register</description>
+              <description>Select source of BALUN25 frequency tuning value, '0' - Flash, '1' - configuration register</description>
               <bitRange>[18:18]</bitRange>
               <access>read-write</access>
             </field>
@@ -105146,7 +105175,7 @@
             </field>
             <field>
               <name>DCDC_MODE</name>
-              <description>DCDC work mode, '0' &#x2013; Voltage mode, '1' &#x2013; Current mode</description>
+              <description>DCDC work mode, '0' - Voltage mode, '1' - Current mode</description>
               <bitRange>[16:16]</bitRange>
               <access>read-write</access>
             </field>
@@ -105158,7 +105187,7 @@
             </field>
             <field>
               <name>DCDC_GENTRIM</name>
-              <description>DCDC frequency triming value, '0' &#x2013; Flash, '1' &#x2013; configuration register</description>
+              <description>DCDC frequency triming value, '0' - Flash, '1' - configuration register</description>
               <bitRange>[14:12]</bitRange>
               <access>read-write</access>
             </field>
@@ -105176,7 +105205,7 @@
             </field>
             <field>
               <name>IREF_TRIM_VAL_SRC</name>
-              <description>Select source of PMU current  trimming value, '0' &#x2013; Flash, '1' &#x2013; configuration register</description>
+              <description>Select source of PMU current  trimming value, '0' - Flash, '1' - configuration register</description>
               <bitRange>[9:9]</bitRange>
               <access>read-write</access>
             </field>
@@ -105244,13 +105273,13 @@
             </field>
             <field>
               <name>PWR_UP_P</name>
-              <description>GNSS-AFE PM power up indicator, '0' &#x2013; power down, '1' &#x2013; power up</description>
+              <description>GNSS-AFE PM power up indicator, '0' - power down, '1' - power up</description>
               <bitRange>[1:1]</bitRange>
               <access>read-write</access>
             </field>
             <field>
               <name>PWR_UP_N</name>
-              <description>GNSS-AFE PM power up indicator, '1' &#x2013; power down, '0' &#x2013; power up</description>
+              <description>GNSS-AFE PM power up indicator, '1' - power down, '0' - power up</description>
               <bitRange>[0:0]</bitRange>
               <access>read-write</access>
             </field>
@@ -105269,37 +105298,37 @@
             </field>
             <field>
               <name>LDO_ADC_EXT_DECAP</name>
-              <description>(IF-ADC) LDO work mode '0' &#x2013;  internal decap mode, '1' &#x2013; external decap mode</description>
+              <description>(IF-ADC) LDO work mode '0' -  internal decap mode, '1' - external decap mode</description>
               <bitRange>[26:26]</bitRange>
               <access>read-write</access>
             </field>
             <field>
               <name>LDO_IF_EXT_DECAP</name>
-              <description>(IF) LDO work mode '0' &#x2013;  internal decap mode, '1' &#x2013; external decap mode</description>
+              <description>(IF) LDO work mode '0' -  internal decap mode, '1' - external decap mode</description>
               <bitRange>[25:25]</bitRange>
               <access>read-write</access>
             </field>
             <field>
               <name>LDO_DPLL_EXT_DECAP</name>
-              <description>(PLL) digital LDO work mode '0' &#x2013;  internal decap mode, '1' &#x2013; external decap mode</description>
+              <description>(PLL) digital LDO work mode '0' -  internal decap mode, '1' - external decap mode</description>
               <bitRange>[24:24]</bitRange>
               <access>read-write</access>
             </field>
             <field>
               <name>LDO_APLL_EXT_DECAP</name>
-              <description>(PLL) analog LDO work mode '0' &#x2013;  internal decap mode, '1' &#x2013; external decap mode</description>
+              <description>(PLL) analog LDO work mode '0' -  internal decap mode, '1' - external decap mode</description>
               <bitRange>[23:23]</bitRange>
               <access>read-write</access>
             </field>
             <field>
               <name>LDO_RF_EXT_DECAP</name>
-              <description>(RF) LDO work mode '0' &#x2013;  internal decap mode, '1' &#x2013; external decap mode</description>
+              <description>(RF) LDO work mode '0' -  internal decap mode, '1' - external decap mode</description>
               <bitRange>[22:22]</bitRange>
               <access>read-write</access>
             </field>
             <field>
               <name>RC_FILTER</name>
-              <description>GNSS-AFE PM bangap voltage reference RC filter mode, '0' &#x2013; slow start mode, '1' &#x2013; fast start mode</description>
+              <description>GNSS-AFE PM bangap voltage reference RC filter mode, '0' - slow start mode, '1' - fast start mode</description>
               <bitRange>[21:21]</bitRange>
               <access>read-write</access>
             </field>
@@ -105353,7 +105382,7 @@
             </field>
             <field>
               <name>IREF_TRIM_SRC</name>
-              <description>Select source of GNSS-AFE PM current reference trimming value, '0' &#x2013; Flash, '1' &#x2013; configuration register</description>
+              <description>Select source of GNSS-AFE PM current reference trimming value, '0' - Flash, '1' - configuration register</description>
               <bitRange>[12:12]</bitRange>
               <access>read-write</access>
             </field>
@@ -105371,7 +105400,7 @@
             </field>
             <field>
               <name>BGVR_TRIM_SRC</name>
-              <description>Select source of GNSS-AFE PM bangap voltage reference trimming value, '0' &#x2013; Flash, '1' &#x2013; configuration register</description>
+              <description>Select source of GNSS-AFE PM bangap voltage reference trimming value, '0' - Flash, '1' - configuration register</description>
               <bitRange>[6:6]</bitRange>
               <access>read-write</access>
             </field>
@@ -105389,7 +105418,7 @@
             </field>
             <field>
               <name>NRST</name>
-              <description>GNSS-AFE reset signal, '0' &#x2013; GNSSAFE in reset state</description>
+              <description>GNSS-AFE reset signal, '0' - GNSSAFE in reset state</description>
               <bitRange>[0:0]</bitRange>
               <access>read-write</access>
             </field>

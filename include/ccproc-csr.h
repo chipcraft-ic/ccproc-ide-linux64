@@ -2,8 +2,8 @@
 *
 * Copyright (c) 2017 ChipCraft Sp. z o.o. All rights reserved
 *
-* $Date: 2022-11-24 15:32:16 +0100 (czw, 24 lis 2022) $
-* $Revision: 916 $
+* $Date: 2024-06-08 11:42:29 +0200 (sob, 08 cze 2024) $
+* $Revision: 1062 $
 *
 *  ----------------------------------------------------------------------
 * Redistribution and use in source and binary forms, with or without
@@ -106,7 +106,7 @@ enum
     CSR_STAT_OMODE     = 0x2000,     /*!< Old Core Mode                     */
     CSR_STAT_IRQn      = 0x4000,     /*!< Pending Interrupt Number          */
     CSR_STAT_BD        = 0x80000,    /*!< Branch Delay                      */
-    CSR_STAT_BPREDDIS  = 0x800000,   /*!< Dynamic Branch Prediction Disable */
+    CSR_STAT_PHTDIS    = 0x800000,   /*!< Disable PHT Branch Prediction     */
 };
 
 /** System Controller Status Register bit offsets */
@@ -262,14 +262,16 @@ enum
 enum
 {
     CPU_ARCH_SHIFT        = 0,    /*!< CPU Architecture Offset  */
-    CPU_GNSS_BANKS_SHIFT  = 4,    /*!< GNSS Banks Number Offset  */
+    CPU_GNSS_BANKS_SHIFT  = 4,    /*!< GNSS Banks Number Offset */
+    CPU_SYSBUS_SHIFT      = 10,   /*!< System Bus Width Offset  */
 };
 
 /** System Controller CPU Info 2 Register bit masks */
 enum
 {
-    CPU_ARCH_MASK         = 0x7 << CPU_ARCH_SHIFT,        /*!< GNSS Architecture Mask  */
-    CPU_GNSS_BANKS_MASK   = 0xF << CPU_GNSS_BANKS_SHIFT,  /*!< GNSS Banks Number Mask  */
+    CPU_ARCH_MASK         = 0x7 << CPU_ARCH_SHIFT,        /*!< GNSS Architecture Mask   */
+    CPU_GNSS_BANKS_MASK   = 0xF << CPU_GNSS_BANKS_SHIFT,  /*!< GNSS Banks Number Mask   */
+    CPU_SYSBUS_MASK       = 0x3 << CPU_SYSBUS_SHIFT,      /*!< System Bus Width Mask    */
 };
 
 /** System Controller CPU Info 2 Register bits */

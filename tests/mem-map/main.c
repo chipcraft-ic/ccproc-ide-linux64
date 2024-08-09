@@ -32,8 +32,8 @@
 * File Name : main.c
 * Author    : Krzysztof Marcinek
 * ******************************************************************************
-* $Date: 2019-12-19 12:13:42 +0100 (czw, 19 gru 2019) $
-* $Revision: 491 $
+* $Date: 2024-06-21 12:08:10 +0200 (pią, 21 cze 2024) $
+* $Revision: 1068 $
 *H*****************************************************************************/
 
 #include "board.h"
@@ -177,7 +177,7 @@ void test_mem_access(uint32_t start, uint32_t end, uint32_t size){
                 }
             }
             ptr++;
-            if (start > 0x83000000){
+            if ((start > 0x83000000) && (start < 0x90000000)) {
                 assertEq(_flag,1);
             }
             /*if (start < 0x80000000){
@@ -288,7 +288,7 @@ int main(void)
     test_mem_access(0x6FFFFF00,0x70000504,64);
     test_mem_access(0x7FFFFF00,0x80000000,64);
 
-    if (AMBA_APB0_CFG_PTR->INFO_0 != 0){
+    if ((AMBA_APB0_CFG_PTR->INFO_0 & 0x1f80) != 0){ // uart and wdt can be emulated, check for gpio
 
         test_mem_access(0x80000000,0x80010004,64);
 

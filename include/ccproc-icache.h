@@ -2,8 +2,8 @@
 *
 * Copyright (c) 2017 ChipCraft Sp. z o.o. All rights reserved
 *
-* $Date: 2021-04-06 10:29:54 +0200 (wto, 06 kwi 2021) $
-* $Revision: 687 $
+* $Date: 2024-01-14 21:55:43 +0100 (nie, 14 sty 2024) $
+* $Revision: 1038 $
 *
 *  ----------------------------------------------------------------------
 * Redistribution and use in source and binary forms, with or without
@@ -57,7 +57,7 @@
 /** Instruction Cache Controller Registers */
 typedef struct
 {
-    uint32_t STATUS;          /*!< Status Register                  */
+    uint32_t STCR;            /*!< Status and Control Register      */
     uint32_t FLUSH;           /*!< Flush Tag Memory                 */
     uint32_t INFO;            /*!< Cache Info Register              */
     uint32_t ERR_CNT_0;       /*!< Error Counter 0 (FT-only)        */
@@ -71,25 +71,25 @@ static volatile icache_regs_t * const ICACHE_PTR = (icache_regs_t*)ICACHE_BASE;
 /** ICC Status Register bits */
 enum
 {
-    ICACHE_STAT_EN              = 1 << 0,  /*!< Instruction Cache Enable                 */
-    ICACHE_STAT_PARITY_EN       = 1 << 3,  /*!< Parity Enable (FT-only)                  */
-    ICACHE_STAT_ERR_TRIG        = 1 << 4,  /*!< Error Count Trigger (FT-only)            */
-    ICACHE_STAT_SCRAMBLE_EN     = 1 << 5,  /*!< Scramble Enable (FT-only)                */
-    ICACHE_STAT_MEM_ERR_INJECT  = 1 << 6,  /*!< Memory Error Injection Enable (FT-only)  */
-    ICACHE_STAT_TAG_ERR_INJECT  = 1 << 7,  /*!< Tag Error Injection Enable (FT-only)     */
-    ICACHE_STAT_HARD_ERR_EN     = 1 << 8,  /*!< Hard error enable (FT-only)              */
+    ICACHE_STCR_EN              = 1 << 0,  /*!< Instruction Cache Enable                 */
+    ICACHE_STCR_PARITY_EN       = 1 << 3,  /*!< Parity Enable (FT-only)                  */
+    ICACHE_STCR_ERR_TRIG        = 1 << 4,  /*!< Error Count Trigger (FT-only)            */
+    ICACHE_STCR_SCRAMBLE_EN     = 1 << 5,  /*!< Scramble Enable (FT-only)                */
+    ICACHE_STCR_MEM_ERR_INJECT  = 1 << 6,  /*!< Memory Error Injection Enable (FT-only)  */
+    ICACHE_STCR_TAG_ERR_INJECT  = 1 << 7,  /*!< Tag Error Injection Enable (FT-only)     */
+    ICACHE_STCR_HARD_ERR_EN     = 1 << 8,  /*!< Hard error enable (FT-only)              */
 };
 
 /** ICC Status Register bit offsets */
 enum
 {
-    ICACHE_STAT_RETRY_SHIFT   = 12,  /*!< Fetch Retry Count Offset (FT-only)    */
+    ICACHE_STCR_RETRY_SHIFT   = 12,  /*!< Fetch Retry Count Offset (FT-only)    */
 };
 
 /** ICC Status Register masks */
 enum
 {
-    ICACHE_STAT_RETRY_MASK  = 0x0F << ICACHE_STAT_RETRY_SHIFT,   /*!< Fetch Retry Count Mask (FT-only)  */
+    ICACHE_STCR_RETRY_MASK  = 0x0F << ICACHE_STCR_RETRY_SHIFT,   /*!< Fetch Retry Count Mask (FT-only)  */
 };
 
 /** ICC Info Register bit offsets */

@@ -1,4 +1,4 @@
-CCPROG_FLAGS          += --burst
+CCPROG_FLAGS          += --burst --jtag
 FLASH_DRIVER          := flash/hhg110ullfmc.c
 ATE_TEST_FUNC         := ate_test_functions.c
 COMMON_SOURCES        += $(FLASH_DRIVER)

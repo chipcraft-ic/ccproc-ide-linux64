@@ -676,6 +676,11 @@
               <bitRange>[5:5]</bitRange>
             </field>
             <field>
+              <name>UBE</name>
+              <description>User Mode Big Endianess</description>
+              <bitRange>[6:6]</bitRange>
+            </field>
+            <field>
               <name>MPIE</name>
               <description>Machine Previous Interrupt Enable</description>
               <bitRange>[7:7]</bitRange>
@@ -797,6 +802,24 @@
               <name>SD</name>
               <description>Some Dirty</description>
               <bitRange>[31:31]</bitRange>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>MSTATUSH</name>
+          <description>Additional Machine Status Register</description>
+          <addressOffset>0xC10</addressOffset>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>SBE</name>
+              <description>Supervisor Mode Big Endianess</description>
+              <bitRange>[4:4]</bitRange>
+            </field>
+            <field>
+              <name>MBE</name>
+              <description>Machine Mode Big Endianess</description>
+              <bitRange>[5:5]</bitRange>
             </field>
           </fields>
         </register>
@@ -1321,6 +1344,43 @@
               </enumeratedValues>
             </field>
             <field>
+              <name>BTB</name>
+              <description>BTB buffer width</description>
+              <bitRange>[13:11]</bitRange>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>0</name>
+                  <description>No BTB</description>
+                  <value>0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>4</name>
+                  <description>4 BTB Entries</description>
+                  <value>1</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>8</name>
+                  <description>8 BTB Entries</description>
+                  <value>2</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>16</name>
+                  <description>16 BTB Entries</description>
+                  <value>3</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>32</name>
+                  <description>32 BTB Entries</description>
+                  <value>4</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>64</name>
+                  <description>64 BTB Entries</description>
+                  <value>5</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <field>
               <name>LIC</name>
               <description>License</description>
               <bitRange>[31:31]</bitRange>
@@ -1469,12 +1529,12 @@
           <fields>
             <field>
               <name>IMSIZE</name>
-              <description>Instruction Memory Size</description>
+              <description>Instruction Memory Bus Address Size</description>
               <bitRange>[4:0]</bitRange>
             </field>
             <field>
               <name>DMSIZE</name>
-              <description>Data Memory Size</description>
+              <description>Data Memory Bus Address Size</description>
               <bitRange>[9:5]</bitRange>
             </field>
             <field>
@@ -1685,11 +1745,6 @@
               <bitRange>[3:3]</bitRange>
             </field>
             <field>
-              <name>DCLS</name>
-              <description>Dual-core Lockstep</description>
-              <bitRange>[3:3]</bitRange>
-            </field>
-            <field>
               <name>GNSS_BANKS</name>
               <description>GNSS Banks Number</description>
               <bitRange>[7:4]</bitRange>
@@ -1703,6 +1758,65 @@
               <name>XPRAM</name>
               <description>Executable SPRAM</description>
               <bitRange>[9:9]</bitRange>
+            </field>
+            <field>
+              <name>SYSBUS</name>
+              <description>System Bus Width</description>
+              <bitRange>[11:10]</bitRange>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>32</name>
+                  <description>32-bit System Bus</description>
+                  <value>0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>64</name>
+                  <description>64-bit System Bus</description>
+                  <value>1</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>128</name>
+                  <description>128-bit System Bus</description>
+                  <value>2</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <field>
+              <name>BTB</name>
+              <description>BTB buffer width</description>
+              <bitRange>[14:12]</bitRange>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>0</name>
+                  <description>No BTB</description>
+                  <value>0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>4</name>
+                  <description>4 BTB Entries</description>
+                  <value>1</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>8</name>
+                  <description>8 BTB Entries</description>
+                  <value>2</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>16</name>
+                  <description>16 BTB Entries</description>
+                  <value>3</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>32</name>
+                  <description>32 BTB Entries</description>
+                  <value>4</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>64</name>
+                  <description>64 BTB Entries</description>
+                  <value>5</value>
+                </enumeratedValue>
+              </enumeratedValues>
             </field>
           </fields>
         </register>
@@ -1751,9 +1865,24 @@
               <bitRange>[7:7]</bitRange>
             </field>
             <field>
-              <name>BPREDDIS</name>
-              <description>Disable Dynamic Branch Prediction</description>
+              <name>PHTDIS</name>
+              <description>Disable PHT Branch Prediction</description>
               <bitRange>[8:8]</bitRange>
+            </field>
+            <field>
+              <name>NMIDIS</name>
+              <description>Disable NMI</description>
+              <bitRange>[9:9]</bitRange>
+            </field>
+            <field>
+              <name>BTBDIS</name>
+              <description>Disable BTB Branch Prediction</description>
+              <bitRange>[10:10]</bitRange>
+            </field>
+            <field>
+              <name>GHRDIS</name>
+              <description>Disable GHR Branch Prediction</description>
+              <bitRange>[11:11]</bitRange>
             </field>
             <field>
               <name>CORE_ID</name>
@@ -1894,11 +2023,11 @@
                   <value>0x0</value>
                 </enumeratedValue>
                 <enumeratedValue>
-                  <name>L1E1</name>
-                  <description>GNSS L1/E1 RF AFE</description>
+                  <name>AFE</name>
+                  <description>GNSS AFE Clock</description>
                   <value>0x1</value>
                 </enumeratedValue>
-                <enumeratedValue>
+                <!--<enumeratedValue>
                   <name>L5E5a</name>
                   <description>GNSS L5/E5a RF AFE</description>
                   <value>0x2</value>
@@ -1917,16 +2046,21 @@
                   <name>E6</name>
                   <description>GNSS E6 RF AFE</description>
                   <value>0x5</value>
-                </enumeratedValue>
+                </enumeratedValue>-->
                 <enumeratedValue>
-                  <name>AUX0</name>
-                  <description>GNSS AUX0 RF AFE</description>
+                  <name>AUX</name>
+                  <description>GNSS AUX Clock</description>
                   <value>0xA</value>
                 </enumeratedValue>
-                <enumeratedValue>
+                <!--<enumeratedValue>
                   <name>AUX1</name>
                   <description>GNSS AUX1 RF AFE</description>
                   <value>0xB</value>
+                </enumeratedValue>-->
+                <enumeratedValue>
+                  <name>VIRT</name>
+                  <description>GNSS Virtual Clock</description>
+                  <value>0xF</value>
                 </enumeratedValue>
               </enumeratedValues>
             </field>
@@ -2036,6 +2170,459 @@
         </register>
       </registers>
     </peripheral>
+    <!-- GNSS Controller Registers -->
+    <peripheral>
+      <name>GNSS</name>
+      <description>GNSS Controller</description>
+      <baseAddress>0xF0040000</baseAddress>
+      <addressBlock>
+        <offset>0</offset>
+        <size>0x100</size>
+        <usage>registers</usage>
+      </addressBlock>
+      <registers>
+        <register>
+          <name>STCR</name>
+          <description>Status and Control Register</description>
+          <addressOffset>0x0</addressOffset>
+          <access>read-write</access>
+          <!-- GNSS Controller Status and Control Register Flags -->
+          <fields>
+            <field>
+              <name>RFAFE</name>
+              <description>GNSS RF AFE</description>
+              <bitRange>[11:8]</bitRange>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>L1E1</name>
+                  <description>GNSS L1/E1 RF AFE</description>
+                  <value>0x1</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>L5E5a</name>
+                  <description>GNSS L5/E5a RF AFE</description>
+                  <value>0x2</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>E5b</name>
+                  <description>GNSS E5b RF AFE</description>
+                  <value>0x3</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>L2</name>
+                  <description>GNSS L2 RF AFE</description>
+                  <value>0x4</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>E6</name>
+                  <description>GNSS E6 RF AFE</description>
+                  <value>0x5</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>AUX0</name>
+                  <description>GNSS AUX0 RF AFE</description>
+                  <value>0x7</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>AUX1</name>
+                  <description>GNSS AUX1 RF AFE</description>
+                  <value>0x8</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>AUX2</name>
+                  <description>GNSS AUX2 RF AFE</description>
+                  <value>0x9</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>AUX3</name>
+                  <description>GNSS AUX3 RF AFE</description>
+                  <value>0xA</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>AUX4</name>
+                  <description>GNSS AUX4 RF AFE</description>
+                  <value>0xB</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>AUX5</name>
+                  <description>GNSS AUX5 RF AFE</description>
+                  <value>0xC</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>AUX6</name>
+                  <description>GNSS AUX6 RF AFE</description>
+                  <value>0xD</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>AUX7</name>
+                  <description>GNSS AUX7 RF AFE</description>
+                  <value>0xE</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <field>
+              <name>MODE</name>
+              <description>GNSS Sample Mode</description>
+              <bitRange>[12:12]</bitRange>
+            </field>
+            <field>
+              <name>PLAY</name>
+              <description>GNSS Playback Mode</description>
+              <bitRange>[13:13]</bitRange>
+            </field>
+            <field>
+              <name>BUSY</name>
+              <description>GNSS Busy</description>
+              <bitRange>[14:14]</bitRange>
+            </field>
+            <field>
+              <name>START</name>
+              <description>GNSS Start</description>
+              <bitRange>[15:15]</bitRange>
+            </field>
+            <field>
+              <name>ERR</name>
+              <description>GNSS FIFO Error</description>
+              <bitRange>[16:16]</bitRange>
+            </field>
+            <field>
+              <name>OVF_I</name>
+              <description>GNSS FIFO I Overflow</description>
+              <bitRange>[17:17]</bitRange>
+            </field>
+            <field>
+              <name>OVF_Q</name>
+              <description>GNSS FIFO Q Overflow</description>
+              <bitRange>[18:18]</bitRange>
+            </field>
+            <field>
+              <name>RTC_RDY</name>
+              <description>RTC Compare Timestamp Ready</description>
+              <bitRange>[19:19]</bitRange>
+            </field>
+            <field>
+              <name>ACQPLAYIE</name>
+              <description>Acquisition/Playback Interrupt Enable</description>
+              <bitRange>[20:20]</bitRange>
+            </field>
+            <field>
+              <name>ACQPLAYIF</name>
+              <description>Acquisition/Playback Interrupt Flag</description>
+              <bitRange>[21:21]</bitRange>
+            </field>
+            <field>
+              <name>RNGIE</name>
+              <description>Range Generation Interrupt Enable</description>
+              <bitRange>[22:22]</bitRange>
+            </field>
+            <field>
+              <name>RNGIF</name>
+              <description>Range Generation Interrupt Flag</description>
+              <bitRange>[23:23]</bitRange>
+            </field>
+            <field>
+              <name>ACQDEC</name>
+              <description>Acquisition Decimator</description>
+              <bitRange>[27:24]</bitRange>
+            </field>
+            <field>
+              <name>ACQSCL</name>
+              <description>Acquisition Decimator Scale</description>
+              <bitRange>[31:28]</bitRange>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>COUNT</name>
+          <description>Count Register</description>
+          <addressOffset>0x4</addressOffset>
+          <access>read-write</access>
+        </register>
+        <register>
+          <name>ADDRI</name>
+          <description>I Array Address</description>
+          <addressOffset>0x8</addressOffset>
+          <access>read-write</access>
+        </register>
+        <register>
+          <name>ADDRQ</name>
+          <description>Q Array Address</description>
+          <addressOffset>0xC</addressOffset>
+          <access>read-write</access>
+        </register>
+        <register>
+          <name>COUNTI</name>
+          <description>Remaining I Count Register</description>
+          <addressOffset>0x10</addressOffset>
+          <access>read-write</access>
+        </register>
+        <register>
+          <name>COUNTQ</name>
+          <description>Remaining Q Count Register</description>
+          <addressOffset>0x14</addressOffset>
+          <access>read-write</access>
+        </register>
+        <register>
+          <name>CTRL</name>
+          <description>GNSS-ISE Control Register</description>
+          <addressOffset>0x18</addressOffset>
+          <access>read-write</access>
+          <!-- GNSS Controller GNSS-ISE Control Register Flags -->
+          <fields>
+            <field>
+              <name>CODE_TICK_IE</name>
+              <description>GNSS-ISE Code Tick Interrupt Enable</description>
+              <bitRange>[0:0]</bitRange>
+            </field>
+            <field>
+              <name>CODE_OVR_IE</name>
+              <description>GNSS-ISE Code Overrun Interrupt Enable</description>
+              <bitRange>[1:1]</bitRange>
+            </field>
+            <field>
+              <name>CODE_ERR_IE</name>
+              <description>GNSS-ISE Code Error Interrupt Enable</description>
+              <bitRange>[2:2]</bitRange>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>TICKF</name>
+          <description>GNSS-ISE Code Tick Interrupt Flags Register</description>
+          <addressOffset>0x1C</addressOffset>
+          <access>read-write</access>
+        </register>
+        <register>
+          <name>OVRF</name>
+          <description>GNSS-ISE Code Tick Overrun Interrupt Flags Register</description>
+          <addressOffset>0x20</addressOffset>
+          <access>read-write</access>
+        </register>
+        <register>
+          <name>ERRF</name>
+          <description>GNSS-ISE Code Error Interrupt Flags Register</description>
+          <addressOffset>0x24</addressOffset>
+          <access>read-write</access>
+        </register>
+        <register>
+          <name>IRQMAP</name>
+          <description>Interrupt Mapping Register</description>
+          <addressOffset>0x28</addressOffset>
+          <access>read-write</access>
+        </register>
+        <register>
+          <name>FIFOCNT</name>
+          <description>FIFO Count Override (for diagnostics only)</description>
+          <addressOffset>0x2C</addressOffset>
+          <access>read-write</access>
+        </register>
+        <register>
+          <name>FIFOWR</name>
+          <description>FIFO Write Override (for diagnostics only)</description>
+          <addressOffset>0x30</addressOffset>
+          <access>read-write</access>
+        </register>
+        <register>
+          <name>TMSTMP_ACQ_LO</name>
+          <description>Acquisition Timestamp LO</description>
+          <addressOffset>0x34</addressOffset>
+          <access>read-only</access>
+        </register>
+        <register>
+          <name>TMSTMP_ACQ_HI</name>
+          <description>Acquisition Timestamp HI</description>
+          <addressOffset>0x38</addressOffset>
+          <access>read-only</access>
+        </register>
+        <register>
+          <name>ADCVAL</name>
+          <description>Test ADC input (for diagnostics only)</description>
+          <addressOffset>0x3C</addressOffset>
+          <access>read-only</access>
+        </register>
+        <register>
+          <name>RNG_NCO</name>
+          <description>Range Generation NCO Register</description>
+          <addressOffset>0x40</addressOffset>
+          <access>read-write</access>
+        </register>
+        <register>
+          <name>RNG_PERIOD</name>
+          <description>Range Generation Period Register</description>
+          <addressOffset>0x44</addressOffset>
+          <access>read-write</access>
+        </register>
+        <!--<register>
+          <name>PPS_PERIOD</name>
+          <description>PPS Generation Period Register</description>
+          <addressOffset>0x48</addressOffset>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>PPS_PERIOD</name>
+              <description>PPS Generation Period</description>
+              <bitRange>[15:0]</bitRange>
+            </field>
+            <field>
+              <name>PPS_HIGH_TIME</name>
+              <description>PPS High State Time</description>
+              <bitRange>[31:16]</bitRange>
+            </field>
+          </fields>
+        </register> -->
+        <register>
+          <name>TMSTMP_RNG_LO</name>
+          <description>Range Generation Timestamp LO</description>
+          <addressOffset>0x4C</addressOffset>
+          <access>read-only</access>
+        </register>
+        <register>
+          <name>TMSTMP_RNG_HI</name>
+          <description>Range Generation Timestamp HI</description>
+          <addressOffset>0x50</addressOffset>
+          <access>read-only</access>
+        </register>
+        <register>
+          <name>FLAGS</name>
+          <description>Interrupt Flags Register</description>
+          <addressOffset>0x54</addressOffset>
+          <access>write-only</access>
+          <fields>
+            <field>
+              <name>ACQPLAY_IF</name>
+              <description>Acquisition/Playback Interrupt Flag</description>
+              <bitRange>[0:0]</bitRange>
+            </field>
+            <field>
+              <name>RNG_IF</name>
+              <description>Range Generation Interrupt Flag</description>
+              <bitRange>[1:1]</bitRange>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>PPS_IN_CFG</name>
+          <description>PPS Input Configuration Register</description>
+          <addressOffset>0x58</addressOffset>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>PPS_IN_PIN</name>
+              <description>PPS Input Pin Selection</description>
+              <bitRange>[4:0]</bitRange>
+            </field>
+            <field>
+              <name>PPS_IN_EN</name>
+              <description>PPS Input Pin Enable</description>
+              <bitRange>[5:5]</bitRange>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>PPS_PERIOD</name>
+          <description>PPS Generation Period Register</description>
+          <addressOffset>0x5C</addressOffset>
+          <access>read-write</access>
+        </register>
+        <register>
+          <name>PPS_HI</name>
+          <description>PPS Generation Period High Register</description>
+          <addressOffset>0x60</addressOffset>
+          <access>read-write</access>
+        </register>
+        <register>
+          <name>PPS_PHASE</name>
+          <description>PPS Output Phase Correction Register</description>
+          <addressOffset>0x64</addressOffset>
+          <access>read-write</access>
+        </register>
+        <register>
+          <name>TMSTMP_PPS_IN_LO</name>
+          <description>PPS Input Timestamp LO</description>
+          <addressOffset>0x68</addressOffset>
+          <access>read-only</access>
+        </register>
+        <register>
+          <name>TMSTMP_PPS_IN_HI</name>
+          <description>PPS Input Timestamp HI</description>
+          <addressOffset>0x6C</addressOffset>
+          <access>read-only</access>
+        </register>
+        <register>
+          <name>TMSTMP_PPS_OUT_LO</name>
+          <description>PPS Output Timestamp LO</description>
+          <addressOffset>0x70</addressOffset>
+          <access>read-only</access>
+        </register>
+        <register>
+          <name>TMSTMP_PPS_OUT_HI</name>
+          <description>PPS Output Timestamp HI</description>
+          <addressOffset>0x74</addressOffset>
+          <access>read-only</access>
+        </register>
+        <register>
+          <name>CARR_CFG</name>
+          <description>Carrier Removal Configuration Register</description>
+          <addressOffset>0x78</addressOffset>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>CARR_EN</name>
+              <description>Carrier Removal Enable</description>
+              <bitRange>[0:0]</bitRange>
+            </field>
+            <field>
+              <name>CARR_MODE</name>
+              <description>Carrier Removal Mode</description>
+              <bitRange>[3:2]</bitRange>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>TMSTMP_RTC_CMP_LO</name>
+          <description>RTC Compare Timestamp LO Register</description>
+          <addressOffset>0x80</addressOffset>
+          <access>read-only</access>
+        </register>
+        <register>
+          <name>TMSTMP_RTC_CMP_HI</name>
+          <description>RTC Compare Timestamp HI Register</description>
+          <addressOffset>0x84</addressOffset>
+          <access>read-only</access>
+        </register>
+        <register>
+          <name>GNSS_DIAG_FUNCT</name>
+          <description>NSS-ISE Diagnostic Function Register</description>
+          <addressOffset>0x88</addressOffset>
+          <access>write-only</access>
+          <fields>
+            <field>
+              <name>FUNCT</name>
+              <description>Diagnostic Function</description>
+              <bitRange>[9:0]</bitRange>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>GNSS_DIAG_DATA1</name>
+          <description>GNSS-ISE Diagnostic Data1 Register</description>
+          <addressOffset>0x8C</addressOffset>
+          <access>write-only</access>
+        </register>
+        <register>
+          <name>GNSS_DIAG_DATA2</name>
+          <description>GNSS-ISE Diagnostic Data2 Register</description>
+          <addressOffset>0x90</addressOffset>
+          <access>write-only</access>
+        </register>
+        <register>
+          <name>GNSS_DIAG_RESULT</name>
+          <description>GNSS-ISE Diagnostic Result Register</description>
+          <addressOffset>0x94</addressOffset>
+          <access>read-only</access>
+        </register>
+      </registers>
+    </peripheral>
     <!-- Instruction Cache -->
     <peripheral>
       <name>ICACHE</name>
@@ -2048,8 +2635,8 @@
       </addressBlock>
       <registers>
         <register>
-          <name>STATUS</name>
-          <description>Status Register</description>
+          <name>STCR</name>
+          <description>Status and Control Register</description>
           <addressOffset>0x0</addressOffset>
           <access>read-write</access>
           <fields>
@@ -2199,8 +2786,8 @@
       </addressBlock>
       <registers>
         <register>
-          <name>STATUS</name>
-          <description>Control Register</description>
+          <name>STCR</name>
+          <description>Status and Control Register</description>
           <addressOffset>0x0</addressOffset>
           <access>read-write</access>
           <fields>
@@ -2361,6 +2948,84 @@
           <name>ERR_STAT</name>
           <description>Error Statistics (FT-only)</description>
           <addressOffset>0x20</addressOffset>
+          <access>read-only</access>
+        </register>
+      </registers>
+    </peripheral>
+    <!-- Viterbi Decoder Controller Registers -->
+    <peripheral>
+      <name>VITERBI</name>
+      <description>Viterbi Decoder Controller</description>
+      <baseAddress>0xF00A0000</baseAddress>
+      <addressBlock>
+        <offset>0</offset>
+        <size>0x100</size>
+        <usage>registers</usage>
+      </addressBlock>
+      <registers>
+        <register>
+          <name>STATUS</name>
+          <description>Status Register</description>
+          <addressOffset>0x0</addressOffset>
+          <access>read-only</access>
+          <!-- Viterbi Controller Status Register Flags -->
+          <fields>
+            <field>
+              <name>BUSY</name>
+              <description>Viterbi Busy</description>
+              <bitRange>[0:0]</bitRange>
+            </field>
+            <field>
+              <name>MAX_LEN</name>
+              <description>Maximum Mesage Lendth</description>
+              <bitRange>[31:16]</bitRange>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>CTRL</name>
+          <description>Control Register</description>
+          <addressOffset>0x4</addressOffset>
+          <access>read-write</access>
+          <!-- Viterbi Controller Control Register Flags -->
+          <fields>
+            <field>
+              <name>MSG_LEN</name>
+              <description>Message Length</description>
+              <bitRange>[11:0]</bitRange>
+            </field>
+            <field>
+              <name>INIT_STATE</name>
+              <description>Viterbi Initial State</description>
+              <bitRange>[17:12]</bitRange>
+            </field>
+            <field>
+              <name>INV_G2</name>
+              <description>Invert G2 Branch</description>
+              <bitRange>[18:18]</bitRange>
+            </field>
+            <field>
+              <name>CFG_EN</name>
+              <description>Configuration Enable</description>
+              <bitRange>[19:19]</bitRange>
+            </field>
+            <field>
+              <name>START</name>
+              <description>Start Operation</description>
+              <bitRange>[31:31]</bitRange>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>DATA_IN</name>
+          <description>Data Input Register</description>
+          <addressOffset>0x08</addressOffset>
+          <access>write-only</access>
+        </register>
+        <register>
+          <name>DATA_OUT</name>
+          <description>Data Output Register</description>
+          <addressOffset>0x0C</addressOffset>
           <access>read-only</access>
         </register>
       </registers>
@@ -2633,6 +3298,361 @@
       <description>UART Controller</description>
       <groupName>UART</groupName>
       <baseAddress>0xE0000100</baseAddress>
+      <addressBlock>
+        <offset>0</offset>
+        <size>0x100</size>
+        <usage>registers</usage>
+      </addressBlock>
+      <registers>
+        <register>
+          <name>STATUS</name>
+          <description>Status Register</description>
+          <addressOffset>0x0</addressOffset>
+          <access>read-only</access>
+          <fields>
+            <field>
+              <name>RXC</name>
+              <description>Reception Complete</description>
+              <bitRange>[0:0]</bitRange>
+            </field>
+            <field>
+              <name>TXC</name>
+              <description>Transmission Complete</description>
+              <bitRange>[1:1]</bitRange>
+            </field>
+            <field>
+              <name>TXDRE</name>
+              <description>Transmission Data Register Empty</description>
+              <bitRange>[2:2]</bitRange>
+            </field>
+            <field>
+              <name>PERR</name>
+              <description>Parity Error</description>
+              <bitRange>[3:3]</bitRange>
+            </field>
+            <field>
+              <name>FRERR</name>
+              <description>Framing Error</description>
+              <bitRange>[4:4]</bitRange>
+            </field>
+            <field>
+              <name>OVERR</name>
+              <description>Overrun Error</description>
+              <bitRange>[5:5]</bitRange>
+            </field>
+            <field>
+              <name>RXBRK</name>
+              <description>Break Reception</description>
+              <bitRange>[6:6]</bitRange>
+            </field>
+            <field>
+              <name>CTS</name>
+              <description>CTS (Clear To Send) Status</description>
+              <bitRange>[7:7]</bitRange>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>PRES</name>
+          <description>Prescaler Register (lo mantisa, hi fraction)</description>
+          <addressOffset>0x4</addressOffset>
+          <access>read-write</access>
+        </register>
+        <register>
+          <name>CTRL</name>
+          <description>Control Register</description>
+          <addressOffset>0x8</addressOffset>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>TXEN</name>
+              <description>Transmitter Enable</description>
+              <bitRange>[0:0]</bitRange>
+            </field>
+            <field>
+              <name>RXEN</name>
+              <description>Receiver Enable</description>
+              <bitRange>[1:1]</bitRange>
+            </field>
+            <field>
+              <name>RTSEN</name>
+              <description>RTS Hardware Support Enable</description>
+              <bitRange>[2:2]</bitRange>
+            </field>
+            <field>
+              <name>CTSEN</name>
+              <description>CTS Hardware Support Enable</description>
+              <bitRange>[3:3]</bitRange>
+            </field>
+            <field>
+              <name>BREAK</name>
+              <description>Transmit BREAK Frame</description>
+              <bitRange>[4:4]</bitRange>
+            </field>
+            <field>
+              <name>LOOP</name>
+              <description>Loopback Mode Enable</description>
+              <bitRange>[5:5]</bitRange>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>MODE</name>
+          <description>Mode Register</description>
+          <addressOffset>0xC</addressOffset>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>OVRS8</name>
+              <description>OVERSAMPLING8 Enable</description>
+              <bitRange>[0:0]</bitRange>
+            </field>
+            <field>
+              <name>BIG_ENDIAN</name>
+              <description>Big Endian Enable</description>
+              <bitRange>[1:1]</bitRange>
+            </field>
+            <!-- Character Length -->
+            <field>
+              <name>CHRL</name>
+              <description>Character Length</description>
+              <bitRange>[4:2]</bitRange>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>CHRL5</name>
+                  <description>5 Data Bits</description>
+                  <value>0x3</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>CHRL6</name>
+                  <description>6 Data Bits</description>
+                  <value>0x2</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>CHRL7</name>
+                  <description>7 Data Bits</description>
+                  <value>0x1</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>CHRL8</name>
+                  <description>8 Data Bits</description>
+                  <value>0x0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>CHRL9</name>
+                  <description>9 Data Bits</description>
+                  <value>0x4</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <!-- Stop Bits Number -->
+            <field>
+              <name>STOP_BITS</name>
+              <description>Stop Bits Number</description>
+              <bitRange>[5:5]</bitRange>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>STOP_BITS_1</name>
+                  <description>1 Stop Bit</description>
+                  <value>0x0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>STOP_BITS_2</name>
+                  <description>2 Stop Bits</description>
+                  <value>0x1</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <!-- Parity -->
+            <field>
+              <name>PARITY</name>
+              <description>Parity</description>
+              <bitRange>[9:7]</bitRange>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>NONE</name>
+                  <description>No Parity</description>
+                  <value>0x0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>EVEN</name>
+                  <description>Even Parity</description>
+                  <value>0x1</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>ODD</name>
+                  <description>Odd Parity</description>
+                  <value>0x2</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>FORCED0</name>
+                  <description>Force 0 Parity</description>
+                  <value>0x3</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>FORCED1</name>
+                  <description>Force 1 Parity</description>
+                  <value>0x4</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <!-- RS485 Mode -->
+            <field>
+              <name>RS485EN</name>
+              <description>RS485 Mode Enable</description>
+              <bitRange>[10:10]</bitRange>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>TDR</name>
+          <description>TX data Register</description>
+          <addressOffset>0x10</addressOffset>
+          <access>read-write</access>
+        </register>
+        <register>
+          <name>RDR</name>
+          <description>RX data Register</description>
+          <addressOffset>0x14</addressOffset>
+          <access>read-only</access>
+        </register>
+        <register>
+          <name>IRQM</name>
+          <description>Interrupt mask Register</description>
+          <addressOffset>0x18</addressOffset>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>RXCIE</name>
+              <description>Reception Complete Interrupt Enable</description>
+              <bitRange>[0:0]</bitRange>
+            </field>
+            <field>
+              <name>TXCIE</name>
+              <description>Transmission Complete Interrupt Enable</description>
+              <bitRange>[1:1]</bitRange>
+            </field>
+            <field>
+              <name>TXDIE</name>
+              <description>Transmit Data Register Empty Interrupt Enable</description>
+              <bitRange>[2:2]</bitRange>
+            </field>
+            <field>
+              <name>PERIE</name>
+              <description>Parity Error Interrupt Enable</description>
+              <bitRange>[3:3]</bitRange>
+            </field>
+            <field>
+              <name>FERIE</name>
+              <description>Framing Error Interrupt Enable</description>
+              <bitRange>[4:4]</bitRange>
+            </field>
+            <field>
+              <name>OVERIE</name>
+              <description>Overrun Error Interrupt Enable</description>
+              <bitRange>[5:5]</bitRange>
+            </field>
+            <field>
+              <name>BRKRIE</name>
+              <description>Break Reception Start Interrupt Enable</description>
+              <bitRange>[6:6]</bitRange>
+            </field>
+            <field>
+              <name>BRKEIE</name>
+              <description>Break Reception End Interrupt Enable</description>
+              <bitRange>[7:7]</bitRange>
+            </field>
+            <field>
+              <name>CTSRIE</name>
+              <description>Rising Edge on CTS Line Interrupt Enable</description>
+              <bitRange>[8:8]</bitRange>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>IRQF</name>
+          <description>Interrupt flags Register</description>
+          <addressOffset>0x1C</addressOffset>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>RXCIF</name>
+              <description>Reception Complete Interrupt Flag</description>
+              <bitRange>[0:0]</bitRange>
+            </field>
+            <field>
+              <name>TXCIF</name>
+              <description>Transmission Complete Interrupt Flag</description>
+              <bitRange>[1:1]</bitRange>
+            </field>
+            <field>
+              <name>TXDIF</name>
+              <description>Transmit Data Register Empty Interrupt Flag</description>
+              <bitRange>[2:2]</bitRange>
+            </field>
+            <field>
+              <name>PERIF</name>
+              <description>Parity Error Interrupt Flag</description>
+              <bitRange>[3:3]</bitRange>
+            </field>
+            <field>
+              <name>FERIF</name>
+              <description>Framing Error Interrupt Flag</description>
+              <bitRange>[4:4]</bitRange>
+            </field>
+            <field>
+              <name>OVERIF</name>
+              <description>Overrun Error Interrupt Flag</description>
+              <bitRange>[5:5]</bitRange>
+            </field>
+            <field>
+              <name>BRKRIF</name>
+              <description>Break Reception Start Interrupt Flag</description>
+              <bitRange>[6:6]</bitRange>
+            </field>
+            <field>
+              <name>BRKEIF</name>
+              <description>Break Reception End Interrupt Flag</description>
+              <bitRange>[7:7]</bitRange>
+            </field>
+            <field>
+              <name>CTSRIF</name>
+              <description>Rising Edge on CTS Line Interrupt Flag</description>
+              <bitRange>[8:8]</bitRange>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>IRQMAP</name>
+          <description>Interrupt mapping</description>
+          <addressOffset>0x20</addressOffset>
+          <access>read-write</access>
+        </register>
+        <register>
+          <name>TMNG</name>
+          <description>RS485 timings Register</description>
+          <addressOffset>0x24</addressOffset>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>_485PRE</name>
+              <description>RS485 mode pre-start bits</description>
+              <bitRange>[3:0]</bitRange>
+            </field>
+            <field>
+              <name>_485POST</name>
+              <description>RS485 mode post-stop bits</description>
+              <bitRange>[19:16]</bitRange>
+            </field>
+          </fields>
+        </register>
+      </registers>
+    </peripheral>
+    <peripheral>
+      <name>UART1</name>
+      <description>UART Controller</description>
+      <groupName>UART</groupName>
+      <baseAddress>0xE0000200</baseAddress>
       <addressBlock>
         <offset>0</offset>
         <size>0x100</size>
@@ -5437,650 +6457,12 @@
         </register>
       </registers>
     </peripheral>
-    <peripheral>
-      <name>TIMER32_1</name>
-      <description>32-bit Timer Module</description>
-      <groupName>TIMER</groupName>
-      <baseAddress>0xE0001000</baseAddress>
-      <addressBlock>
-        <offset>0</offset>
-        <size>0x100</size>
-        <usage>registers</usage>
-      </addressBlock>
-      <registers>
-        <register>
-          <name>CTRL</name>
-          <description>Control Register</description>
-          <addressOffset>0x0</addressOffset>
-          <access>read-write</access>
-          <fields>
-            <field>
-              <name>EN</name>
-              <description>Timer Enable bit</description>
-              <bitRange>[0:0]</bitRange>
-            </field>
-            <field>
-              <name>DIR</name>
-              <description>count direction</description>
-              <bitRange>[1:1]</bitRange>
-              <enumeratedValues>
-                <enumeratedValue>
-                  <name>UP</name>
-                  <description>count direction - increment</description>
-                  <value>0</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>DOWN</name>
-                  <description>count direction - decrement</description>
-                  <value>1</value>
-                </enumeratedValue>
-              </enumeratedValues>
-            </field>
-            <field>
-              <name>CMD</name>
-              <description>command</description>
-              <bitRange>[3:2]</bitRange>
-              <enumeratedValues>
-                <enumeratedValue>
-                  <name>NO_CMD</name>
-                  <description>no command</description>
-                  <value>0</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>RESTART</name>
-                  <description>update registers with "BUFFERED" values and restart counting</description>
-                  <value>1</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>UPDATE</name>
-                  <description>update registers with "BUFFERED" values</description>
-                  <value>2</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>RESET</name>
-                  <description>clear all registers</description>
-                  <value>3</value>
-                </enumeratedValue>
-              </enumeratedValues>
-            </field>
-            <field>
-              <name>MODE</name>
-              <description>Timer mode</description>
-              <bitRange>[5:4]</bitRange>
-              <enumeratedValues>
-                <enumeratedValue>
-                  <name>NORMAL</name>
-                  <description>timer mode</description>
-                  <value>0</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>CAPTURE</name>
-                  <description>capture mode</description>
-                  <value>1</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>WAVEFORM</name>
-                  <description>waveform generator mode</description>
-                  <value>2</value>
-                </enumeratedValue>
-              </enumeratedValues>
-            </field>
-            <field>
-              <name>CAP</name>
-              <description>Capture</description>
-              <bitRange>[7:6]</bitRange>
-              <enumeratedValues>
-                <enumeratedValue>
-                  <name>NORMAL</name>
-                  <description>normal mode</description>
-                  <value>0</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>PERIOD</name>
-                  <description>period mode</description>
-                  <value>1</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>PULSE</name>
-                  <description>pulse width mode</description>
-                  <value>2</value>
-                </enumeratedValue>
-              </enumeratedValues>
-            </field>
-            <field>
-              <name>WAVE</name>
-              <description>Wave</description>
-              <bitRange>[8:8]</bitRange>
-              <enumeratedValues>
-                <enumeratedValue>
-                  <name>SINGLE</name>
-                  <description>single slope mode</description>
-                  <value>0</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>DUAL</name>
-                  <description>dual slope mode</description>
-                  <value>1</value>
-                </enumeratedValue>
-              </enumeratedValues>
-            </field>
-            <field>
-              <name>CC_NUM</name>
-              <description>Timer Control Register CC Number</description>
-              <bitRange>[23:16]</bitRange>
-            </field>
-            <field>
-              <name>DBG_STOP</name>
-              <description>Stop counting in debug mode</description>
-              <bitRange>[31:31]</bitRange>
-            </field>
-          </fields>
-        </register>
-        <register>
-          <name>PER</name>
-          <description>Period Register</description>
-          <addressOffset>0x4</addressOffset>
-          <access>read-write</access>
-        </register>
-        <register>
-          <name>PERBUF</name>
-          <description>Period Buffer Register</description>
-          <addressOffset>0x8</addressOffset>
-          <access>read-write</access>
-        </register>
-        <register>
-          <name>PRES</name>
-          <description>Prescaler Register</description>
-          <addressOffset>0xC</addressOffset>
-          <access>read-write</access>
-        </register>
-        <register>
-          <name>PRESBUF</name>
-          <description>Prescaler Buffer Register</description>
-          <addressOffset>0x10</addressOffset>
-          <access>read-write</access>
-        </register>
-        <register>
-          <name>COUNT</name>
-          <description>Count Register</description>
-          <addressOffset>0x14</addressOffset>
-          <access>read-write</access>
-        </register>
-        <register>
-          <name>IRQM</name>
-          <description>Interrupt Mask</description>
-          <addressOffset>0x18</addressOffset>
-          <access>read-write</access>
-          <fields>
-            <field>
-              <name>OVFIE</name>
-              <description>Overflow Interrupt Enable</description>
-              <bitRange>[0:0]</bitRange>
-            </field>
-            <field>
-              <name>ERRIE</name>
-              <description>Error Interrupt Enable</description>
-              <bitRange>[1:1]</bitRange>
-            </field>
-            <field>
-              <name>CCIE0</name>
-              <description>Capture/Compare 0 Interrupt Enable</description>
-              <bitRange>[2:2]</bitRange>
-            </field>
-            <field>
-              <name>CCIE1</name>
-              <description>Capture/Compare 1 Interrupt Enable</description>
-              <bitRange>[3:3]</bitRange>
-            </field>
-            <field>
-              <name>CCIE2</name>
-              <description>Capture/Compare 2 Interrupt Enable</description>
-              <bitRange>[4:4]</bitRange>
-            </field>
-            <field>
-              <name>CCIE3</name>
-              <description>Capture/Compare 3 Interrupt Enable</description>
-              <bitRange>[5:5]</bitRange>
-            </field>
-          </fields>
-        </register>
-        <register>
-          <name>IRQF</name>
-          <description>Interrupt Flags</description>
-          <addressOffset>0x1C</addressOffset>
-          <access>read-write</access>
-          <fields>
-            <field>
-              <name>OVFIF</name>
-              <description>Overflow Interrupt Flag</description>
-              <bitRange>[0:0]</bitRange>
-            </field>
-            <field>
-              <name>ERRIF</name>
-              <description>Error Interrupt Flag</description>
-              <bitRange>[1:1]</bitRange>
-            </field>
-            <field>
-              <name>CCIF0</name>
-              <description>Capture/Compare 0 Interrupt Flag</description>
-              <bitRange>[2:2]</bitRange>
-            </field>
-            <field>
-              <name>CCIF1</name>
-              <description>Capture/Compare 1 Interrupt Flag</description>
-              <bitRange>[3:3]</bitRange>
-            </field>
-            <field>
-              <name>CCIF2</name>
-              <description>Capture/Compare 2 Interrupt Flag</description>
-              <bitRange>[4:4]</bitRange>
-            </field>
-            <field>
-              <name>CCIF3</name>
-              <description>Capture/Compare 3 Interrupt Flag</description>
-              <bitRange>[5:5]</bitRange>
-            </field>
-          </fields>
-        </register>
-        <register>
-          <name>IRQMAP</name>
-          <description>Interrupt Mapping</description>
-          <addressOffset>0x20</addressOffset>
-          <access>read-write</access>
-        </register>
-        <register>
-          <name>BUFVD</name>
-          <description>Buffer Valid Flags Register</description>
-          <addressOffset>0x24</addressOffset>
-          <access>read-write</access>
-          <fields>
-            <field>
-              <name>PRESBV</name>
-              <description>Prescaler Buffer Valid</description>
-              <bitRange>[0:0]</bitRange>
-            </field>
-            <field>
-              <name>PERBV</name>
-              <description>Period Buffer Valid</description>
-              <bitRange>[1:1]</bitRange>
-            </field>
-            <field>
-              <name>CCVD0</name>
-              <description>Capture/Compare 0 Buffer Valid</description>
-              <bitRange>[2:2]</bitRange>
-            </field>
-            <field>
-              <name>CCVD1</name>
-              <description>Capture/Compare 1 Buffer Valid</description>
-              <bitRange>[3:3]</bitRange>
-            </field>
-            <field>
-              <name>CCVD2</name>
-              <description>Capture/Compare 2 Buffer Valid</description>
-              <bitRange>[4:4]</bitRange>
-            </field>
-            <field>
-              <name>CCVD3</name>
-              <description>Capture/Compare 3 Buffer Valid</description>
-              <bitRange>[5:6]</bitRange>
-            </field>
-          </fields>
-        </register>
-        <register>
-          <name>COMPDEF</name>
-          <description>Compare Output Default Register</description>
-          <addressOffset>0x28</addressOffset>
-          <access>read-write</access>
-          <fields>
-            <field>
-              <name>CCDEF0</name>
-              <description>Capture Output 0 Default Value</description>
-              <bitRange>[2:2]</bitRange>
-            </field>
-            <field>
-              <name>CCDEF1</name>
-              <description>Capture Output 1 Default Value</description>
-              <bitRange>[3:3]</bitRange>
-            </field>
-            <field>
-              <name>CCDEF2</name>
-              <description>Capture Output 2 Default Value</description>
-              <bitRange>[4:4]</bitRange>
-            </field>
-            <field>
-              <name>CCDEF3</name>
-              <description>Capture Output 3 Default Value</description>
-              <bitRange>[5:5]</bitRange>
-            </field>
-          </fields>
-        </register>
-      </registers>
-    </peripheral>
     <!-- Timer16 -->
     <peripheral>
       <name>TIMER16_0</name>
       <description>16-bit Timer Module</description>
       <groupName>TIMER</groupName>
       <baseAddress>0xE0001100</baseAddress>
-      <addressBlock>
-        <offset>0</offset>
-        <size>0x100</size>
-        <usage>registers</usage>
-      </addressBlock>
-      <registers>
-        <register>
-          <name>CTRL</name>
-          <description>Control Register</description>
-          <addressOffset>0x0</addressOffset>
-          <access>read-write</access>
-          <fields>
-            <field>
-              <name>EN</name>
-              <description>Timer Enable bit</description>
-              <bitRange>[0:0]</bitRange>
-            </field>
-            <field>
-              <name>DIR</name>
-              <description>count direction</description>
-              <bitRange>[1:1]</bitRange>
-              <enumeratedValues>
-                <enumeratedValue>
-                  <name>UP</name>
-                  <description>count direction - increment</description>
-                  <value>0</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>DOWN</name>
-                  <description>count direction - decrement</description>
-                  <value>1</value>
-                </enumeratedValue>
-              </enumeratedValues>
-            </field>
-            <field>
-              <name>CMD</name>
-              <description>command</description>
-              <bitRange>[3:2]</bitRange>
-              <enumeratedValues>
-                <enumeratedValue>
-                  <name>NO_CMD</name>
-                  <description>no command</description>
-                  <value>0</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>RESTART</name>
-                  <description>update registers with "BUFFERED" values and restart counting</description>
-                  <value>1</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>UPDATE</name>
-                  <description>update registers with "BUFFERED" values</description>
-                  <value>2</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>RESET</name>
-                  <description>clear all registers</description>
-                  <value>3</value>
-                </enumeratedValue>
-              </enumeratedValues>
-            </field>
-            <field>
-              <name>MODE</name>
-              <description>Timer mode</description>
-              <bitRange>[5:4]</bitRange>
-              <enumeratedValues>
-                <enumeratedValue>
-                  <name>NORMAL</name>
-                  <description>timer mode</description>
-                  <value>0</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>CAPTURE</name>
-                  <description>capture mode</description>
-                  <value>1</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>WAVEFORM</name>
-                  <description>waveform generator mode</description>
-                  <value>2</value>
-                </enumeratedValue>
-              </enumeratedValues>
-            </field>
-            <field>
-              <name>CAP</name>
-              <description>Capture</description>
-              <bitRange>[7:6]</bitRange>
-              <enumeratedValues>
-                <enumeratedValue>
-                  <name>NORMAL</name>
-                  <description>normal mode</description>
-                  <value>0</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>PERIOD</name>
-                  <description>period mode</description>
-                  <value>1</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>PULSE</name>
-                  <description>pulse width mode</description>
-                  <value>2</value>
-                </enumeratedValue>
-              </enumeratedValues>
-            </field>
-            <field>
-              <name>WAVE</name>
-              <description>Wave</description>
-              <bitRange>[8:8]</bitRange>
-              <enumeratedValues>
-                <enumeratedValue>
-                  <name>SINGLE</name>
-                  <description>single slope mode</description>
-                  <value>0</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>DUAL</name>
-                  <description>dual slope mode</description>
-                  <value>1</value>
-                </enumeratedValue>
-              </enumeratedValues>
-            </field>
-            <field>
-              <name>CC_NUM</name>
-              <description>Timer Control Register CC Number</description>
-              <bitRange>[23:16]</bitRange>
-            </field>
-            <field>
-              <name>DBG_STOP</name>
-              <description>Stop counting in debug mode</description>
-              <bitRange>[31:31]</bitRange>
-            </field>
-          </fields>
-        </register>
-        <register>
-          <name>PER</name>
-          <description>Period Register</description>
-          <addressOffset>0x4</addressOffset>
-          <access>read-write</access>
-        </register>
-        <register>
-          <name>PERBUF</name>
-          <description>Period Buffer Register</description>
-          <addressOffset>0x8</addressOffset>
-          <access>read-write</access>
-        </register>
-        <register>
-          <name>PRES</name>
-          <description>Prescaler Register</description>
-          <addressOffset>0xC</addressOffset>
-          <access>read-write</access>
-        </register>
-        <register>
-          <name>PRESBUF</name>
-          <description>Prescaler Buffer Register</description>
-          <addressOffset>0x10</addressOffset>
-          <access>read-write</access>
-        </register>
-        <register>
-          <name>COUNT</name>
-          <description>Count Register</description>
-          <addressOffset>0x14</addressOffset>
-          <access>read-write</access>
-        </register>
-        <register>
-          <name>IRQM</name>
-          <description>Interrupt Mask</description>
-          <addressOffset>0x18</addressOffset>
-          <access>read-write</access>
-          <fields>
-            <field>
-              <name>OVFIE</name>
-              <description>Overflow Interrupt Enable</description>
-              <bitRange>[0:0]</bitRange>
-            </field>
-            <field>
-              <name>ERRIE</name>
-              <description>Error Interrupt Enable</description>
-              <bitRange>[1:1]</bitRange>
-            </field>
-            <field>
-              <name>CCIE0</name>
-              <description>Capture/Compare 0 Interrupt Enable</description>
-              <bitRange>[2:2]</bitRange>
-            </field>
-            <field>
-              <name>CCIE1</name>
-              <description>Capture/Compare 1 Interrupt Enable</description>
-              <bitRange>[3:3]</bitRange>
-            </field>
-            <field>
-              <name>CCIE2</name>
-              <description>Capture/Compare 2 Interrupt Enable</description>
-              <bitRange>[4:4]</bitRange>
-            </field>
-            <field>
-              <name>CCIE3</name>
-              <description>Capture/Compare 3 Interrupt Enable</description>
-              <bitRange>[5:5]</bitRange>
-            </field>
-          </fields>
-        </register>
-        <register>
-          <name>IRQF</name>
-          <description>Interrupt Flags</description>
-          <addressOffset>0x1C</addressOffset>
-          <access>read-write</access>
-          <fields>
-            <field>
-              <name>OVFIF</name>
-              <description>Overflow Interrupt Flag</description>
-              <bitRange>[0:0]</bitRange>
-            </field>
-            <field>
-              <name>ERRIF</name>
-              <description>Error Interrupt Flag</description>
-              <bitRange>[1:1]</bitRange>
-            </field>
-            <field>
-              <name>CCIF0</name>
-              <description>Capture/Compare 0 Interrupt Flag</description>
-              <bitRange>[2:2]</bitRange>
-            </field>
-            <field>
-              <name>CCIF1</name>
-              <description>Capture/Compare 1 Interrupt Flag</description>
-              <bitRange>[3:3]</bitRange>
-            </field>
-            <field>
-              <name>CCIF2</name>
-              <description>Capture/Compare 2 Interrupt Flag</description>
-              <bitRange>[4:4]</bitRange>
-            </field>
-            <field>
-              <name>CCIF3</name>
-              <description>Capture/Compare 3 Interrupt Flag</description>
-              <bitRange>[5:5]</bitRange>
-            </field>
-          </fields>
-        </register>
-        <register>
-          <name>IRQMAP</name>
-          <description>Interrupt Mapping</description>
-          <addressOffset>0x20</addressOffset>
-          <access>read-write</access>
-        </register>
-        <register>
-          <name>BUFVD</name>
-          <description>Buffer Valid Flags Register</description>
-          <addressOffset>0x24</addressOffset>
-          <access>read-write</access>
-          <fields>
-            <field>
-              <name>PRESBV</name>
-              <description>Prescaler Buffer Valid</description>
-              <bitRange>[0:0]</bitRange>
-            </field>
-            <field>
-              <name>PERBV</name>
-              <description>Period Buffer Valid</description>
-              <bitRange>[1:1]</bitRange>
-            </field>
-            <field>
-              <name>CCVD0</name>
-              <description>Capture/Compare 0 Buffer Valid</description>
-              <bitRange>[2:2]</bitRange>
-            </field>
-            <field>
-              <name>CCVD1</name>
-              <description>Capture/Compare 1 Buffer Valid</description>
-              <bitRange>[3:3]</bitRange>
-            </field>
-            <field>
-              <name>CCVD2</name>
-              <description>Capture/Compare 2 Buffer Valid</description>
-              <bitRange>[4:4]</bitRange>
-            </field>
-            <field>
-              <name>CCVD3</name>
-              <description>Capture/Compare 3 Buffer Valid</description>
-              <bitRange>[5:6]</bitRange>
-            </field>
-          </fields>
-        </register>
-        <register>
-          <name>COMPDEF</name>
-          <description>Compare Output Default Register</description>
-          <addressOffset>0x28</addressOffset>
-          <access>read-write</access>
-          <fields>
-            <field>
-              <name>CCDEF0</name>
-              <description>Capture Output 0 Default Value</description>
-              <bitRange>[2:2]</bitRange>
-            </field>
-            <field>
-              <name>CCDEF1</name>
-              <description>Capture Output 1 Default Value</description>
-              <bitRange>[3:3]</bitRange>
-            </field>
-            <field>
-              <name>CCDEF2</name>
-              <description>Capture Output 2 Default Value</description>
-              <bitRange>[4:4]</bitRange>
-            </field>
-            <field>
-              <name>CCDEF3</name>
-              <description>Capture Output 3 Default Value</description>
-              <bitRange>[5:5]</bitRange>
-            </field>
-          </fields>
-        </register>
-      </registers>
-    </peripheral>
-    <peripheral>
-      <name>TIMER16_1</name>
-      <description>16-bit Timer Module</description>
-      <groupName>TIMER</groupName>
-      <baseAddress>0xE0001200</baseAddress>
       <addressBlock>
         <offset>0</offset>
         <size>0x100</size>
@@ -7229,7 +7611,7 @@
           </fields>
         </register>
         <register>
-          <name>DWNCHNL2_STATUS</name>
+          <name>UPCHNL0_STATUS</name>
           <description>Status Register</description>
           <addressOffset>0x60</addressOffset>
           <access>read-only</access>
@@ -7263,7 +7645,7 @@
           </fields>
         </register>
         <register>
-          <name>DWNCHNL2_CTRL</name>
+          <name>UPCHNL0_CTRL</name>
           <description>Control Register</description>
           <addressOffset>0x64</addressOffset>
           <access>read-write</access>
@@ -7314,37 +7696,37 @@
           </fields>
         </register>
         <register>
-          <name>DWNCHNL2_PSELECT</name>
+          <name>UPCHNL0_PSELECT</name>
           <description>Peripheral Select</description>
           <addressOffset>0x68</addressOffset>
           <access>read-write</access>
         </register>
         <register>
-          <name>DWNCHNL2_ADDRESS</name>
+          <name>UPCHNL0_ADDRESS</name>
           <description>Memory Address</description>
           <addressOffset>0x6C</addressOffset>
           <access>read-write</access>
         </register>
         <register>
-          <name>DWNCHNL2_ADDRESSREL</name>
+          <name>UPCHNL0_ADDRESSREL</name>
           <description>Memory Address Reload</description>
           <addressOffset>0x70</addressOffset>
           <access>read-write</access>
         </register>
         <register>
-          <name>DWNCHNL2_COUNTER</name>
+          <name>UPCHNL0_COUNTER</name>
           <description>Transfer Counter</description>
           <addressOffset>0x74</addressOffset>
           <access>read-write</access>
         </register>
         <register>
-          <name>DWNCHNL2_COUNTERREL</name>
+          <name>UPCHNL0_COUNTERREL</name>
           <description>Transfer Counter Reload</description>
           <addressOffset>0x78</addressOffset>
           <access>read-write</access>
         </register>
         <register>
-          <name>DWNCHNL2_IRQM</name>
+          <name>UPCHNL0_IRQM</name>
           <description>Interrupt Mask</description>
           <addressOffset>0x7C</addressOffset>
           <access>read-write</access>
@@ -7373,7 +7755,7 @@
           </fields>
         </register>
         <register>
-          <name>DWNCHNL3_STATUS</name>
+          <name>UPCHNL1_STATUS</name>
           <description>Status Register</description>
           <addressOffset>0x80</addressOffset>
           <access>read-only</access>
@@ -7407,7 +7789,7 @@
           </fields>
         </register>
         <register>
-          <name>DWNCHNL3_CTRL</name>
+          <name>UPCHNL1_CTRL</name>
           <description>Control Register</description>
           <addressOffset>0x84</addressOffset>
           <access>read-write</access>
@@ -7458,37 +7840,37 @@
           </fields>
         </register>
         <register>
-          <name>DWNCHNL3_PSELECT</name>
+          <name>UPCHNL1_PSELECT</name>
           <description>Peripheral Select</description>
           <addressOffset>0x88</addressOffset>
           <access>read-write</access>
         </register>
         <register>
-          <name>DWNCHNL3_ADDRESS</name>
+          <name>UPCHNL1_ADDRESS</name>
           <description>Memory Address</description>
           <addressOffset>0x8C</addressOffset>
           <access>read-write</access>
         </register>
         <register>
-          <name>DWNCHNL3_ADDRESSREL</name>
+          <name>UPCHNL1_ADDRESSREL</name>
           <description>Memory Address Reload</description>
           <addressOffset>0x90</addressOffset>
           <access>read-write</access>
         </register>
         <register>
-          <name>DWNCHNL3_COUNTER</name>
+          <name>UPCHNL1_COUNTER</name>
           <description>Transfer Counter</description>
           <addressOffset>0x94</addressOffset>
           <access>read-write</access>
         </register>
         <register>
-          <name>DWNCHNL3_COUNTERREL</name>
+          <name>UPCHNL1_COUNTERREL</name>
           <description>Transfer Counter Reload</description>
           <addressOffset>0x98</addressOffset>
           <access>read-write</access>
         </register>
         <register>
-          <name>DWNCHNL3_IRQM</name>
+          <name>UPCHNL1_IRQM</name>
           <description>Interrupt Mask</description>
           <addressOffset>0x9C</addressOffset>
           <access>read-write</access>
@@ -7516,26 +7898,39 @@
             </field>
           </fields>
         </register>
+      </registers>
+    </peripheral>
+    <!-- Acquisition Engine -->
+    <peripheral>
+      <name>ACQENG0</name>
+      <description>Acquisition Engine</description>
+      <groupName>ACQENG</groupName>
+      <baseAddress>0xE2100000</baseAddress>
+      <addressBlock>
+        <offset>0</offset>
+        <size>0x100000</size>
+        <usage>registers</usage>
+      </addressBlock>
+      <registers>
         <register>
-          <name>UPCHNL0_STATUS</name>
-          <description>Status Register</description>
-          <addressOffset>0xA0</addressOffset>
+          <name>DS_I_STATUS</name>
+          <description>Data Streamer I Status Register</description>
+          <addressOffset>0x0</addressOffset>
           <access>read-only</access>
-          <!-- DMA Channel Status Register flags -->
           <fields>
             <field>
-              <name>ACT</name>
-              <description>Channel Active</description>
+              <name>BUSY</name>
+              <description>Busy</description>
               <bitRange>[0:0]</bitRange>
             </field>
             <field>
-              <name>TCZ</name>
-              <description>Transfer Counter Zero</description>
+              <name>SCZ</name>
+              <description>Sample Counter Zero</description>
               <bitRange>[1:1]</bitRange>
             </field>
             <field>
-              <name>RCZ</name>
-              <description>Counter Reload Zero</description>
+              <name>SRCZ</name>
+              <description>Sample Counter Reload Zero</description>
               <bitRange>[2:2]</bitRange>
             </field>
             <field>
@@ -7548,104 +7943,120 @@
               <description>Memory Access Error</description>
               <bitRange>[4:4]</bitRange>
             </field>
+            <field>
+              <name>FIFOU</name>
+              <description>Fifo Usage</description>
+              <bitRange>[14:5]</bitRange>
+            </field>
           </fields>
         </register>
         <register>
-          <name>UPCHNL0_CTRL</name>
-          <description>Control Register</description>
-          <addressOffset>0xA4</addressOffset>
+          <name>DS_I_CTRL</name>
+          <description>Data Streamer I Control Register</description>
+          <addressOffset>0x4</addressOffset>
           <access>read-write</access>
-          <!-- DMA Channel Control Register flags -->
           <fields>
             <field>
-              <name>EN</name>
-              <description>Transfer Enable</description>
+              <name>ACT</name>
+              <description>Streamer Active</description>
               <bitRange>[0:0]</bitRange>
             </field>
             <field>
-              <name>RING</name>
-              <description>Ring Buffer</description>
+              <name>ENA</name>
+              <description>Enable Streaming</description>
               <bitRange>[1:1]</bitRange>
             </field>
             <field>
-              <name>DEC</name>
-              <description>Address Decrement</description>
+              <name>FLUSH</name>
+              <description>Flush Streamer</description>
               <bitRange>[2:2]</bitRange>
-            </field>
-            <field>
-              <name>INC</name>
-              <description>Address Increment</description>
-              <bitRange>[3:3]</bitRange>
-            </field>
-            <field>
-              <name>TRU</name>
-              <description>Transfer Unit</description>
-              <bitRange>[5:4]</bitRange>
-              <enumeratedValues>
-                <enumeratedValue>
-                  <name>TRU8</name>
-                  <description>5 Data Bits</description>
-                  <value>0x1</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>TRU16</name>
-                  <description>6 Data Bits</description>
-                  <value>0x2</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>TRU32</name>
-                  <description>7 Data Bits</description>
-                  <value>0x0</value>
-                </enumeratedValue>
-              </enumeratedValues>
             </field>
           </fields>
         </register>
         <register>
-          <name>UPCHNL0_PSELECT</name>
-          <description>Peripheral Select</description>
-          <addressOffset>0xA8</addressOffset>
+          <name>DS_I_CONFIG</name>
+          <description>Data Streamer I Configuration Register</description>
+          <addressOffset>0x8</addressOffset>
           <access>read-write</access>
-        </register>
-        <register>
-          <name>UPCHNL0_ADDRESS</name>
-          <description>Memory Address</description>
-          <addressOffset>0xAC</addressOffset>
-          <access>read-write</access>
-        </register>
-        <register>
-          <name>UPCHNL0_ADDRESSREL</name>
-          <description>Memory Address Reload</description>
-          <addressOffset>0xB0</addressOffset>
-          <access>read-write</access>
-        </register>
-        <register>
-          <name>UPCHNL0_COUNTER</name>
-          <description>Transfer Counter</description>
-          <addressOffset>0xB4</addressOffset>
-          <access>read-write</access>
-        </register>
-        <register>
-          <name>UPCHNL0_COUNTERREL</name>
-          <description>Transfer Counter Reload</description>
-          <addressOffset>0xB8</addressOffset>
-          <access>read-write</access>
-        </register>
-        <register>
-          <name>UPCHNL0_IRQM</name>
-          <description>Interrupt Mask</description>
-          <addressOffset>0xBC</addressOffset>
-          <access>read-write</access>
-          <!-- DMA Channel Interrupt Mask bits -->
           <fields>
             <field>
-              <name>TCZIE</name>
-              <description>Transfer Counter Zero Interrupt Enable</description>
+              <name>RING</name>
+              <description>Ring Buffer</description>
               <bitRange>[0:0]</bitRange>
             </field>
             <field>
-              <name>RCZIE</name>
-              <description>Reload Counter Zero Interrupt Enable</description>
+              <name>SSS</name>
+              <description>Stream Sample Size</description>
+              <bitRange>[4:1]</bitRange>
+            </field>
+            <field>
+              <name>SEST</name>
+              <description>Sign Extended Stream transfer</description>
+              <bitRange>[5:5]</bitRange>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>DS_I_INFO</name>
+          <description>Data Streamer I Info Register</description>
+          <addressOffset>0xC</addressOffset>
+          <access>read-only</access>
+          <fields>
+            <field>
+              <name>SIDW</name>
+              <description>Stream Interface Data Width</description>
+              <bitRange>[9:0]</bitRange>
+            </field>
+            <field>
+              <name>FIFOD</name>
+              <description>Fifo Depth</description>
+              <bitRange>[19:10]</bitRange>
+            </field>
+            <field>
+              <name>FIFOWD</name>
+              <description>Fifo Word Width</description>
+              <bitRange>[29:20]</bitRange>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>DS_I_ADDRESS</name>
+          <description>Data Streamer I Memory Address Register</description>
+          <addressOffset>0x10</addressOffset>
+          <access>read-write</access>
+        </register>
+        <register>
+          <name>DS_I_ADDRESSREL</name>
+          <description>Data Streamer I Memory Address Reload Register</description>
+          <addressOffset>0x14</addressOffset>
+          <access>read-write</access>
+        </register>
+        <register>
+          <name>DS_I_COUNTER</name>
+          <description>Data Streamer I Sample Counter Register</description>
+          <addressOffset>0x18</addressOffset>
+          <access>read-write</access>
+        </register>
+        <register>
+          <name>DS_I_COUNTERREL</name>
+          <description>Data Streamer I Sample Counter Reload Register</description>
+          <addressOffset>0x1C</addressOffset>
+          <access>read-write</access>
+        </register>
+        <register>
+          <name>DS_I_IRQMASK</name>
+          <description>Data Streamer I Interrupt Mask Register</description>
+          <addressOffset>0x20</addressOffset>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>SCZIE</name>
+              <description>Sample Counter Zero Interrupt Enable</description>
+              <bitRange>[0:0]</bitRange>
+            </field>
+            <field>
+              <name>SRCZIE</name>
+              <description>Sample Counter Reload Zero Interrupt Enable</description>
               <bitRange>[1:1]</bitRange>
             </field>
             <field>
@@ -7661,25 +8072,24 @@
           </fields>
         </register>
         <register>
-          <name>UPCHNL1_STATUS</name>
-          <description>Status Register</description>
-          <addressOffset>0xC0</addressOffset>
+          <name>DS_Q_STATUS</name>
+          <description>Data Streamer Q Status Register</description>
+          <addressOffset>0x40000</addressOffset>
           <access>read-only</access>
-          <!-- DMA Channel Status Register flags -->
           <fields>
             <field>
-              <name>ACT</name>
-              <description>Channel Active</description>
+              <name>BUSY</name>
+              <description>Busy</description>
               <bitRange>[0:0]</bitRange>
             </field>
             <field>
-              <name>TCZ</name>
-              <description>Transfer Counter Zero</description>
+              <name>SCZ</name>
+              <description>Sample Counter Zero</description>
               <bitRange>[1:1]</bitRange>
             </field>
             <field>
-              <name>RCZ</name>
-              <description>Counter Reload Zero</description>
+              <name>SRCZ</name>
+              <description>Sample Counter Reload Zero</description>
               <bitRange>[2:2]</bitRange>
             </field>
             <field>
@@ -7692,104 +8102,120 @@
               <description>Memory Access Error</description>
               <bitRange>[4:4]</bitRange>
             </field>
+            <field>
+              <name>FIFOU</name>
+              <description>Fifo Usage</description>
+              <bitRange>[14:5]</bitRange>
+            </field>
           </fields>
         </register>
         <register>
-          <name>UPCHNL1_CTRL</name>
-          <description>Control Register</description>
-          <addressOffset>0xC4</addressOffset>
+          <name>DS_Q_CTRL</name>
+          <description>Data Streamer Q Control Register</description>
+          <addressOffset>0x40004</addressOffset>
           <access>read-write</access>
-          <!-- DMA Channel Control Register flags -->
           <fields>
             <field>
-              <name>EN</name>
-              <description>Transfer Enable</description>
+              <name>ACT</name>
+              <description>Streamer Active</description>
               <bitRange>[0:0]</bitRange>
             </field>
             <field>
-              <name>RING</name>
-              <description>Ring Buffer</description>
+              <name>ENA</name>
+              <description>Enable Streaming</description>
               <bitRange>[1:1]</bitRange>
             </field>
             <field>
-              <name>DEC</name>
-              <description>Address Decrement</description>
+              <name>FLUSH</name>
+              <description>Flush Streamer</description>
               <bitRange>[2:2]</bitRange>
-            </field>
-            <field>
-              <name>INC</name>
-              <description>Address Increment</description>
-              <bitRange>[3:3]</bitRange>
-            </field>
-            <field>
-              <name>TRU</name>
-              <description>Transfer Unit</description>
-              <bitRange>[5:4]</bitRange>
-              <enumeratedValues>
-                <enumeratedValue>
-                  <name>TRU8</name>
-                  <description>5 Data Bits</description>
-                  <value>0x1</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>TRU16</name>
-                  <description>6 Data Bits</description>
-                  <value>0x2</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>TRU32</name>
-                  <description>7 Data Bits</description>
-                  <value>0x0</value>
-                </enumeratedValue>
-              </enumeratedValues>
             </field>
           </fields>
         </register>
         <register>
-          <name>UPCHNL1_PSELECT</name>
-          <description>Peripheral Select</description>
-          <addressOffset>0xC8</addressOffset>
+          <name>DS_Q_CONFIG</name>
+          <description>Data Streamer Q Configuration Register</description>
+          <addressOffset>0x40008</addressOffset>
           <access>read-write</access>
-        </register>
-        <register>
-          <name>UPCHNL1_ADDRESS</name>
-          <description>Memory Address</description>
-          <addressOffset>0xCC</addressOffset>
-          <access>read-write</access>
-        </register>
-        <register>
-          <name>UPCHNL1_ADDRESSREL</name>
-          <description>Memory Address Reload</description>
-          <addressOffset>0xD0</addressOffset>
-          <access>read-write</access>
-        </register>
-        <register>
-          <name>UPCHNL1_COUNTER</name>
-          <description>Transfer Counter</description>
-          <addressOffset>0xD4</addressOffset>
-          <access>read-write</access>
-        </register>
-        <register>
-          <name>UPCHNL1_COUNTERREL</name>
-          <description>Transfer Counter Reload</description>
-          <addressOffset>0xD8</addressOffset>
-          <access>read-write</access>
-        </register>
-        <register>
-          <name>UPCHNL1_IRQM</name>
-          <description>Interrupt Mask</description>
-          <addressOffset>0xDC</addressOffset>
-          <access>read-write</access>
-          <!-- DMA Channel Interrupt Mask bits -->
           <fields>
             <field>
-              <name>TCZIE</name>
-              <description>Transfer Counter Zero Interrupt Enable</description>
+              <name>RING</name>
+              <description>Ring Buffer</description>
               <bitRange>[0:0]</bitRange>
             </field>
             <field>
-              <name>RCZIE</name>
-              <description>Reload Counter Zero Interrupt Enable</description>
+              <name>SSS</name>
+              <description>Stream Sample Size</description>
+              <bitRange>[4:1]</bitRange>
+            </field>
+            <field>
+              <name>SEST</name>
+              <description>Sign Extended Stream transfer</description>
+              <bitRange>[5:5]</bitRange>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>DS_Q_INFO</name>
+          <description>Data Streamer Q Info Register</description>
+          <addressOffset>0x4000C</addressOffset>
+          <access>read-only</access>
+          <fields>
+            <field>
+              <name>SIDW</name>
+              <description>Stream Interface Data Width</description>
+              <bitRange>[9:0]</bitRange>
+            </field>
+            <field>
+              <name>FIFOD</name>
+              <description>Fifo Depth</description>
+              <bitRange>[19:10]</bitRange>
+            </field>
+            <field>
+              <name>FIFOWD</name>
+              <description>Fifo Word Width</description>
+              <bitRange>[29:20]</bitRange>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>DS_Q_ADDRESS</name>
+          <description>Data Streamer Q Memory Address Register</description>
+          <addressOffset>0x40010</addressOffset>
+          <access>read-write</access>
+        </register>
+        <register>
+          <name>DS_Q_ADDRESSREL</name>
+          <description>Data Streamer Q Memory Address Reload Register</description>
+          <addressOffset>0x40014</addressOffset>
+          <access>read-write</access>
+        </register>
+        <register>
+          <name>DS_Q_COUNTER</name>
+          <description>Data Streamer Q Sample Counter Register</description>
+          <addressOffset>0x40018</addressOffset>
+          <access>read-write</access>
+        </register>
+        <register>
+          <name>DS_Q_COUNTERREL</name>
+          <description>Data Streamer Q Sample Counter Reload Register</description>
+          <addressOffset>0x4001C</addressOffset>
+          <access>read-write</access>
+        </register>
+        <register>
+          <name>DS_Q_IRQMASK</name>
+          <description>Data Streamer Q Interrupt Mask Register</description>
+          <addressOffset>0x40020</addressOffset>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>SCZIE</name>
+              <description>Sample Counter Zero Interrupt Enable</description>
+              <bitRange>[0:0]</bitRange>
+            </field>
+            <field>
+              <name>SRCZIE</name>
+              <description>Sample Counter Reload Zero Interrupt Enable</description>
               <bitRange>[1:1]</bitRange>
             </field>
             <field>
@@ -7805,290 +8231,478 @@
           </fields>
         </register>
         <register>
-          <name>UPCHNL2_STATUS</name>
-          <description>Status Register</description>
-          <addressOffset>0xE0</addressOffset>
+          <name>AEC_STATUS</name>
+          <description>Core Status Register</description>
+          <addressOffset>0x80000</addressOffset>
           <access>read-only</access>
-          <!-- DMA Channel Status Register flags -->
           <fields>
             <field>
-              <name>ACT</name>
-              <description>Channel Active</description>
+              <name>BUSY</name>
+              <description>Busy</description>
               <bitRange>[0:0]</bitRange>
             </field>
             <field>
-              <name>TCZ</name>
-              <description>Transfer Counter Zero</description>
+              <name>PRNDONE</name>
+              <description>PRN Generation Done</description>
               <bitRange>[1:1]</bitRange>
             </field>
             <field>
-              <name>RCZ</name>
-              <description>Counter Reload Zero</description>
+              <name>SATFO</name>
+              <description>Satellite Found</description>
               <bitRange>[2:2]</bitRange>
             </field>
             <field>
-              <name>MAR</name>
-              <description>Memory Address Reload</description>
+              <name>DONE</name>
+              <description>Acquisition Done</description>
               <bitRange>[3:3]</bitRange>
             </field>
             <field>
-              <name>MERR</name>
-              <description>Memory Access Error</description>
-              <bitRange>[4:4]</bitRange>
+              <name>PRNSHIFT</name>
+              <description>PRN Shift</description>
+              <bitRange>[19:4]</bitRange>
+            </field>
+            <field>
+              <name>AUTOERR</name>
+              <description>Auto Mode Error</description>
+              <bitRange>[20:20]</bitRange>
             </field>
           </fields>
         </register>
         <register>
-          <name>UPCHNL2_CTRL</name>
-          <description>Control Register</description>
-          <addressOffset>0xE4</addressOffset>
+          <name>AEC_CTRL</name>
+          <description>Core Control Register</description>
+          <addressOffset>0x80004</addressOffset>
           <access>read-write</access>
-          <!-- DMA Channel Control Register flags -->
           <fields>
             <field>
-              <name>EN</name>
-              <description>Transfer Enable</description>
+              <name>CLKREQ</name>
+              <description>Clock Request</description>
               <bitRange>[0:0]</bitRange>
             </field>
             <field>
-              <name>RING</name>
-              <description>Ring Buffer</description>
+              <name>DIAGMBIST</name>
+              <description>Diagnostic Access MBIST Mode</description>
               <bitRange>[1:1]</bitRange>
             </field>
             <field>
-              <name>DEC</name>
-              <description>Address Decrement</description>
+              <name>ACT</name>
+              <description>Acquisition Engine Active</description>
               <bitRange>[2:2]</bitRange>
             </field>
             <field>
-              <name>INC</name>
-              <description>Address Increment</description>
+              <name>READY</name>
+              <description>AXI Stream Ready</description>
               <bitRange>[3:3]</bitRange>
             </field>
             <field>
-              <name>TRU</name>
-              <description>Transfer Unit</description>
-              <bitRange>[5:4]</bitRange>
+              <name>PRNCL</name>
+              <description>PRN Generator Clean</description>
+              <bitRange>[4:4]</bitRange>
+            </field>
+            <field>
+              <name>PRNLO</name>
+              <description>Load PRN Code</description>
+              <bitRange>[5:5]</bitRange>
+            </field>
+            <field>
+              <name>CARRCL</name>
+              <description>Carrier Mixer Clear</description>
+              <bitRange>[6:6]</bitRange>
+            </field>
+            <field>
+              <name>POSTCL</name>
+              <description>Post-Processing Clear</description>
+              <bitRange>[7:7]</bitRange>
+            </field>
+            <field>
+              <name>DROPSMP</name>
+              <description>Drop Next Sample</description>
+              <bitRange>[8:8]</bitRange>
+            </field>
+            <field>
+              <name>REFILLML</name>
+              <description>Force Refilling Matched Filter</description>
+              <bitRange>[9:9]</bitRange>
+            </field>
+            <field>
+              <name>AUTOCL</name>
+              <description>Auto FSM Clear</description>
+              <bitRange>[10:10]</bitRange>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>AEC_CONFIG</name>
+          <description>Core Main Configuratiin Register</description>
+          <addressOffset>0x80008</addressOffset>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>AUTO</name>
+              <description>Automatic Mode</description>
+              <bitRange>[0:0]</bitRange>
+            </field>
+            <field>
+              <name>GPS</name>
+              <description>GPS Enabled</description>
+              <bitRange>[1:1]</bitRange>
+            </field>
+            <field>
+              <name>GALIL</name>
+              <description>Galileo Enabled</description>
+              <bitRange>[2:2]</bitRange>
+            </field>
+            <field>
+              <name>GLONA</name>
+              <description>GLONASS Enables</description>
+              <bitRange>[3:3]</bitRange>
+            </field>
+            <field>
+              <name>BEID</name>
+              <description>BieDou Enabled</description>
+              <bitRange>[4:4]</bitRange>
+            </field>
+            <field>
+              <name>QZSS</name>
+              <description>QZSS Enabled</description>
+              <bitRange>[5:5]</bitRange>
+            </field>
+            <field>
+              <name>NAVIC</name>
+              <description>NavIC Enabled</description>
+              <bitRange>[6:6]</bitRange>
+            </field>
+            <field>
+              <name>L1E1F</name>
+              <description>L1/E1 Frequency Enabled</description>
+              <bitRange>[7:7]</bitRange>
+            </field>
+            <field>
+              <name>L2F</name>
+              <description>L2 Frequency Enabled</description>
+              <bitRange>[8:8]</bitRange>
+            </field>
+            <field>
+              <name>E6F</name>
+              <description>E6 Frequency Enabled</description>
+              <bitRange>[9:9]</bitRange>
+            </field>
+            <field>
+              <name>L5E5AF</name>
+              <description>L5/E5a Frequency Enabled</description>
+              <bitRange>[10:10]</bitRange>
+            </field>
+            <field>
+              <name>E5BF</name>
+              <description>E5b Frequency Enabled</description>
+              <bitRange>[11:11]</bitRange>
+            </field>
+            <field>
+              <name>SF</name>
+              <description>S Band Frequency Enabled</description>
+              <bitRange>[12:12]</bitRange>
+            </field>
+            <field>
+              <name>CF</name>
+              <description>C Band Frequency Enabled</description>
+              <bitRange>[13:13]</bitRange>
+            </field>
+            <field>
+              <name>MIXER</name>
+              <description>Carrier Mixed Enabled</description>
+              <bitRange>[14:14]</bitRange>
+            </field>
+            <field>
+              <name>FFT</name>
+              <description>FFT Enabled</description>
+              <bitRange>[15:15]</bitRange>
+            </field>
+            <field>
+              <name>CARRM</name>
+              <description>Carrier Mode</description>
+              <bitRange>[17:16]</bitRange>
               <enumeratedValues>
                 <enumeratedValue>
-                  <name>TRU8</name>
-                  <description>5 Data Bits</description>
+                  <name>PIMQ_PQPI</name>
+                  <description>PIMQ_PQPI</description>
+                  <value>0x0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>PIPQ_PQMI</name>
+                  <description>PIPQ_PQMI</description>
                   <value>0x1</value>
                 </enumeratedValue>
                 <enumeratedValue>
-                  <name>TRU16</name>
-                  <description>6 Data Bits</description>
+                  <name>PIPQ_MQPI</name>
+                  <description>PIPQ_MQPI</description>
                   <value>0x2</value>
                 </enumeratedValue>
                 <enumeratedValue>
-                  <name>TRU32</name>
-                  <description>7 Data Bits</description>
-                  <value>0x0</value>
+                  <name>PIMQ_MQMI</name>
+                  <description>PIMQ_MQMI</description>
+                  <value>0x3</value>
                 </enumeratedValue>
               </enumeratedValues>
             </field>
+            <field>
+              <name>BOCMIX</name>
+              <description>PRN BOX Mixer Enabled</description>
+              <bitRange>[18:18]</bitRange>
+            </field>
+            <field>
+              <name>SPCS</name>
+              <description>Samples Per Chip as Shift</description>
+              <bitRange>[22:19]</bitRange>
+            </field>
+            <field>
+              <name>CYCLIC</name>
+              <description>Cyclic Data Enabled</description>
+              <bitRange>[23:23]</bitRange>
+            </field>
+            <field>
+              <name>SBAS</name>
+              <description>SBAS Enabled</description>
+              <bitRange>[24:24]</bitRange>
+            </field>
+            <field>
+              <name>ALWFINE</name>
+              <description>Always Fine Search Enabled</description>
+              <bitRange>[25:25]</bitRange>
+            </field>
           </fields>
         </register>
         <register>
-          <name>UPCHNL2_PSELECT</name>
-          <description>Peripheral Select</description>
-          <addressOffset>0xE8</addressOffset>
+          <name>AEC_CFG_F_IF</name>
+          <description>Core Carrier Frequency Configuration Register</description>
+          <addressOffset>0x8000C</addressOffset>
           <access>read-write</access>
         </register>
         <register>
-          <name>UPCHNL2_ADDRESS</name>
-          <description>Memory Address</description>
-          <addressOffset>0xEC</addressOffset>
+          <name>AEC_CFG_F_DOPP</name>
+          <description>Core Doppler Frequency Configuration Register</description>
+          <addressOffset>0x80010</addressOffset>
           <access>read-write</access>
         </register>
         <register>
-          <name>UPCHNL2_ADDRESSREL</name>
-          <description>Memory Address Reload</description>
-          <addressOffset>0xF0</addressOffset>
+          <name>AEC_SET_F_PHASE</name>
+          <description>Core Sine NCO Phase Set Register</description>
+          <addressOffset>0x80014</addressOffset>
           <access>read-write</access>
         </register>
         <register>
-          <name>UPCHNL2_COUNTER</name>
-          <description>Transfer Counter</description>
-          <addressOffset>0xF4</addressOffset>
+          <name>AEC_CFG_FINE_F_DOPP</name>
+          <description>Core Fine Doppler Step Configuration Register</description>
+          <addressOffset>0x80018</addressOffset>
           <access>read-write</access>
         </register>
         <register>
-          <name>UPCHNL2_COUNTERREL</name>
-          <description>Transfer Counter Reload</description>
-          <addressOffset>0xF8</addressOffset>
+          <name>AEC_CFG_PRN_CODE</name>
+          <description>Core PRN Code Number Register</description>
+          <addressOffset>0x8001C</addressOffset>
           <access>read-write</access>
-        </register>
-        <register>
-          <name>UPCHNL2_IRQM</name>
-          <description>Interrupt Mask</description>
-          <addressOffset>0xFC</addressOffset>
-          <access>read-write</access>
-          <!-- DMA Channel Interrupt Mask bits -->
           <fields>
             <field>
-              <name>TCZIE</name>
-              <description>Transfer Counter Zero Interrupt Enable</description>
-              <bitRange>[0:0]</bitRange>
+              <name>PRN</name>
+              <description>PRN Code Number</description>
+              <bitRange>[7:0]</bitRange>
             </field>
             <field>
-              <name>RCZIE</name>
-              <description>Reload Counter Zero Interrupt Enable</description>
-              <bitRange>[1:1]</bitRange>
-            </field>
-            <field>
-              <name>MARIE</name>
-              <description>Memory Address Reload Interrupt Enable</description>
-              <bitRange>[2:2]</bitRange>
-            </field>
-            <field>
-              <name>MERRIE</name>
-              <description>Memory Access Error Interrupt Enable</description>
-              <bitRange>[3:3]</bitRange>
+              <name>PRNBI</name>
+              <description>Numer of PRN Code Bits to Load</description>
+              <bitRange>[23:8]</bitRange>
             </field>
           </fields>
         </register>
         <register>
-          <name>UPCHNL3_STATUS</name>
-          <description>Status Register</description>
-          <addressOffset>0x100</addressOffset>
+          <name>AEC_CFG_PRN_FREQ</name>
+          <description>Core PRN Frequency Configuration Register</description>
+          <addressOffset>0x80020</addressOffset>
+          <access>read-write</access>
+        </register>
+        <register>
+          <name>AEC_CFG_POST</name>
+          <description>Core Post-Processing Configuration Register</description>
+          <addressOffset>0x80024</addressOffset>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>PERIOD</name>
+              <description>PRN Period</description>
+              <bitRange>[15:0]</bitRange>
+            </field>
+            <field>
+              <name>NPERCOH</name>
+              <description>Number of PRN Period Coherent Accumulations</description>
+              <bitRange>[19:16]</bitRange>
+            </field>
+            <field>
+              <name>NPERNCOH</name>
+              <description>Number of PRN Period Noncoherent Accumulations</description>
+              <bitRange>[23:20]</bitRange>
+            </field>
+            <field>
+              <name>STEP</name>
+              <description>PRN Step</description>
+              <bitRange>[31:24]</bitRange>
+            </field>
+          </fields>
+        </register>
+        <register>
+          <name>AEC_CFG_DET</name>
+          <description>Core Detection Configuration Register</description>
+          <addressOffset>0x80028</addressOffset>
+          <access>read-write</access>
+        </register>
+        <register>
+          <name>AEC_CFG_MIN_F_DOPP</name>
+          <description>Core Min Doppler Range Configuration Register</description>
+          <addressOffset>0x8002C</addressOffset>
+          <access>read-write</access>
+        </register>
+        <register>
+          <name>AEC_CFG_MAX_F_DOPP</name>
+          <description>Core Max Doppler Range Configuration Register</description>
+          <addressOffset>0x80030</addressOffset>
+          <access>read-write</access>
+        </register>
+        <register>
+          <name>AEC_CFG_PRN_MASK_0</name>
+          <description>Core PRN Mask 0 Configuration Register</description>
+          <addressOffset>0x80034</addressOffset>
+          <access>read-write</access>
+        </register>
+        <register>
+          <name>AEC_CFG_PRN_MASK_1</name>
+          <description>Core PRN Mask 1 Configuration Register</description>
+          <addressOffset>0x80038</addressOffset>
+          <access>read-write</access>
+        </register>
+        <register>
+          <name>AEC_INFO</name>
+          <description>Core Info Register</description>
+          <addressOffset>0x8003C</addressOffset>
           <access>read-only</access>
-          <!-- DMA Channel Status Register flags -->
           <fields>
             <field>
-              <name>ACT</name>
-              <description>Channel Active</description>
-              <bitRange>[0:0]</bitRange>
+              <name>VERSION</name>
+              <description>Acquisition Engine Version</description>
+              <bitRange>[7:0]</bitRange>
             </field>
             <field>
-              <name>TCZ</name>
-              <description>Transfer Counter Zero</description>
-              <bitRange>[1:1]</bitRange>
+              <name>HAS_AUTO</name>
+              <description>Automatic Mode Info</description>
+              <bitRange>[8:8]</bitRange>
             </field>
             <field>
-              <name>RCZ</name>
-              <description>Counter Reload Zero</description>
-              <bitRange>[2:2]</bitRange>
+              <name>CORRWD</name>
+              <description>Correlation Width</description>
+              <bitRange>[13:9]</bitRange>
             </field>
             <field>
-              <name>MAR</name>
-              <description>Memory Address Reload</description>
-              <bitRange>[3:3]</bitRange>
+              <name>SBAS_L1CA</name>
+              <description>SBAS L1CA PRN Generator Info</description>
+              <bitRange>[19:19]</bitRange>
             </field>
             <field>
-              <name>MERR</name>
-              <description>Memory Access Error</description>
-              <bitRange>[4:4]</bitRange>
+              <name>NAVIC_L5SPS</name>
+              <description>NavIC L5SPS PRN Generator Info</description>
+              <bitRange>[20:20]</bitRange>
+            </field>
+            <field>
+              <name>QZSS_L1CA</name>
+              <description>QZSS L1CA PRN Generator Info</description>
+              <bitRange>[21:21]</bitRange>
+            </field>
+            <field>
+              <name>BEID_B1I</name>
+              <description>BeiDou B1I PRN Generator Info</description>
+              <bitRange>[22:22]</bitRange>
+            </field>
+            <field>
+              <name>GLONA_L1OF</name>
+              <description>GLONASS L1OF PRN Generator Info</description>
+              <bitRange>[23:23]</bitRange>
+            </field>
+            <field>
+              <name>GALIL_C</name>
+              <description>Galileo C Band PRN Generator Info</description>
+              <bitRange>[24:24]</bitRange>
+            </field>
+            <field>
+              <name>GALIL_E5B</name>
+              <description>Galileo E5b PRN Generator Info</description>
+              <bitRange>[25:25]</bitRange>
+            </field>
+            <field>
+              <name>GALIL_E5A</name>
+              <description>Galileo E5a PRN Generator Info</description>
+              <bitRange>[26:26]</bitRange>
+            </field>
+            <field>
+              <name>GALIL_E6</name>
+              <description>Galileo E6 PRN Generator Info</description>
+              <bitRange>[27:27]</bitRange>
+            </field>
+            <field>
+              <name>GALIL_E1B</name>
+              <description>Galileo E1B PRN Generator Info</description>
+              <bitRange>[28:28]</bitRange>
+            </field>
+            <field>
+              <name>GPS_L5</name>
+              <description>GPS L5 PRN Generator Info</description>
+              <bitRange>[29:29]</bitRange>
+            </field>
+            <field>
+              <name>GPS_L2C</name>
+              <description>GPS L2C PRN Generator Info</description>
+              <bitRange>[30:30]</bitRange>
+            </field>
+            <field>
+              <name>GPS_L1CA</name>
+              <description>GPS L1CA PRN Generator Info</description>
+              <bitRange>[31:31]</bitRange>
             </field>
           </fields>
         </register>
         <register>
-          <name>UPCHNL3_CTRL</name>
-          <description>Control Register</description>
-          <addressOffset>0x104</addressOffset>
-          <access>read-write</access>
-          <!-- DMA Channel Control Register flags -->
+          <name>AEC_INFO_MF</name>
+          <description>Core Matched Filter Info Register</description>
+          <addressOffset>0x80040</addressOffset>
+          <access>read-only</access>
           <fields>
             <field>
-              <name>EN</name>
-              <description>Transfer Enable</description>
-              <bitRange>[0:0]</bitRange>
+              <name>MFDATA</name>
+              <description>Matched Filter Data Shift Register Length</description>
+              <bitRange>[15:0]</bitRange>
             </field>
             <field>
-              <name>RING</name>
-              <description>Ring Buffer</description>
-              <bitRange>[1:1]</bitRange>
-            </field>
-            <field>
-              <name>DEC</name>
-              <description>Address Decrement</description>
-              <bitRange>[2:2]</bitRange>
-            </field>
-            <field>
-              <name>INC</name>
-              <description>Address Increment</description>
-              <bitRange>[3:3]</bitRange>
-            </field>
-            <field>
-              <name>TRU</name>
-              <description>Transfer Unit</description>
-              <bitRange>[5:4]</bitRange>
-              <enumeratedValues>
-                <enumeratedValue>
-                  <name>TRU8</name>
-                  <description>5 Data Bits</description>
-                  <value>0x1</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>TRU16</name>
-                  <description>6 Data Bits</description>
-                  <value>0x2</value>
-                </enumeratedValue>
-                <enumeratedValue>
-                  <name>TRU32</name>
-                  <description>7 Data Bits</description>
-                  <value>0x0</value>
-                </enumeratedValue>
-              </enumeratedValues>
+              <name>MFCODE</name>
+              <description>Matched Filter Code Shift Register Length</description>
+              <bitRange>[31:16]</bitRange>
             </field>
           </fields>
         </register>
         <register>
-          <name>UPCHNL3_PSELECT</name>
-          <description>Peripheral Select</description>
-          <addressOffset>0x108</addressOffset>
+          <name>AEC_IRQMASK</name>
+          <description>Core Interrupt Mask Register</description>
+          <addressOffset>0x80044</addressOffset>
           <access>read-write</access>
-        </register>
-        <register>
-          <name>UPCHNL3_ADDRESS</name>
-          <description>Memory Address</description>
-          <addressOffset>0x10C</addressOffset>
-          <access>read-write</access>
-        </register>
-        <register>
-          <name>UPCHNL3_ADDRESSREL</name>
-          <description>Memory Address Reload</description>
-          <addressOffset>0x110</addressOffset>
-          <access>read-write</access>
-        </register>
-        <register>
-          <name>UPCHNL3_COUNTER</name>
-          <description>Transfer Counter</description>
-          <addressOffset>0x114</addressOffset>
-          <access>read-write</access>
-        </register>
-        <register>
-          <name>UPCHNL3_COUNTERREL</name>
-          <description>Transfer Counter Reload</description>
-          <addressOffset>0x118</addressOffset>
-          <access>read-write</access>
-        </register>
-        <register>
-          <name>UPCHNL3_IRQM</name>
-          <description>Interrupt Mask</description>
-          <addressOffset>0x11C</addressOffset>
-          <access>read-write</access>
-          <!-- DMA Channel Interrupt Mask bits -->
           <fields>
             <field>
-              <name>TCZIE</name>
-              <description>Transfer Counter Zero Interrupt Enable</description>
+              <name>PRNDONEIE</name>
+              <description>PRN Generation Done Interrupt Enable</description>
               <bitRange>[0:0]</bitRange>
             </field>
             <field>
-              <name>RCZIE</name>
-              <description>Reload Counter Zero Interrupt Enable</description>
+              <name>SATFOIE</name>
+              <description>Satellite Found Interrupt Enable</description>
               <bitRange>[1:1]</bitRange>
             </field>
             <field>
-              <name>MARIE</name>
-              <description>Memory Address Reload Interrupt Enable</description>
+              <name>DONEIE</name>
+              <description>Acquisition Done Interrupt Enable</description>
               <bitRange>[2:2]</bitRange>
-            </field>
-            <field>
-              <name>MERRIE</name>
-              <description>Memory Access Error Interrupt Enable</description>
-              <bitRange>[3:3]</bitRange>
             </field>
           </fields>
         </register>

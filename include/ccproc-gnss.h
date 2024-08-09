@@ -2,8 +2,8 @@
 *
 * Copyright (c) 2017 ChipCraft Sp. z o.o. All rights reserved
 *
-* $Date: 2022-12-12 15:09:34 +0100 (pon, 12 gru 2022) $
-* $Revision: 936 $
+* $Date: 2024-06-17 09:37:19 +0200 (pon, 17 cze 2024) $
+* $Revision: 1065 $
 *
 *  ----------------------------------------------------------------------
 * Redistribution and use in source and binary forms, with or without
@@ -58,7 +58,7 @@
 /** GNSS Controller Registers */
 typedef struct
 {
-    uint32_t STATUS;            /*!< Status Register                                      */
+    uint32_t STCR;              /*!< Status and Control Register                          */
     uint32_t COUNT;             /*!< Count Register                                       */
     uint32_t ADDRI;             /*!< I Array Address                                      */
     uint32_t ADDRQ;             /*!< Q Array Address                                      */
@@ -121,48 +121,42 @@ static volatile gnss_regs_t * const GNSS_PTR = (gnss_regs_t*)GNSS_BASE;
 /** GNSS Controller Status Register Flags */
 enum
 {
-    GNSS_STAT_L1E1        = 1 << 0,  /*!< GNSS L1/E1 Available                        */
-    GNSS_STAT_L5E5        = 1 << 1,  /*!< GNSS L5/E5 Available                        */
-    GNSS_STAT_L2E6        = 1 << 2,  /*!< GNSS L2/E6 Available                        */
-    GNSS_STAT_L1E1_EN     = 1 << 4,  /*!< Enable L1/E1 FIFO                           */
-    GNSS_STAT_L5E5_EN     = 1 << 5,  /*!< Enable L5/E5 FIFO                           */
-    GNSS_STAT_L2E6_EN     = 1 << 6,  /*!< Enable L2/E6 FIFO                           */
-    GNSS_STAT_MODE        = 1 << 10, /*!< GNSS Sample Mode                            */
-    GNSS_STAT_PLAY        = 1 << 11, /*!< GNSS Playback Mode                          */
-    GNSS_STAT_BUSY        = 1 << 12, /*!< GNSS Busy                                   */
-    GNSS_STAT_START       = 1 << 13, /*!< GNSS Start                                  */
-    GNSS_STAT_ERR         = 1 << 16, /*!< GNSS FIFO Error                             */
-    GNSS_STAT_OVF_I       = 1 << 17, /*!< GNSS FIFO I Overflow                        */
-    GNSS_STAT_OVF_Q       = 1 << 18, /*!< GNSS FIFO Q Overflow                        */
-    GNSS_STAT_RTC_RDY     = 1 << 19, /*!< RTC Compare Timestamp Ready                 */
-    GNSS_STAT_ACQPLAYIE   = 1 << 20, /*!< Acquisition/Playback Interrupt Enable       */
-    GNSS_STAT_ACQPLAYIF   = 1 << 21, /*!< Acquisition/Playback Interrupt Flag         */
-    GNSS_STAT_RNGIE       = 1 << 22, /*!< Range Generation Interrupt Enable           */
-    GNSS_STAT_RNGIF       = 1 << 23, /*!< Range Generation Interrupt Flag             */
+    GNSS_STCR_MODE        = 1 << 10, /*!< GNSS Sample Mode                            */
+    GNSS_STCR_PLAY        = 1 << 11, /*!< GNSS Playback Mode                          */
+    GNSS_STCR_BUSY        = 1 << 12, /*!< GNSS Busy                                   */
+    GNSS_STCR_START       = 1 << 13, /*!< GNSS Start                                  */
+    GNSS_STCR_ERR         = 1 << 16, /*!< GNSS FIFO Error                             */
+    GNSS_STCR_OVF_I       = 1 << 17, /*!< GNSS FIFO I Overflow                        */
+    GNSS_STCR_OVF_Q       = 1 << 18, /*!< GNSS FIFO Q Overflow                        */
+    GNSS_STCR_RTC_RDY     = 1 << 19, /*!< RTC Compare Timestamp Ready                 */
+    GNSS_STCR_ACQPLAYIE   = 1 << 20, /*!< Acquisition/Playback Interrupt Enable       */
+    GNSS_STCR_ACQPLAYIF   = 1 << 21, /*!< Acquisition/Playback Interrupt Flag         */
+    GNSS_STCR_RNGIE       = 1 << 22, /*!< Range Generation Interrupt Enable           */
+    GNSS_STCR_RNGIF       = 1 << 23, /*!< Range Generation Interrupt Flag             */
 };
 
 /** GNSS Controller Status Register bit offsets */
 enum
 {
-    GNSS_STAT_RFAFE_SHIFT  = 8,   /*!< GNSS RF AFE Shift                        */
-    GNSS_STAT_ACQDEC_SHIFT = 24,  /*!< GNSS Acquisition Decimator Shift         */
-    GNSS_STAT_ACQSCL_SHIFT = 28,  /*!< GNSS Acquisition Decimator Scale Shift   */
+    GNSS_STCR_RFAFE_SHIFT  = 8,   /*!< GNSS RF AFE Shift                        */
+    GNSS_STCR_ACQDEC_SHIFT = 24,  /*!< GNSS Acquisition Decimator Shift         */
+    GNSS_STCR_ACQSCL_SHIFT = 28,  /*!< GNSS Acquisition Decimator Scale Shift   */
 };
 
 /** GNSS Controller Status Register masks */
 enum
 {
-    GNSS_STAT_RFAFE_MASK   = 0x03 << GNSS_STAT_RFAFE_SHIFT,  /*!< GNSS RF AFE Mask                       */
-    GNSS_STAT_ACQDEC_MASK  = 0x0F << GNSS_STAT_ACQDEC_SHIFT, /*!< GNSS Acquisition Decimator Mask        */
-    GNSS_STAT_ACQSCL_MASK  = 0x0F << GNSS_STAT_ACQSCL_SHIFT, /*!< GNSS Acquisition Decimator Scale Mask  */
+    GNSS_STCR_RFAFE_MASK   = 0x03 << GNSS_STCR_RFAFE_SHIFT,  /*!< GNSS RF AFE Mask                       */
+    GNSS_STCR_ACQDEC_MASK  = 0x0F << GNSS_STCR_ACQDEC_SHIFT, /*!< GNSS Acquisition Decimator Mask        */
+    GNSS_STCR_ACQSCL_MASK  = 0x0F << GNSS_STCR_ACQSCL_SHIFT, /*!< GNSS Acquisition Decimator Scale Mask  */
 };
 
 /** GNSS Controller Status RF AFE */
 enum
 {
-    GNSS_STAT_RFAFE_L1E1   = 0x0,  /*!< GNSS L1/E1 RF AFE           */
-    GNSS_STAT_RFAFE_L5E5   = 0x1,  /*!< GNSS L5/E5 RF AFE           */
-    GNSS_STAT_RFAFE_L2E6   = 0x2,  /*!< GNSS L2/E6 RF AFE           */
+    GNSS_STCR_RFAFE_L1E1   = 0x0,  /*!< GNSS L1/E1 RF AFE           */
+    GNSS_STCR_RFAFE_L5E5   = 0x1,  /*!< GNSS L5/E5 RF AFE           */
+    GNSS_STCR_RFAFE_L2E6   = 0x2,  /*!< GNSS L2/E6 RF AFE           */
 };
 
 /** GNSS Controller GNSS-ISE Control Register Flags */
@@ -239,12 +233,12 @@ enum
  * @name GNSS Controller Status Register macros
  * @{
  */
-#define GNSS_STATUS_GET_RFAFE(status)      ((status & GNSS_STAT_RFAFE_MASK) >> GNSS_STAT_RFAFE_SHIFT)      /*!< Gets GNSS RF AFE                     */
-#define GNSS_STATUS_BUILD_RFAFE(rfafe)     ((rfafe << GNSS_STAT_RFAFE_SHIFT) & GNSS_STAT_RFAFE_MASK)       /*!< Builds GNSS RF AFE                   */
-#define GNSS_STATUS_GET_ACQDEC(status)     ((status & GNSS_STAT_ACQDEC_MASK) >> GNSS_STAT_ACQDEC_SHIFT)    /*!< Gets Acquisition Decimator           */
-#define GNSS_STATUS_BUILD_ACQDEC(acqdec)   ((acqdec << GNSS_STAT_ACQDEC_SHIFT) & GNSS_STAT_ACQDEC_MASK)    /*!< Builds Acquisition Decimator         */
-#define GNSS_STATUS_GET_ACQSCL(status)     ((status & GNSS_STAT_ACQSCL_MASK) >> GNSS_STAT_ACQSCL_SHIFT)    /*!< Gets Acquisition Decimator Scale     */
-#define GNSS_STATUS_BUILD_ACQSCL(acqscl)   ((acqscl << GNSS_STAT_ACQSCL_SHIFT) & GNSS_STAT_ACQSCL_MASK)    /*!< Builds Acquisition Decimator Scale   */
+#define GNSS_STCR_GET_RFAFE(status)      ((status & GNSS_STCR_RFAFE_MASK) >> GNSS_STCR_RFAFE_SHIFT)      /*!< Gets GNSS RF AFE                     */
+#define GNSS_STCR_BUILD_RFAFE(rfafe)     ((rfafe << GNSS_STCR_RFAFE_SHIFT) & GNSS_STCR_RFAFE_MASK)       /*!< Builds GNSS RF AFE                   */
+#define GNSS_STCR_GET_ACQDEC(status)     ((status & GNSS_STCR_ACQDEC_MASK) >> GNSS_STCR_ACQDEC_SHIFT)    /*!< Gets Acquisition Decimator           */
+#define GNSS_STCR_BUILD_ACQDEC(acqdec)   ((acqdec << GNSS_STCR_ACQDEC_SHIFT) & GNSS_STCR_ACQDEC_MASK)    /*!< Builds Acquisition Decimator         */
+#define GNSS_STCR_GET_ACQSCL(status)     ((status & GNSS_STCR_ACQSCL_MASK) >> GNSS_STCR_ACQSCL_SHIFT)    /*!< Gets Acquisition Decimator Scale     */
+#define GNSS_STCR_BUILD_ACQSCL(acqscl)   ((acqscl << GNSS_STCR_ACQSCL_SHIFT) & GNSS_STCR_ACQSCL_MASK)    /*!< Builds Acquisition Decimator Scale   */
 /** @} */
 
 /** @} */

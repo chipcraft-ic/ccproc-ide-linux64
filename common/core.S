@@ -32,8 +32,8 @@
 # File Name : core.S
 # Author    : Rafal Harabien
 # ******************************************************************************
-# $Date: 2019-05-16 23:26:56 +0200 (czw, 16 maj 2019) $
-# $Revision: 419 $
+# $Date: 2024-01-14 21:55:43 +0100 (nie, 14 sty 2024) $
+# $Revision: 1038 $
 #H******************************************************************************
 
 #include <specialreg.h>
@@ -69,8 +69,8 @@ core_entrypoint:
   mtc0 $t1, C0_STATUS
 
   lui $t0, CACHE_CTRL_BASE            # Cache Controller base address
-  sw $zero, ICACHE_STAT_OFFSET($t0)   # disable instruction cache
-  sw $zero, DCACHE_STAT_OFFSET($t0)   # disable data cache
+  sw $zero, ICACHE_STCR_OFFSET($t0)   # disable instruction cache
+  sw $zero, DCACHE_STCR_OFFSET($t0)   # disable data cache
 
 write_buffer_wait:
   sync

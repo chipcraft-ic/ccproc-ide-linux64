@@ -2,8 +2,8 @@
 *
 * Copyright (c) 2017 ChipCraft Sp. z o.o. All rights reserved
 *
-* $Date: 2022-11-24 15:32:16 +0100 (czw, 24 lis 2022) $
-* $Revision: 916 $
+* $Date: 2024-01-14 21:55:43 +0100 (nie, 14 sty 2024) $
+* $Revision: 1038 $
 *
 *  ----------------------------------------------------------------------
 * Redistribution and use in source and binary forms, with or without
@@ -57,7 +57,7 @@
 /** Data Cache Registers */
 typedef struct
 {
-    uint32_t STATUS;            /*!< Control Register                 */
+    uint32_t STCR;              /*!< Status and Control Register      */
     uint32_t FLUSH;             /*!< Flush Tag Memory                 */
     uint32_t INFO;              /*!< Cache Info Register              */
     uint32_t ERR_CNT_0;         /*!< Error Counter 0 (FT-only)        */
@@ -73,15 +73,15 @@ static volatile dcache_regs_t * const DCACHE_PTR = (dcache_regs_t*)DCACHE_BASE;
 /** DCC Status Register bits */
 enum
 {
-    DCACHE_STAT_EN                = 1 << 0,  /*!< Data Cache Enable                                             */
-    DCACHE_STAT_FLUSH             = 1 << 1,  /*!< Data Cache Flush in Progress (not available in lockstep mode) */
-    DCACHE_STAT_BUSY              = 1 << 2,  /*!< Data Cache Write Buffer Busy (not available in lockstep mode) */
-    DCACHE_STAT_ECC_EN            = 1 << 3,  /*!< ECC Enable (FT-only)                                          */
-    DCACHE_STAT_ERR_TRIG          = 1 << 4,  /*!< Error Count Trigger (FT-only)                                 */
-    DCACHE_STAT_SCRAMBLE_EN       = 1 << 5,  /*!< Scramble Enable (FT-only)                                     */
-    DCACHE_STAT_MEM_ERR_INJECT    = 1 << 6,  /*!< Memory Error Injection Enable (FT-only)                       */
-    DCACHE_STAT_TAG_ERR_INJECT    = 1 << 7,  /*!< Tag Error Injection Enable (FT-only)                          */
-    DCACHE_STAT_HARD_ERR_EN       = 1 << 8,  /*!< Hard error enable (FT-only)                                   */
+    DCACHE_STCR_EN                = 1 << 0,  /*!< Data Cache Enable                                             */
+    DCACHE_STCR_FLUSH             = 1 << 1,  /*!< Data Cache Flush in Progress (not available in lockstep mode) */
+    DCACHE_STCR_BUSY              = 1 << 2,  /*!< Data Cache Write Buffer Busy (not available in lockstep mode) */
+    DCACHE_STCR_ECC_EN            = 1 << 3,  /*!< ECC Enable (FT-only)                                          */
+    DCACHE_STCR_ERR_TRIG          = 1 << 4,  /*!< Error Count Trigger (FT-only)                                 */
+    DCACHE_STCR_SCRAMBLE_EN       = 1 << 5,  /*!< Scramble Enable (FT-only)                                     */
+    DCACHE_STCR_MEM_ERR_INJECT    = 1 << 6,  /*!< Memory Error Injection Enable (FT-only)                       */
+    DCACHE_STCR_TAG_ERR_INJECT    = 1 << 7,  /*!< Tag Error Injection Enable (FT-only)                          */
+    DCACHE_STCR_HARD_ERR_EN       = 1 << 8,  /*!< Hard error enable (FT-only)                                   */
 };
 
 /** DCC Info Register bit offsets */

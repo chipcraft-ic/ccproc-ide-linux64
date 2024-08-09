@@ -32,8 +32,8 @@
 * File Name : ate_test_functions.c
 * Author    : Krzysztof Siwiec
 * ******************************************************************************
-* $Date: 2022-06-01 13:13:43 +0200 (śro, 01 cze 2022) $
-* $Revision: 868 $
+* $Date: 2024-07-04 21:54:52 +0200 (czw, 04 lip 2024) $
+* $Revision: 1069 $
 *H*****************************************************************************/
 
 #include <core_util.h>
@@ -393,8 +393,8 @@ static void core_FunctionAfeBist()
         GNSS_STATUS_WR(1);
     }
 
-    GNSS_PTR->STATUS |= GNSS_STAT_L1E1_EN | GNSS_STAT_L5E5_EN | GNSS_STAT_L2E6_EN;
-    PERFCNT_PTR->STATUS |= (PERFCNT_STAT_SRC_L1E1 << PERFCNT_STAT_SRC_SHIFT) & PERFCNT_STAT_SRC_MASK; // initialize time source
+    GNSS_PTR->STCR |= 0x70; //GNSS_STCR_L1E1_EN | GNSS_STCR_L5E5_EN | GNSS_STCR_L2E6_EN;
+    PERFCNT_PTR->STATUS |= (PERFCNT_STAT_SRC_AFE << PERFCNT_STAT_SRC_SHIFT) & PERFCNT_STAT_SRC_MASK; // initialize time source
     PERFCNT_PTR->STATUS |= PERFCNT_STAT_EN;
 
     //uint32_t test_start = GnssGetUsec();
