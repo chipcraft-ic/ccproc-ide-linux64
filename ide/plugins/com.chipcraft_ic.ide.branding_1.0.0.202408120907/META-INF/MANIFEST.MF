@@ -9,7 +9,7 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-Vendor: %ide.property.vendor
 Export-Package: com.chipcraft_ic.ide.branding
 Bundle-Name: %ide.property.plugin.branding.name
-Bundle-Version: 1.0.0.202408091303
+Bundle-Version: 1.0.0.202408120907
 Bundle-Localization: plugin
 Bundle-Activator: com.chipcraft_ic.ide.branding.Activator
 Build-Jdk-Spec: 1.8
