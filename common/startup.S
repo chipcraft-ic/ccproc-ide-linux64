@@ -32,8 +32,8 @@
 # File Name : startup.S
 # Author    : Rafal Harabien, Krzysztof Marcinek
 # ******************************************************************************
-# $Date: 2024-02-01 10:30:21 +0100 (czw, 01 lut 2024) $
-# $Revision: 1040 $
+# $Date: 2024-12-20 15:31:17 +0100 (pią, 20 gru 2024) $
+# $Revision: 1119 $
 #H******************************************************************************
 
 # Useful defines:
@@ -170,6 +170,7 @@ cache_init:
   or $t1, $zero, CACHE_EN_MASK          # cache enable mask
   or $t1, $t1, CACHE_FT_MASK            # cache parity/ecc enable mask
   or $t1, $t1, CACHE_HE_MASK            # cache hard error enable mask
+  or $t1, $t1, CACHE_BM_MASK            # cache merging enable mask
   sw $t1, ICACHE_STCR_OFFSET($t0)       # enable instruction cache
   sw $t1, DCACHE_STCR_OFFSET($t0)       # enable data cache
   la $gp, _gp                           # init global pointer
@@ -197,6 +198,45 @@ cache_init:
   ori $t1, $t1, SPROT_EN_MASK           # enable stack protection
   ori $t1, $t1, IRQ_EN_MASK             # enable interrupts
   mtc0 $t1, C0_STATUS                   # write STATUS register
+
+#ifdef _EXEC_TIMEOUT
+wdt_setup:
+  lui $t0, PWD_CTRL_BASE                # load power management controller base address
+  lw $t1, RST_RSN_OFFSET($t0)           # read reset reason
+  ori $t2, $zero, WDT_RESET_MASK        # load watchdog reset mask
+  beq $t1, $t2, end_loop                # end simulation if watchdog reset
+  nop
+wdt_check:
+  lui $t0, AMBA_BASE                    # load amba base address
+  lw $t1, AMBA_INFO0_OFFSET($t0)        # load AMBA_INFO_0
+  lui $t2, WDT_MASK                     # load watchdog mask
+  and $t1, $t1, $t2                     # check is watchdog is present
+  beq $zero, $t1, end_loop              # end simulation if no watchdog
+  nop
+  ori $t0, $t0, WDT_ADDRESS             # load watchdog address
+  ori $t1, $zero, WDT_UNLOCK_MASK       # load unlock mask
+  ori $t2, $zero, _EXEC_TIMEOUT         # load period
+  ori $t3, $zero, WDT_ENABLE_MASK       # load enable mask
+wdt_pres:
+  li $t5, 512                           # load prescaler value
+  sw $t1, WDT_UNLOCK_OFFSET($t0)        # unlok registers
+  sw $t5, WDT_PRES_OFFSET($t0)          # store period
+  lw $t4, WDT_PRES_OFFSET($t0)          # load period
+  bne $t5, $t4, wdt_pres                # check if prescaler stored
+  nop
+wdt_period:
+  sw $t1, WDT_UNLOCK_OFFSET($t0)        # unlok registers
+  sw $t2, WDT_PERIOD_OFFSET($t0)        # store period
+  lw $t4, WDT_PERIOD_OFFSET($t0)        # load period
+  bne $t2, $t4, wdt_period              # check if period stored
+  nop
+wdt_enable:
+  sw $t1, WDT_UNLOCK_OFFSET($t0)        # unlok registers
+  sw $t3, WDT_CTRL_OFFSET($t0)          # enable watchdog
+  lw $t4, WDT_CTRL_OFFSET($t0)          # load control
+  bne $t3, $t4, wdt_enable              # check if watchdog enabled
+  nop
+#endif
 
 #ifdef _MI16_ENABLE
 check_mips16:
@@ -262,6 +302,12 @@ common_done:
 
 program:
 
+#ifdef _CCSDK_SIMULATION_FLOW
+  lui $s0, RAM_BASE
+  sw $zero, 0($s0)                      # clear for simulation
+  sw $zero, 4($s0)
+#endif
+
   lui $s0, CSR_CTRL_BASE                # System Controller base address
   lw $s1, CPU_INFO0_OFFSET($s0)         # CPU features register
   srl $t0, $s1, RAM_SIZE_SHIFT
@@ -325,46 +371,6 @@ zero_bss:
 
 done:
   add $sp, -16                          # call arguments area
-
-#ifdef _EXEC_TIMEOUT
-
-  lui $t0, PWD_CTRL_BASE                # load power management controller base address
-  lw $t1, RST_RSN_OFFSET($t0)           # read reset reason
-  ori $t2, $zero, WDT_RESET_MASK        # load watchdog reset mask
-  beq $t1, $t2, end_loop                # end simulation if watchdog reset
-  nop
-
-  lui $t0, AMBA_BASE                    # load amba base address
-  lw $t1, AMBA_INFO0_OFFSET($t0)        # load AMBA_INFO_0
-  lui $t2, WDT_MASK                     # load watchdog mask
-  and $t1, $t1, $t2                     # check is watchdog is present
-  beq $zero, $t1, end_loop              # end simulation if no watchdog
-  nop
-  ori $t0, $t0, WDT_ADDRESS             # load watchdog address
-  ori $t1, $zero, WDT_UNLOCK_MASK       # load unlock mask
-  ori $t2, $zero, _EXEC_TIMEOUT         # load period
-  ori $t3, $zero, WDT_ENABLE_MASK       # load enable mask
-wdt_pres:
-  li $t5, 512                           # load prescaler value
-  sw $t1, WDT_UNLOCK_OFFSET($t0)        # unlok registers
-  sw $t5, WDT_PRES_OFFSET($t0)          # store period
-  lw $t4, WDT_PRES_OFFSET($t0)          # load period
-  bne $t5, $t4, wdt_pres                # check if prescaler stored
-  nop
-wdt_period:
-  sw $t1, WDT_UNLOCK_OFFSET($t0)        # unlok registers
-  sw $t2, WDT_PERIOD_OFFSET($t0)        # store period
-  lw $t4, WDT_PERIOD_OFFSET($t0)        # load period
-  bne $t2, $t4, wdt_period              # check if period stored
-  nop
-wdt_enable:
-  sw $t1, WDT_UNLOCK_OFFSET($t0)        # unlok registers
-  sw $t3, WDT_CTRL_OFFSET($t0)          # enable watchdog
-  lw $t4, WDT_CTRL_OFFSET($t0)          # load control
-  bne $t3, $t4, wdt_enable              # check if watchdog enabled
-  nop
-
-#endif
 
   jal board_init                        # board specific initialization
   nop
@@ -435,7 +441,8 @@ exception_handler:
   break 0, BREAK_CODE                   # break to debug mode
 #endif
 
-  nop                                   # dummy insctructions for lockstep operation
+  nop
+  nop                                   # dummy instructions for lockstep operation
   nop                                   # in corner case where exception occures
   nop                                   # immediately after previous one
   nop                                   # because of presence of signature buffer
@@ -445,6 +452,7 @@ exception_handler:
   nop                                   # because of that the number of instructions
   nop                                   # in exception handler should be greater
   nop                                   # than the signature buffer
+  nop
 
   mfc0 $k1, C0_EPC                      # get Return Address
   add $k1, 4                            # go to next instruction

@@ -2,8 +2,8 @@
 *
 * Copyright (c) 2017 ChipCraft Sp. z o.o. All rights reserved
 *
-* $Date: 2021-04-06 10:29:54 +0200 (wto, 06 kwi 2021) $
-* $Revision: 687 $
+* $Date: 2024-08-19 09:13:00 +0200 (pon, 19 sie 2024) $
+* $Revision: 1100 $
 *
 *  ----------------------------------------------------------------------
 * Redistribution and use in source and binary forms, with or without
@@ -61,24 +61,25 @@
 /** RTC Registers */
 typedef struct
 {
-    uint32_t CTRL;           /*!< Control Register                */
-    uint32_t SHDNCTRL;       /*!< Shutdown Control Register       */
-    uint32_t STATUS;         /*!< Status Register                 */
-    uint32_t PRES;           /*!< Prescaler Register (16 bit)     */
-    uint32_t PER;            /*!< Period Register (32 bit)        */
-    uint32_t COMPARE;        /*!< Compare Register (32 bit)       */
-    uint32_t COUNT;          /*!< Count Register (32 bit)         */
-    uint32_t WKUP0DBCN;      /*!< Wakeup Debounce Config Register */
-    uint32_t IRQM;           /*!< Interrupt Mask Register         */
-    uint32_t IRQF;           /*!< Interrupt Flags Register        */
-    uint32_t IRQMAP;         /*!< Interrupt Mapping Register      */
-    uint32_t BACKUP0;        /*!< Backup 0 Register               */
-    uint32_t BACKUP1;        /*!< Backup 1 Register               */
-    uint32_t BACKUP2;        /*!< Backup 2 Register               */
-    uint32_t BACKUP3;        /*!< Backup 3 Register               */
-    uint32_t TMSTMPCTRL;     /*!< Timestamp Control Register      */
-    uint32_t TMSTMPSTAT;     /*!< Timestamp Status Register       */
-    uint32_t TMSTMP;         /*!< Timestamp Register              */
+    uint32_t CTRL;           /*!< Control Register                  */
+    uint32_t SHDNCTRL;       /*!< Shutdown Control Register         */
+    uint32_t STATUS;         /*!< Status Register                   */
+    uint32_t PRES;           /*!< Prescaler Register (16 bit)       */
+    uint32_t PER;            /*!< Period Register (32 bit)          */
+    uint32_t COMPARE;        /*!< Compare Register (32 bit)         */
+    uint32_t COUNT;          /*!< Count Register (32 bit)           */
+    uint32_t PRESCNT;        /*!< Prescaler Value Register (32 bit) */
+    uint32_t IRQM;           /*!< Interrupt Mask Register           */
+    uint32_t IRQF;           /*!< Interrupt Flags Register          */
+    uint32_t IRQMAP;         /*!< Interrupt Mapping Register        */
+    uint32_t BACKUP0;        /*!< Backup 0 Register                 */
+    uint32_t BACKUP1;        /*!< Backup 1 Register                 */
+    uint32_t BACKUP2;        /*!< Backup 2 Register                 */
+    uint32_t BACKUP3;        /*!< Backup 3 Register                 */
+    uint32_t TMSTMPCTRL;     /*!< Timestamp Control Register        */
+    uint32_t TMSTMPSTAT;     /*!< Timestamp Status Register         */
+    uint32_t TMSTMP;         /*!< Timestamp Register                */
+    uint32_t WKUP0DBCN;      /*!< Wakeup Debounce Config Register   */
 } amba_rtc_t;
 
 #ifdef CCPROC_SDK

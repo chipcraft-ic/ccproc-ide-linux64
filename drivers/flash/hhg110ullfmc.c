@@ -32,8 +32,8 @@
  * File Name : hhg110ullfmc.c
  * Author    : Maciej Plasota
  * ******************************************************************************
- * $Date: 2024-06-04 16:15:15 +0200 (wto, 04 cze 2024) $
- * $Revision: 1060 $
+ * $Date: 2025-03-03 13:31:11 +0100 (pon, 03 mar 2025) $
+ * $Revision: 1131 $
  *H*****************************************************************************/
 
 #include <limits.h>
@@ -1578,6 +1578,23 @@ flash_sync( void )
     /* Do nothing. */
     return result;
 }
+
+/* Dummy function to maintain compatibility with CCRV32 API. */
+bool
+flash_cache_buffer_allocated( void const * const address )
+{
+    /* Do nothing */
+    return false;
+}
+
+/* Dummy function to maintain compatibility with CCRV32 API. */
+int16_t
+flash_cache_buffer_writes( void const * const address )
+{
+    /* Do nothing */
+    return -1;
+}
+
 /* Dummy function to maintain compatibility with CCRV32 API. */
 void
 flash_cache_threshold( uint8_t const min, uint8_t const max )

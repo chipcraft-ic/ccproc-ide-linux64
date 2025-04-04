@@ -2,8 +2,8 @@
 *
 * Copyright (c) 2017 ChipCraft Sp. z o.o. All rights reserved
 *
-* $Date: 2024-06-08 11:42:29 +0200 (sob, 08 cze 2024) $
-* $Revision: 1062 $
+* $Date: 2024-08-27 12:39:04 +0200 (wto, 27 sie 2024) $
+* $Revision: 1103 $
 *
 *  ----------------------------------------------------------------------
 * Redistribution and use in source and binary forms, with or without
@@ -264,6 +264,7 @@ enum
     CPU_ARCH_SHIFT        = 0,    /*!< CPU Architecture Offset  */
     CPU_GNSS_BANKS_SHIFT  = 4,    /*!< GNSS Banks Number Offset */
     CPU_SYSBUS_SHIFT      = 10,   /*!< System Bus Width Offset  */
+    CPU_PHT_SHIFT         = 16,   /*!< PHT Size Offset          */
 };
 
 /** System Controller CPU Info 2 Register bit masks */
@@ -272,6 +273,7 @@ enum
     CPU_ARCH_MASK         = 0x7 << CPU_ARCH_SHIFT,        /*!< GNSS Architecture Mask   */
     CPU_GNSS_BANKS_MASK   = 0xF << CPU_GNSS_BANKS_SHIFT,  /*!< GNSS Banks Number Mask   */
     CPU_SYSBUS_MASK       = 0x3 << CPU_SYSBUS_SHIFT,      /*!< System Bus Width Mask    */
+    CPU_PHT_MASK          = 0x7 << CPU_PHT_SHIFT,         /*!< PHT Size Mask            */
 };
 
 /** System Controller CPU Info 2 Register bits */

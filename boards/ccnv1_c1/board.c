@@ -2,8 +2,8 @@
 *
 * Copyright (c) 2017 ChipCraft Sp. z o.o. All rights reserved
 *
-* $Date: 2023-09-18 12:31:57 +0200 (pon, 18 wrz 2023) $
-* $Revision: 997 $
+* $Date: 2024-12-20 15:31:17 +0100 (pią, 20 gru 2024) $
+* $Revision: 1119 $
 *
 *  ----------------------------------------------------------------------
 * Redistribution and use in source and binary forms, with or without
@@ -136,7 +136,11 @@ void gnss_power_cycle(void)
 
     /* wait loop */
 
+#ifdef _CCSDK_SIMULATION_FLOW
+    for (int i=0; i<500; i++)
+#else
     for (int i=0; i<5000000; i++)
+#endif
         __asm__ __volatile__("nop");
 
     /* disable subblocks */
@@ -160,7 +164,11 @@ void gnss_power_cycle(void)
     CFG_REGS_PTR->CFGREG_UNLOCK = CFGREG_UNLOCK_DEF;
     CFG_REGS_PTR->CFGREG_LNA15_CONF = CFGREG_LNA15_CONF_DEF;
 
+#ifdef _CCSDK_SIMULATION_FLOW
+    for (int i=0; i<500; i++)
+#else
     for (int i=0; i<500000; i++)
+#endif
         __asm__ __volatile__("nop");
 
 }

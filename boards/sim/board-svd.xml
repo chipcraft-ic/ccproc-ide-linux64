@@ -13,8 +13,8 @@
   <licenseText>
     Copyright (c) 2018 ChipCraft Sp. z o.o. All rights reserved\n
 \n
-    $Date: 2024-08-01 10:07:13 +0200 (czw, 01 sie 2024) $\n
-    $Revision: 1085 $\n
+    $Date: 2024-09-24 11:12:19 +0200 (wto, 24 wrz 2024) $\n
+    $Revision: 1109 $\n
 \n
      ----------------------------------------------------------------------\n
     Redistribution and use in source and binary forms, with or without\n
@@ -978,6 +978,28 @@
                 <enumeratedValue>
                   <name>128</name>
                   <description>128-bit System Bus</description>
+                  <value>2</value>
+                </enumeratedValue>
+              </enumeratedValues>
+            </field>
+            <field>
+              <name>PHT</name>
+              <description>PHT Size</description>
+              <bitRange>[18:16]</bitRange>
+              <enumeratedValues>
+                <enumeratedValue>
+                  <name>1024</name>
+                  <description>1024 PHT Entries</description>
+                  <value>0</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>2048</name>
+                  <description>2048 PHT Entries</description>
+                  <value>1</value>
+                </enumeratedValue>
+                <enumeratedValue>
+                  <name>4096</name>
+                  <description>4096 PHT Entries</description>
                   <value>2</value>
                 </enumeratedValue>
               </enumeratedValues>
@@ -3854,6 +3876,19 @@
           <description>GNSS-ISE Diagnostic Result Register</description>
           <addressOffset>0x94</addressOffset>
           <access>read-only</access>
+        </register>
+        <register>
+          <name>GNSS_CLK_PRESC</name>
+          <description>GNSS-ISE Clock Prescaler Register</description>
+          <addressOffset>0x98</addressOffset>
+          <access>read-write</access>
+          <fields>
+            <field>
+              <name>CLK_PRESC</name>
+              <description>Clock Prescaler</description>
+              <bitRange>[3:0]</bitRange>
+            </field>
+          </fields>
         </register>
       </registers>
     </peripheral>

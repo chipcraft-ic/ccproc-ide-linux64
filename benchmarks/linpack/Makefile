@@ -1,4 +1,4 @@
--include ../..common/legacy-env-var-support.mk
+-include ../../common/legacy-env-var-support.mk
 
 PROGNAME   := linpack
 COMMON_DIR := $(CHIPCRAFT_SDK_HOME)/common

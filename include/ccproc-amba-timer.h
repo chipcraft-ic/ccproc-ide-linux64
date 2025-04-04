@@ -2,8 +2,8 @@
 *
 * Copyright (c) 2017 ChipCraft Sp. z o.o. All rights reserved
 *
-* $Date: 2018-09-07 16:07:40 +0200 (pią, 07 wrz 2018) $
-* $Revision: 296 $
+* $Date: 2024-08-19 14:59:12 +0200 (pon, 19 sie 2024) $
+* $Revision: 1101 $
 *
 *  ----------------------------------------------------------------------
 * Redistribution and use in source and binary forms, with or without
@@ -87,8 +87,8 @@ typedef struct
  #define AMBA_TIMER32_BASE(index) (AMBA_TIMER32_0_BASE+(index)*0x100)  /*!< Timer 32 base address */
  #define AMBA_TIMER16_BASE(index) (AMBA_TIMER16_0_BASE+(index)*0x100)  /*!< Timer 16 base address */
 
- #define AMBA_TIMER32_CHANNEL_BASE(index, channel) (AMBA_TIMER32_BASE(index) + (channel)*sizeof(timer_channel_regs_t))  /*!< Timer 32 channel base address */
- #define AMBA_TIMER16_CHANNEL_BASE(index, channel) (AMBA_TIMER16_BASE(index) + (channel)*sizeof(timer_channel_regs_t))  /*!< Timer 16 channel base address */
+ #define AMBA_TIMER32_CHANNEL_BASE(index, channel) (AMBA_TIMER32_BASE(index) + sizeof(amba_timer_t) + (channel)*sizeof(timer_channel_regs_t))  /*!< Timer 32 channel base address */
+ #define AMBA_TIMER16_CHANNEL_BASE(index, channel) (AMBA_TIMER16_BASE(index) + sizeof(amba_timer_t) + (channel)*sizeof(timer_channel_regs_t))  /*!< Timer 16 channel base address */
 
  #define AMBA_TIMER32_PTR(index) ((volatile amba_timer_t*)AMBA_TIMER32_BASE(index))  /*!< Timer 32 pointer */
  #define AMBA_TIMER16_PTR(index) ((volatile amba_timer_t*)AMBA_TIMER16_BASE(index))  /*!< Timer 16 pointer */

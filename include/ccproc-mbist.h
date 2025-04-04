@@ -2,8 +2,8 @@
 *
 * Copyright (c) 2019 ChipCraft Sp. z o.o. All rights reserved
 *
-* $Date: 2022-12-12 15:09:34 +0100 (pon, 12 gru 2022) $
-* $Revision: 936 $
+* $Date: 2024-08-19 09:13:00 +0200 (pon, 19 sie 2024) $
+* $Revision: 1100 $
 *
 *  ----------------------------------------------------------------------
 * Redistribution and use in source and binary forms, with or without
@@ -131,7 +131,7 @@ enum
 enum
 {
     MBIST_INJ_PORT0_EN      = 1 << 0,  /*!< Port0 fault injection enable */
-    MBIST_INJ_PORT1_EN      = 1 << 1,  /*!< Port0 fault injection enable */
+    MBIST_INJ_PORT1_EN      = 1 << 1,  /*!< Port1 fault injection enable */
 };
 
 /** @} */

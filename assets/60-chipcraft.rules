@@ -6,6 +6,6 @@ ACTION!="add|change", GOTO="chipcraft_rules_end"
 SUBSYSTEM!="usb|tty|hidraw", GOTO="chipcraft_rules_end"
 
 # Olimex ARM-USB-OCD-H
-ATTRS{idVendor}=="15ba", ATTRS{idProduct}=="002b", MODE="660", GROUP="plugdev", TAG+="uaccess"
+ATTRS{idVendor}=="15ba", ATTRS{idProduct}=="002b", MODE="660", GROUP="dialout", TAG+="uaccess"
 
 LABEL="chipcraft_rules_end"

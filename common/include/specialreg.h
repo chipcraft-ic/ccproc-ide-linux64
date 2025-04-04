@@ -32,8 +32,8 @@
 # File Name : specialreg.h
 # Author    : Krzysztof Marcinek
 # ******************************************************************************
-# $Date: 2024-01-14 21:55:43 +0100 (nie, 14 sty 2024) $
-# $Revision: 1038 $
+# $Date: 2024-09-17 20:06:05 +0200 (wto, 17 wrz 2024) $
+# $Revision: 1107 $
 #H******************************************************************************
 
 #ifndef _SPECIALREG_H_
@@ -130,5 +130,6 @@
 #define CACHE_FT_MASK           0x8          /* cache parity/ecc enable mask                     */
 #define CACHE_SC_MASK           0x20         /* cache scrambling enable mask                     */
 #define CACHE_HE_MASK           0x100        /* hard error mask                                  */
+#define CACHE_BM_MASK           0x400        /* store buffer merging mask                        */
 
 #endif /* _SPECIALREG_H_ */

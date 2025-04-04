@@ -2,8 +2,8 @@
 *
 * Copyright (c) 2017 ChipCraft Sp. z o.o. All rights reserved
 *
-* $Date: 2019-06-25 14:24:19 +0200 (wto, 25 cze 2019) $
-* $Revision: 424 $
+* $Date: 2024-09-24 11:12:19 +0200 (wto, 24 wrz 2024) $
+* $Revision: 1109 $
 *
 *  ----------------------------------------------------------------------
 * Redistribution and use in source and binary forms, with or without
@@ -56,7 +56,7 @@ enum
     DBG_WATCHPOINTS_BASE = DEBUG_BASE + 0x00000010,  /*!< 4 hardware watchpoints (read & write) */
     DBG_BURST_COUNT      = DEBUG_BASE + 0x00000020,  /*!< Burst Count Register                  */
     DBG_GPR_BASE         = DEBUG_BASE + 0x01000000,  /*!< 32 General Purpose Registers          */
-    DBG_FPR_BASE         = DEBUG_BASE + 0x01000080,  /*!< 32 Floating Point Registers           */
+    DBG_FPR_BASE         = DEBUG_BASE + 0x01000200,  /*!< 32 Floating Point Registers           */
     DBG_ICACHE_MEM_BASE  = DEBUG_BASE + 0x02000000,  /*!< Instruction Cache Memory              */
     DBG_ICACHE_TAG_BASE  = DEBUG_BASE + 0x02100000,  /*!< Instruction Cache Tag                 */
     DBG_DCACHE_MEM_BASE  = DEBUG_BASE + 0x02200000,  /*!< Data Cache Memory                     */

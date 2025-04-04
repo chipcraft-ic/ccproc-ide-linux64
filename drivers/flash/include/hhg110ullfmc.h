@@ -32,8 +32,8 @@
  * File Name : hhg110ullfmc.h
  * Author    : Maciej Plasota
  * ******************************************************************************
- * $Date: 2024-06-04 16:15:15 +0200 (wto, 04 cze 2024) $
- * $Revision: 1060 $
+ * $Date: 2025-03-03 13:31:11 +0100 (pon, 03 mar 2025) $
+ * $Revision: 1131 $
  *H*****************************************************************************/
 
 #ifndef _FLASH_H_
@@ -951,6 +951,36 @@ flash_write(
  */
 flash_access_status_t
 flash_sync( void );
+
+/*! \brief Check if cache page buffer is allocated.
+ *
+ * \param address Page address.
+ *
+ * The address is allowed to be unaligned.
+ *
+ * \return Status of operation.
+ *   \retval true cache page buffer is allocated.
+ *   \retval false cache page buffer is not allocated.
+ */
+bool
+flash_cache_buffer_allocated(
+    void const * const address
+);
+
+/*! \brief Check cache page buffer writes number.
+ *
+ * \param address Page address.
+ *
+ * The address is allowed to be unaligned.
+ *
+ * \return Status of operation.
+ *   \retval -1 cache page buffer is not allocated.
+ *   \retval Allocated cache page buffer writes number.
+ */
+int16_t
+flash_cache_buffer_writes(
+    void const * const address
+);
 
 /*! \brief Set minimum and maximum writes threshold for cache synchronization.
  *

@@ -2,8 +2,8 @@
 *
 * Copyright (c) 2017 ChipCraft Sp. z o.o. All rights reserved
 *
-* $Date: 2024-06-17 09:37:19 +0200 (pon, 17 cze 2024) $
-* $Revision: 1065 $
+* $Date: 2024-08-19 09:13:00 +0200 (pon, 19 sie 2024) $
+* $Revision: 1100 $
 *
 *  ----------------------------------------------------------------------
 * Redistribution and use in source and binary forms, with or without
@@ -109,6 +109,7 @@ typedef struct
     uint32_t GNSS_DIAG_DATA1;   /*!< GNSS-ISE Diagnostic Data Register                    */
     uint32_t GNSS_DIAG_DATA2;   /*!< GNSS-ISE Diagnostic Data Register                    */
     uint32_t GNSS_DIAG_RESULT;  /*!< GNSS-ISE Diagnostic Result Register                  */
+    uint32_t GNSS_CLK_PRESC;    /*!< GNSS-ISE Clock Prescaler Register                    */
 #endif
 } gnss_regs_t;
 
